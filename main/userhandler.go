@@ -24,18 +24,18 @@ func createUserHandler() *UserHandler {
 func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	login := r.FormValue("login")
 	if login == "" {
-		http.Error(w, `bad login`, 400)
+		http.Error(w, `bad login`, http.StatusBadRequest)
 		return
 	}
 	user, ok := userHandler.users.GetByName(login)
 
 	if !ok {
-		http.Error(w, `no user`, 404)
+		http.Error(w, `no user`, http.StatusNotFound)
 		return
 	}
 
 	if user.Password != r.FormValue("password") {
-		http.Error(w, `bad password`, 400)
+		http.Error(w, `bad password`, http.StatusBadRequest)
 		return
 	}
 
@@ -54,12 +54,12 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	session, err := r.Cookie("session_id")
 	if session == nil || err == http.ErrNoCookie {
-		http.Error(w, `no session`, 401)
+		http.Error(w, `no session`, http.StatusUnauthorized)
 		return
 	}
 
 	if _, ok := userHandler.sessions[session.Value]; !ok {
-		http.Error(w, `no session`, 401)
+		http.Error(w, `no session`, http.StatusUnauthorized)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	email := r.FormValue("email")
 	if login == "" || password == "" {
-		http.Error(w, `bad parameters`, 400)
+		http.Error(w, `bad parameters`, http.StatusBadRequest)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 
 	_, err := userHandler.users.Add(user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -95,19 +95,19 @@ func (userHandler *UserHandler) UserById(w http.ResponseWriter, r *http.Request)
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if id < 0 || err != nil {
-		http.Error(w, `bad id`, 400)
+		http.Error(w, `bad id`, http.StatusBadRequest)
 		return
 	}
 
 	user, ok := userHandler.users.GetById(uint(id))
 	if !ok {
-		http.Error(w, `no user`, 404)
+		http.Error(w, `no user`, http.StatusNotFound)
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(&user)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

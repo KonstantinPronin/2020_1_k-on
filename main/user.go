@@ -13,7 +13,7 @@ type User struct {
 
 type UserStorage struct {
 	mutex sync.RWMutex
-	users map[uint]*User
+	users map[string]*User
 	count uint
 }
 
@@ -28,13 +28,13 @@ func CreateUserStorage() *UserStorage {
 
 	return &UserStorage{
 		mutex: sync.RWMutex{},
-		users: map[uint]*User{0: &user},
+		users: map[string]*User{user.Username: &user},
 		count: 1,
 	}
 }
 
-func (userStorage *UserStorage) Contains(id uint) bool {
-	_, ok := userStorage.users[id]
+func (userStorage *UserStorage) Contains(login string) bool {
+	_, ok := userStorage.users[login]
 	return ok
 }
 
@@ -44,7 +44,7 @@ func (userStorage *UserStorage) Add(user *User) (uint, error) {
 
 	id := userStorage.count
 	user.Id = id
-	userStorage.users[id] = user
+	userStorage.users[user.Username] = user
 	userStorage.count++
 
 	return id, nil
@@ -54,22 +54,22 @@ func (userStorage *UserStorage) GetById(id uint) (*User, bool) {
 	userStorage.mutex.RLock()
 	defer userStorage.mutex.RUnlock()
 
-	if !userStorage.Contains(id) {
-		return nil, false
+	for _, user := range userStorage.users {
+		if user.Id == id {
+			return user, true
+		}
 	}
 
-	return userStorage.users[id], true
+	return nil, false
 }
 
 func (userStorage *UserStorage) GetByName(login string) (*User, bool) {
 	userStorage.mutex.RLock()
 	defer userStorage.mutex.RUnlock()
 
-	for _, user := range userStorage.users {
-		if user.Username == login {
-			return user, true
-		}
+	if !userStorage.Contains(login) {
+		return nil, false
 	}
 
-	return nil, false
+	return userStorage.users[login], true
 }
