@@ -28,6 +28,7 @@ func main() {
 	r := mux.NewRouter()
 
 	filmHandler := createFilmHandler()
+
 	r.HandleFunc("/films/create/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
@@ -46,6 +47,7 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		filmHandler.getFilm(w, r)
 	})
+
 	fmt.Println("starting server at :8080")
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {

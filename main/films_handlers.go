@@ -9,14 +9,12 @@ import (
 )
 
 type FilmHandler struct {
-	sessions map[string]uint
-	films    *FilmsList
+	films *FilmsList
 }
 
 func createFilmHandler() *FilmHandler {
 	return &FilmHandler{
-		sessions: make(map[string]uint),
-		films:    CreateFilmList(),
+		films: CreateFilmList(),
 	}
 }
 
