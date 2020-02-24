@@ -1,13 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 	"time"
 )
@@ -22,8 +22,16 @@ func (mc *StubContext) Value(interface{}) interface{} {
 
 func TestUserHandler_Login_EmptyLogin(t *testing.T) {
 	userHandler := createUserHandler()
+	user := User{
+		Password: "test",
+	}
+	body, err := json.Marshal(user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	response := httptest.NewRecorder()
-	request, err := http.NewRequest("POST", "/login", nil)
+	request, err := http.NewRequest("POST", "/login", bytes.NewBuffer(body))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,13 +49,20 @@ func TestUserHandler_Login_EmptyLogin(t *testing.T) {
 
 func TestUserHandler_Login_UserDoesNotExist(t *testing.T) {
 	userHandler := createUserHandler()
-	response := httptest.NewRecorder()
-	form := url.Values{"login": []string{"test"}}
-	request, err := http.NewRequest("POST", "/login", nil)
+	user := User{
+		Username: "test",
+		Password: "test",
+	}
+	body, err := json.Marshal(user)
 	if err != nil {
 		t.Fatal(err)
 	}
-	request.Form = form
+
+	response := httptest.NewRecorder()
+	request, err := http.NewRequest("POST", "/login", bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	handler := http.HandlerFunc(userHandler.Login)
 	handler.ServeHTTP(response, request)
@@ -66,14 +81,22 @@ func TestUserHandler_Login_WrongPassword(t *testing.T) {
 		Username: "test",
 		Password: "test",
 	}
+	wrongUser := User{
+		Username: "test",
+		Password: "wrong",
+	}
 	userHandler.users.users[user.Username] = &user
-	response := httptest.NewRecorder()
-	form := url.Values{"login": []string{"test"}, "password": []string{"wrong"}}
-	request, err := http.NewRequest("POST", "/login", nil)
+
+	body, err := json.Marshal(wrongUser)
 	if err != nil {
 		t.Fatal(err)
 	}
-	request.Form = form
+
+	response := httptest.NewRecorder()
+	request, err := http.NewRequest("POST", "/login", bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	handler := http.HandlerFunc(userHandler.Login)
 	handler.ServeHTTP(response, request)
@@ -93,13 +116,16 @@ func TestUserHandler_Login(t *testing.T) {
 		Password: "test",
 	}
 	userHandler.users.users[user.Username] = &user
-	response := httptest.NewRecorder()
-	form := url.Values{"login": []string{"test"}, "password": []string{"test"}}
-	request, err := http.NewRequest("POST", "/login", nil)
+	body, err := json.Marshal(user)
 	if err != nil {
 		t.Fatal(err)
 	}
-	request.Form = form
+
+	response := httptest.NewRecorder()
+	request, err := http.NewRequest("POST", "/login", bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	handler := http.HandlerFunc(userHandler.Login)
 	handler.ServeHTTP(response, request)
@@ -114,6 +140,7 @@ func TestUserHandler_Login(t *testing.T) {
 
 func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
 	userHandler := createUserHandler()
+
 	response := httptest.NewRecorder()
 	request, err := http.NewRequest("POST", "/logout", nil)
 	if err != nil {
@@ -134,8 +161,9 @@ func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
 func TestUserHandler_Logout(t *testing.T) {
 	userHandler := createUserHandler()
 	userHandler.sessions["test"] = 0
+
 	response := httptest.NewRecorder()
-	request, err := http.NewRequest("POST", "/login", nil)
+	request, err := http.NewRequest("POST", "/logout", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -160,8 +188,16 @@ func TestUserHandler_Logout(t *testing.T) {
 
 func TestUserHandler_Add_EmptyLogin(t *testing.T) {
 	userHandler := createUserHandler()
+	user := User{
+		Password: "test",
+	}
+	body, err := json.Marshal(user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	response := httptest.NewRecorder()
-	request, err := http.NewRequest("POST", "/signup", nil)
+	request, err := http.NewRequest("POST", "/signup", bytes.NewBuffer(body))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -179,13 +215,20 @@ func TestUserHandler_Add_EmptyLogin(t *testing.T) {
 
 func TestUserHandler_Add(t *testing.T) {
 	userHandler := createUserHandler()
-	form := url.Values{"login": []string{"test"}, "password": []string{"test"}}
-	response := httptest.NewRecorder()
-	request, err := http.NewRequest("POST", "/signup", nil)
+	user := User{
+		Username: "test",
+		Password: "test",
+	}
+	body, err := json.Marshal(user)
 	if err != nil {
 		t.Fatal(err)
 	}
-	request.Form = form
+
+	response := httptest.NewRecorder()
+	request, err := http.NewRequest("POST", "/signup", bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	handler := http.HandlerFunc(userHandler.Add)
 	handler.ServeHTTP(response, request)

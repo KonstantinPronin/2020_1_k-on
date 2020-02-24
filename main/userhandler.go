@@ -22,19 +22,26 @@ func createUserHandler() *UserHandler {
 }
 
 func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
-	login := r.FormValue("login")
-	if login == "" {
+	in := new(User)
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	err := decoder.Decode(in)
+	if err != nil {
+		http.Error(w, `bad parameters`, http.StatusBadRequest)
+		return
+	}
+	if in.Username == "" {
 		http.Error(w, `bad login`, http.StatusBadRequest)
 		return
 	}
-	user, ok := userHandler.users.GetByName(login)
 
+	user, ok := userHandler.users.GetByName(in.Username)
 	if !ok {
 		http.Error(w, `no user`, http.StatusNotFound)
 		return
 	}
-
-	if user.Password != r.FormValue("password") {
+	if user.Password != in.Password {
 		http.Error(w, `bad password`, http.StatusBadRequest)
 		return
 	}
@@ -70,21 +77,17 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
-	login := r.FormValue("login")
-	password := r.FormValue("password")
-	email := r.FormValue("email")
-	if login == "" || password == "" {
+	user := new(User)
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	err := decoder.Decode(user)
+	if err != nil || user.Username == "" || user.Password == "" {
 		http.Error(w, `bad parameters`, http.StatusBadRequest)
 		return
 	}
 
-	user := &User{
-		Username: login,
-		Password: password,
-		Email:    email,
-	}
-
-	_, err := userHandler.users.Add(user)
+	_, err = userHandler.users.Add(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
