@@ -1,36 +1,37 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 )
 
-func getFilmsList(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	film := []Film{}
-	str, _ := readLines("../storage/films.json")
-	data := []byte(str)
-	err := json.Unmarshal(data, &film)
+type FilmHandler struct {
+	sessions map[string]uint
+	films    *FilmsList
+}
 
-	if err != nil {
-		return
+func createFilmHandler() *FilmHandler {
+	return &FilmHandler{
+		sessions: make(map[string]uint),
+		films:    CreateFilmList(),
 	}
-	for k := range film {
-		_, err = fmt.Fprintf(w, "ID:%d, Name:%s, Year: %d \n", film[k].ID, film[k].Name, film[k].YearCreated)
-	}
-	if err != nil {
-		return
+}
+
+func (filmHandler *FilmHandler) getFilmsList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	for _, val := range filmHandler.films.films {
+		fmt.Fprintf(w, "%d ", val.ID)
+		fmt.Fprintf(w, "%s ", val.Name)
+		fmt.Fprintf(w, "%d \n", val.YearCreated)
+
 	}
 	return
 }
 
-func getFilm(w http.ResponseWriter, r *http.Request) {
+func (filmHandler *FilmHandler) getFilm(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -38,62 +39,46 @@ func getFilm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error":"bad id"}`, 400)
 		return
 	}
-	film := []Film{}
-	str, _ := readLines("../storage/films.json")
-	data := []byte(str)
-	err = json.Unmarshal(data, &film)
-	if err != nil {
+	f, ok := filmHandler.films.GetById(uint(id))
+	if !ok {
+		http.Error(w, `{"error":"not found this film"}`, 404)
 		return
+	} else {
+		fmt.Fprintf(w, "%d ", f.ID)
+		fmt.Fprintf(w, "%s ", f.Name)
+		fmt.Fprintf(w, "%d \n", f.YearCreated)
 	}
-	for k := range film {
-		if film[k].ID == id {
-			_, err = fmt.Fprintf(w, "ID:%d, Name:%s, Year: %d \n", film[k].ID, film[k].Name, film[k].YearCreated)
-			return
-		}
-	}
-	http.Error(w, "not found", 404)
-	return
-
 }
 
-func createFilm(w http.ResponseWriter, r *http.Request) {
-	film := []Film{}
-	str, _ := readLines("../storage/films.json")
-	data := []byte(str)
-	err := json.Unmarshal(data, &film)
-	if err != nil {
-		http.Error(w, "server error in unmarshal", 500)
-		log.Fatalf("%s", err)
-		return
-	}
-
+func (filmHandler *FilmHandler) createFilm(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "server error in parsing form", 500)
 		log.Fatalf("%s", err)
 
 		return
 	}
-	var id int = 0
-	if len(film) > 0 {
-		id = film[len(film)-1].ID + 1
-	}
 	name := r.FormValue("Name")
+	_, is := filmHandler.films.GetByName(name)
+	if is {
+		fmt.Fprint(w, "film with this name already exists:")
+		return
+	}
 	year, err := strconv.Atoi(r.FormValue("Year"))
 	if err != nil {
-		fmt.Fprintf(w, "year must be int!: %v", err)
+		fmt.Fprintf(w, "year must be int!: %s", err)
 		return
 	}
-	film = append(film, Film{ID: id, Name: name, YearCreated: year})
-	js, err := json.Marshal(film)
-	if err != nil {
-		http.Error(w, "server error in marshal", 500)
-		log.Fatalf("%s", err)
-		return
+	film := Film{
+		ID:          filmHandler.films.count + 1,
+		Name:        name,
+		YearCreated: year,
 	}
-	err = ioutil.WriteFile("../storage/films.json", js, os.ModePerm)
-	if err != nil {
-		http.Error(w, "server error in saving data", 500)
-		log.Fatalf("%s", err)
+
+	filmHandler.films.Add(&film)
+	ok := filmHandler.films.UpdateFilmList()
+	if ok {
+		http.Redirect(w, r, "/films/"+strconv.Itoa(int(film.ID))+"/", 301)
+	} else {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	http.Redirect(w, r, "/films/"+strconv.Itoa(id)+"/", 301)
 }

@@ -24,37 +24,27 @@ func readLines(path string) (string, error) {
 	return lines, scanner.Err()
 }
 
-func printHtml(w http.ResponseWriter, r *http.Request) {
-	html, err := readLines("../storage/index.html")
-	if err != nil {
-		return
-	}
-	_, err = fmt.Fprint(w, html)
-	if err != nil {
-		return
-	}
-}
-
 func main() {
 	r := mux.NewRouter()
 
+	filmHandler := createFilmHandler()
 	r.HandleFunc("/films/create/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			http.ServeFile(w, r, "../storage/index.html")
 		case "POST":
-			createFilm(w, r)
+			filmHandler.createFilm(w, r)
 		}
 	})
 
 	r.HandleFunc("/films", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		getFilmsList(w, r)
+		filmHandler.getFilmsList(w, r)
 	})
 
 	r.HandleFunc("/films/{id:[0-9]+}/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		getFilm(w, r)
+		filmHandler.getFilm(w, r)
 	})
 	fmt.Println("starting server at :8080")
 	err := http.ListenAndServe(":8080", r)
