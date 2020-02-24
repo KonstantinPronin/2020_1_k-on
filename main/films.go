@@ -95,10 +95,3 @@ func (filmList *FilmsList) GetByName(name string) (*Film, bool) {
 
 	return filmList.films[name], true
 }
-
-func (filmList *FilmsList) GetFull() (*FilmsList, bool) {
-	filmList.mutex.RLock()
-	defer filmList.mutex.RUnlock()
-
-	return filmList, true
-}
