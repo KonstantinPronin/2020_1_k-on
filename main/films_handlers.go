@@ -19,11 +19,17 @@ func createFilmHandler() *FilmHandler {
 }
 
 func (filmHandler *FilmHandler) getFilmsList(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(filmHandler.films.films)
+	w.Header().Set("Content-Type", "application/json")
+	var f []Film
+	for _, val := range filmHandler.films.films {
+		f = append(f, *val)
+	}
+	json.NewEncoder(w).Encode(f)
 	return
 }
 
 func (filmHandler *FilmHandler) getFilm(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -51,7 +57,8 @@ func (filmHandler *FilmHandler) createFilm(w http.ResponseWriter, r *http.Reques
 	}
 	_, is := filmHandler.films.GetByName(film.Name)
 	if is {
-		fmt.Fprint(w, "film with this name already exists:")
+		http.Error(w, `bad film name`, http.StatusBadRequest)
+		fmt.Print(w, "film with this name already exists:")
 		return
 	}
 	filmHandler.films.Add(&film)

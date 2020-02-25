@@ -38,15 +38,8 @@ func main() {
 		}
 	})
 
-	r.HandleFunc("/films", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		filmHandler.getFilmsList(w, r)
-	})
-
-	r.HandleFunc("/films/{id:[0-9]+}/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		filmHandler.getFilm(w, r)
-	})
+	r.HandleFunc("/films", filmHandler.getFilmsList)
+	r.HandleFunc("/films/{id:[0-9]+}/", filmHandler.getFilm)
 
 	fmt.Println("starting server at :8080")
 	err := http.ListenAndServe(":8080", r)
