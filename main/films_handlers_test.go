@@ -18,17 +18,19 @@ const jsonIn = `[
   {
     "ID": 6,
     "Name": "New",
-    "YearCreated": 3000
+    "YearCreated": 3000,
+    "Image": "path"
   }
 ]`
 
 const jsReq = `{
   "name": "New",
-  "YearCreated": 3000
+  "YearCreated": 3000,
+  "Image": "path"
 }`
 
-const jsResp = `[{"ID":1,"Name":"1","YearCreated":1000},{"ID":2,"Name":"2","YearCreated":2000}]`
-const jsResp2 = `{"ID":1,"Name":"1","YearCreated":1000}`
+const jsResp = `[{"ID":1,"Name":"1","YearCreated":1000,"Image":"path"},{"ID":2,"Name":"2","YearCreated":2000,"Image":"path"}]`
+const jsResp2 = `{"ID":1,"Name":"1","YearCreated":1000,"Image":"path"}`
 
 func TestCreateFilm(t *testing.T) {
 	film := []Film{}
@@ -54,11 +56,13 @@ func TestGetFilmsList(t *testing.T) {
 			ID:          1,
 			Name:        "1",
 			YearCreated: 1000,
+			Image:       "path",
 		},
 		{
 			ID:          2,
 			Name:        "2",
 			YearCreated: 2000,
+			Image:       "path",
 		},
 	}
 	filmList := FilmsList{
@@ -86,6 +90,7 @@ func TestGetFilm(t *testing.T) {
 			ID:          1,
 			Name:        "1",
 			YearCreated: 1000,
+			Image:       "path",
 		},
 	}
 	filmList := FilmsList{

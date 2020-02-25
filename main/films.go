@@ -12,6 +12,7 @@ type Film struct {
 	ID          uint
 	Name        string
 	YearCreated int
+	Image       string
 }
 
 type FilmsList struct {
