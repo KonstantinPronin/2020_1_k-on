@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -25,11 +24,12 @@ func readLines(path string) (string, error) {
 }
 
 func main() {
-	r := mux.NewRouter()
+	router := mux.NewRouter()
 
 	filmHandler := createFilmHandler()
+	userHandler := createUserHandler()
 
-	r.HandleFunc("/films/create/", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/films/create/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			http.ServeFile(w, r, "../storage/index.html")
@@ -38,10 +38,14 @@ func main() {
 		}
 	})
 
-	r.HandleFunc("/films", filmHandler.getFilmsList)
-	r.HandleFunc("/films/{id:[0-9]+}/", filmHandler.getFilm)
+	router.HandleFunc("/films", filmHandler.getFilmsList)
+	router.HandleFunc("/films/{id:[0-9]+}/", filmHandler.getFilm)
+	router.HandleFunc("/login", userHandler.Login)
+	router.HandleFunc("/logout", userHandler.Logout)
+	router.HandleFunc("/signup", userHandler.Add)
+	router.HandleFunc("/user/{id:[0-9]+}", userHandler.UserById)
 
-	fmt.Println("starting server at :8080")
+	log.Println("starting server at :8080")
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		log.Fatalf("server error %s", err)
