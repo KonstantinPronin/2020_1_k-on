@@ -9,13 +9,12 @@ const ImageDirectory string = string("./media/img/")
 const MaxFileSize int64 = 1000000
 
 type ImageJson struct {
-	image string
+	Image string `json:"image"`
 }
 
 func WriteFile(directory string, filename string, data []byte) (string, error) {
 	filepath := directory + filename
 	err := ioutil.WriteFile(filepath, data, 0644)
-	err = ioutil.WriteFile(filepath, data, 0644)
 	if err != nil {
 		return "", err
 	}

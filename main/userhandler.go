@@ -247,7 +247,7 @@ func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	image := ImageJson{image: data}
+	image := ImageJson{Image: data}
 	err = json.NewEncoder(w).Encode(&image)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
