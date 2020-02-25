@@ -72,7 +72,7 @@ func TestUserHandler_Login_UserDoesNotExist(t *testing.T) {
 	}
 
 	assert.Equal(t, "no user\n", string(data))
-	assert.Equal(t, http.StatusNotFound, response.Code)
+	assert.Equal(t, http.StatusUnauthorized, response.Code)
 }
 
 func TestUserHandler_Login_WrongPassword(t *testing.T) {
@@ -250,7 +250,7 @@ func TestUserHandler_UserById_WrongId(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	handler := http.HandlerFunc(userHandler.UserById)
+	handler := http.HandlerFunc(userHandler.Get)
 	handler.ServeHTTP(response, request)
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -271,7 +271,7 @@ func TestUserHandler_UserById_UserDoesNotExist(t *testing.T) {
 	ctx := new(StubContext)
 	request = request.WithContext(ctx)
 
-	handler := http.HandlerFunc(userHandler.UserById)
+	handler := http.HandlerFunc(userHandler.Get)
 	handler.ServeHTTP(response, request)
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -298,7 +298,7 @@ func TestUserHandler_UserById(t *testing.T) {
 	ctx := new(StubContext)
 	request = request.WithContext(ctx)
 
-	handler := http.HandlerFunc(userHandler.UserById)
+	handler := http.HandlerFunc(userHandler.Get)
 	handler.ServeHTTP(response, request)
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {

@@ -9,6 +9,19 @@ type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
+	Image    string `json:"image"`
+}
+
+func (user *User) Update(upUser *User) {
+	if upUser.Username != "" {
+		user.Username = upUser.Username
+	}
+	if upUser.Password != "" {
+		user.Username = upUser.Password
+	}
+	if upUser.Email != "" {
+		user.Email = upUser.Email
+	}
 }
 
 type UserStorage struct {
