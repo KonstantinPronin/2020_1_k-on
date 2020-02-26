@@ -1,12 +1,28 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"os"
 	"sync"
 )
+
+func readLines(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	var lines string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = lines + scanner.Text()
+	}
+	return lines, scanner.Err()
+}
 
 type Film struct {
 	ID          uint
@@ -44,6 +60,9 @@ func CreateFilmList() *FilmsList {
 }
 
 func (filmList *FilmsList) UpdateFilmList() bool {
+	filmList.mutex.Lock()
+	defer filmList.mutex.Unlock()
+
 	fArr := []Film{}
 	for _, val := range filmList.films {
 		fArr = append(fArr, *val)

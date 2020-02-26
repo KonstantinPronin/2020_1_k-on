@@ -1,27 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"os"
 )
-
-func readLines(path string) (string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	var lines string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = lines + scanner.Text()
-	}
-	return lines, scanner.Err()
-}
 
 func main() {
 	router := mux.NewRouter()
@@ -37,6 +20,8 @@ func main() {
 			filmHandler.createFilm(w, r)
 		}
 	})
+
+	router.HandleFunc("*", filmHandler.Cors).Methods("OPTIONS")
 
 	router.HandleFunc("/films", filmHandler.getFilmsList)
 	router.HandleFunc("/films/{id:[0-9]+}/", filmHandler.getFilm)

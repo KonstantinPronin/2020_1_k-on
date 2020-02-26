@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -58,15 +59,19 @@ func (filmHandler *FilmHandler) createFilm(w http.ResponseWriter, r *http.Reques
 	_, is := filmHandler.films.GetByName(film.Name)
 	if is {
 		http.Error(w, `bad film name`, http.StatusBadRequest)
-		fmt.Print(w, "film with this name already exists:")
+		log.Fatal("film with this name already exists:")
 		return
 	}
 	filmHandler.films.Add(&film)
 	ok := filmHandler.films.UpdateFilmList()
 	if ok {
-		//http.Redirect(w, r, "/films/"+strconv.Itoa(int(film.ID))+"/", 301)
 		json.NewEncoder(w).Encode(film)
 	} else {
 		http.Error(w, "can't update database", http.StatusInternalServerError)
 	}
+}
+
+func (filmHandler *FilmHandler) Cors(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Method", "*")
 }

@@ -1,27 +1,32 @@
 [
   {
-    "ID": 1,
-    "Name": "Avatar",
-    "YearCreated": 2009
-  },
-  {
-    "ID": 2,
-    "Name": "Avengers",
-    "YearCreated": 2012
-  },
-  {
     "ID": 3,
     "Name": "The Dark Knight",
-    "YearCreated": 2008
+    "YearCreated": 2008,
+    "Image": "path"
   },
   {
     "ID": 4,
     "Name": "Batman",
-    "YearCreated": 2010
+    "YearCreated": 2010,
+    "Image": "path"
   },
   {
     "ID": 5,
     "Name": "Kimi No Nawa",
-    "YearCreated": 2017
+    "YearCreated": 2017,
+    "Image": "path"
+  },
+  {
+    "ID": 1,
+    "Name": "Avatar",
+    "YearCreated": 2009,
+    "Image": "path"
+  },
+  {
+    "ID": 2,
+    "Name": "Avengers",
+    "YearCreated": 2012,
+    "Image": "path"
   }
 ]
