@@ -66,7 +66,7 @@ func (userHandler *UserHandler) auth(login, password string, w http.ResponseWrit
 func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Method", "POST")
-	w.Header().Set("Access-Control-Allow-Origin", "localhost:3000")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 
 	if userHandler.isAuth(r) {
 		return
