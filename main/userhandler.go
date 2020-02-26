@@ -64,12 +64,11 @@ func (userHandler *UserHandler) auth(login, password string, w http.ResponseWrit
 }
 
 func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "OPTIONS" {
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Method", "POST")
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	} else {
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Method", "POST")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 
+	if r.Method == "POST" {
 		if userHandler.isAuth(r) {
 			return
 		}
@@ -102,11 +101,11 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "OPTIONS" {
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Method", "POST")
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	} else {
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Method", "POST")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+
+	if r.Method == "POST" {
 
 		if userHandler.isAuth(r) {
 			http.Error(w, `already login`, http.StatusForbidden)
