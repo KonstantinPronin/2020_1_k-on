@@ -17,7 +17,7 @@ func (user *User) Update(upUser *User) {
 		user.Username = upUser.Username
 	}
 	if upUser.Password != "" {
-		user.Username = upUser.Password
+		user.Password = upUser.Password
 	}
 	if upUser.Email != "" {
 		user.Email = upUser.Email

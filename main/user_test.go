@@ -6,6 +6,27 @@ import (
 	"testing"
 )
 
+func TestUser_Update(t *testing.T) {
+	old := User{
+		Username: "old",
+		Password: "old",
+		Email:    "old",
+	}
+	upd := User{
+		Username: "new",
+		Password: "new",
+	}
+	expected := User{
+		Username: "new",
+		Password: "new",
+		Email:    "old",
+	}
+
+	old.Update(&upd)
+
+	assert.Equal(t, expected, old)
+}
+
 func TestUserStorage_Add(t *testing.T) {
 	userStorage := UserStorage{
 		mutex: sync.RWMutex{},
