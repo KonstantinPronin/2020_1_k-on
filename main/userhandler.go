@@ -102,36 +102,43 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
-	if userHandler.isAuth(r) {
-		http.Error(w, `already login`, http.StatusForbidden)
-		return
-	}
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Method", "POST")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	} else {
 
-	user := new(User)
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
+		if userHandler.isAuth(r) {
+			http.Error(w, `already login`, http.StatusForbidden)
+			return
+		}
 
-	err := decoder.Decode(user)
-	if err != nil || user.Username == "" || user.Password == "" {
-		http.Error(w, `bad parameters`, http.StatusBadRequest)
-		return
-	}
-	if userHandler.users.Contains(user.Username) {
-		http.Error(w, `such user already exist`, http.StatusBadRequest)
-		return
-	}
+		user := new(User)
+		decoder := json.NewDecoder(r.Body)
+		defer r.Body.Close()
 
-	_, err = userHandler.users.Add(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+		err := decoder.Decode(user)
+		if err != nil || user.Username == "" || user.Password == "" {
+			http.Error(w, `bad in parameters`, http.StatusBadRequest)
+			return
+		}
+		if userHandler.users.Contains(user.Username) {
+			http.Error(w, `such user already exist`, http.StatusBadRequest)
+			return
+		}
 
-	userHandler.auth(user.Username, user.Password, w)
-	err = json.NewEncoder(w).Encode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		_, err = userHandler.users.Add(user)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		userHandler.auth(user.Username, user.Password, w)
+		err = json.NewEncoder(w).Encode(&user)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
