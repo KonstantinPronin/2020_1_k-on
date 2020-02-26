@@ -64,25 +64,28 @@ func (userHandler *UserHandler) auth(login, password string, w http.ResponseWrit
 }
 
 func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Method", "POST")
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Method", "POST")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	} else {
 
-	if userHandler.isAuth(r) {
-		return
+		if userHandler.isAuth(r) {
+			return
+		}
+
+		in := new(User)
+		decoder := json.NewDecoder(r.Body)
+		defer r.Body.Close()
+
+		err := decoder.Decode(in)
+		if err != nil {
+			http.Error(w, `bad parameters`, http.StatusBadRequest)
+			return
+		}
+
+		userHandler.auth(in.Username, in.Password, w)
 	}
-
-	in := new(User)
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
-
-	err := decoder.Decode(in)
-	if err != nil {
-		http.Error(w, `bad parameters`, http.StatusBadRequest)
-		return
-	}
-
-	userHandler.auth(in.Username, in.Password, w)
 }
 
 func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
