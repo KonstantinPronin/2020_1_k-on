@@ -48,7 +48,7 @@ func main() {
 	router.HandleFunc("/user/{id:[0-9]+}/image", userHandler.GetImage)
 
 	log.Println("starting server at :8080")
-	err := http.ListenAndServe(":8080", r)
+	err := http.ListenAndServe(":8080", router)
 	if err != nil {
 		log.Fatalf("server error %s", err)
 	}
