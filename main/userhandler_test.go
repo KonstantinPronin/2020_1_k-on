@@ -43,7 +43,7 @@ func TestUserHandler_Login_EmptyLogin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "bad login\n", string(data))
+	assert.Equal(t, "{\"error\":\"bad login\"}\n", string(data))
 	assert.Equal(t, http.StatusBadRequest, response.Code)
 }
 
@@ -71,7 +71,7 @@ func TestUserHandler_Login_UserDoesNotExist(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "no user\n", string(data))
+	assert.Equal(t, "{\"error\":\"no user\"}\n", string(data))
 	assert.Equal(t, http.StatusUnauthorized, response.Code)
 }
 
@@ -105,7 +105,7 @@ func TestUserHandler_Login_WrongPassword(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "bad password\n", string(data))
+	assert.Equal(t, "{\"error\":\"bad password\"}\n", string(data))
 	assert.Equal(t, http.StatusBadRequest, response.Code)
 }
 
@@ -154,7 +154,7 @@ func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "no session\n", string(data))
+	assert.Equal(t, "{\"error\":\"no session\"}\n", string(data))
 	assert.Equal(t, http.StatusUnauthorized, response.Code)
 }
 
@@ -210,7 +210,7 @@ func TestUserHandler_Add_AlreadyLogin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "already login\n", string(data))
+	assert.Equal(t, "{\"error\":\"already login\"}\n", string(data))
 	assert.Equal(t, http.StatusForbidden, response.Code)
 }
 
@@ -237,7 +237,7 @@ func TestUserHandler_Add_EmptyLogin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "bad parameters\n", string(data))
+	assert.Equal(t, "{\"error\":\"bad in parameters\"}\n", string(data))
 	assert.Equal(t, http.StatusBadRequest, response.Code)
 }
 
@@ -286,7 +286,7 @@ func TestUserHandler_Get_NoSession(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "no session\n", string(data))
+	assert.Equal(t, "{\"error\":\"no session\"}\n", string(data))
 	assert.Equal(t, http.StatusUnauthorized, response.Code)
 }
 
@@ -344,7 +344,7 @@ func TestUserHandler_Update_NoSession(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "no session\n", string(data))
+	assert.Equal(t, "{\"error\":\"no session\"}\n", string(data))
 	assert.Equal(t, http.StatusUnauthorized, response.Code)
 }
 
@@ -401,7 +401,7 @@ func TestUserHandler_UploadImage_NoSession(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "no session\n", string(data))
+	assert.Equal(t, "{\"error\":\"no session\"}\n", string(data))
 	assert.Equal(t, http.StatusUnauthorized, response.Code)
 }
 
@@ -435,7 +435,7 @@ func TestUserHandler_UploadImage_BadFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, "bad data form\n", string(data))
+	assert.Equal(t, "{\"error\":\"bad data form\"}\n", string(data))
 	assert.Equal(t, http.StatusBadRequest, response.Code)
 }
 

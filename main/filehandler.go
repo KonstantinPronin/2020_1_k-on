@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 )
 
-const ImageDirectory string = string("./media/img/")
+const ImageDirectory string = string("../media/img/")
 const MaxFileSize int64 = 1000000
 
 type ImageJson struct {

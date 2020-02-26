@@ -5,11 +5,12 @@ import (
 )
 
 type User struct {
-	Id       uint   `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-	Image    string `json:"image"`
+	Id          uint   `json:"id"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	Email       string `json:"email"`
+	Image       string `json:"image"`
+	ImageBase64 string `json:"avatar"`
 }
 
 func (user *User) Update(upUser *User) {

@@ -44,7 +44,7 @@ func (userHandler *UserHandler) auth(login, password string, w http.ResponseWrit
 
 	user, ok := userHandler.users.GetByName(login)
 	if !ok {
-		http.Error(w, `{"error":"no user"}"`, http.StatusUnauthorized)
+		http.Error(w, `{"error":"no user"}`, http.StatusUnauthorized)
 		return
 	}
 	if user.Password != password {
@@ -92,7 +92,7 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	if !userHandler.isAuth(r) {
-		http.Error(w, `{"error":"no session"`, http.StatusUnauthorized)
+		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
 		return
 	}
 	session, _ := r.Cookie("session_id")
@@ -169,7 +169,14 @@ func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := json.NewEncoder(w).Encode(&user)
+	data, err := ReadFile(user.Image)
+	if err != nil {
+		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
+		return
+	}
+	user.ImageBase64 = data
+
+	err = json.NewEncoder(w).Encode(&user)
 	if err != nil {
 		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 		return
