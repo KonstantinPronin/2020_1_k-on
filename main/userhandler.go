@@ -36,18 +36,19 @@ func (userHandler *UserHandler) isAuth(r *http.Request) bool {
 }
 
 func (userHandler *UserHandler) auth(login, password string, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
 	if login == "" {
-		http.Error(w, `bad login`, http.StatusBadRequest)
+		http.Error(w, `{"error":"bad login"}`, http.StatusBadRequest)
 		return
 	}
 
 	user, ok := userHandler.users.GetByName(login)
 	if !ok {
-		http.Error(w, `no user`, http.StatusUnauthorized)
+		http.Error(w, `{"error":"no user"}"`, http.StatusUnauthorized)
 		return
 	}
 	if user.Password != password {
-		http.Error(w, `bad password`, http.StatusBadRequest)
+		http.Error(w, `{"error":"bad password"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -69,7 +70,9 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 
 	if r.Method == "POST" {
+		w.Header().Set("Content-Type", "application/json")
 		if userHandler.isAuth(r) {
+			http.Error(w, `{"error":"already login"}`, http.StatusForbidden)
 			return
 		}
 
@@ -79,7 +82,7 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 		err := decoder.Decode(in)
 		if err != nil {
-			http.Error(w, `bad parameters`, http.StatusBadRequest)
+			http.Error(w, `{"error":"bad parameters"}`, http.StatusBadRequest)
 			return
 		}
 
@@ -89,7 +92,7 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	if !userHandler.isAuth(r) {
-		http.Error(w, `no session`, http.StatusUnauthorized)
+		http.Error(w, `{"error":"no session"`, http.StatusUnauthorized)
 		return
 	}
 	session, _ := r.Cookie("session_id")
@@ -106,9 +109,9 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 
 	if r.Method == "POST" {
-
+		w.Header().Set("Content-Type", "application/json")
 		if userHandler.isAuth(r) {
-			http.Error(w, `already login`, http.StatusForbidden)
+			http.Error(w, `{"error":"already login"}`, http.StatusForbidden)
 			return
 		}
 
@@ -118,24 +121,24 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 
 		err := decoder.Decode(user)
 		if err != nil || user.Username == "" || user.Password == "" {
-			http.Error(w, `bad in parameters`, http.StatusBadRequest)
+			http.Error(w, `{"error":"bad in parameters"}`, http.StatusBadRequest)
 			return
 		}
 		if userHandler.users.Contains(user.Username) {
-			http.Error(w, `such user already exist`, http.StatusBadRequest)
+			http.Error(w, `{"error":"such user already exist"`, http.StatusBadRequest)
 			return
 		}
 
 		_, err = userHandler.users.Add(user)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 			return
 		}
 
 		userHandler.auth(user.Username, user.Password, w)
 		err = json.NewEncoder(w).Encode(&user)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 			return
 		}
 	}
@@ -151,8 +154,10 @@ func (userHandler *UserHandler) Profile(w http.ResponseWriter, r *http.Request) 
 }
 
 func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if !userHandler.isAuth(r) {
-		http.Error(w, `no session`, http.StatusUnauthorized)
+
+		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
 		return
 	}
 	session, _ := r.Cookie("session_id")
@@ -160,20 +165,21 @@ func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	user, ok := userHandler.users.GetById(uint(id))
 	if !ok {
-		http.Error(w, `no user`, http.StatusNotFound)
+		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
 		return
 	}
 
 	err := json.NewEncoder(w).Encode(&user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 		return
 	}
 }
 
 func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if !userHandler.isAuth(r) {
-		http.Error(w, `no session`, http.StatusUnauthorized)
+		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
 		return
 	}
 	session, _ := r.Cookie("session_id")
@@ -181,7 +187,7 @@ func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	user, ok := userHandler.users.GetById(uint(id))
 	if !ok {
-		http.Error(w, `no user`, http.StatusNotFound)
+		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
 		return
 	}
 
@@ -191,7 +197,7 @@ func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err := decoder.Decode(upUser)
 	if err != nil {
-		http.Error(w, `bad parameters`, http.StatusBadRequest)
+		http.Error(w, `{"error":"bad parameters"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -199,8 +205,9 @@ func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if !userHandler.isAuth(r) {
-		http.Error(w, `no session`, http.StatusUnauthorized)
+		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
 		return
 	}
 	session, _ := r.Cookie("session_id")
@@ -208,32 +215,32 @@ func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Reque
 
 	user, ok := userHandler.users.GetById(uint(id))
 	if !ok {
-		http.Error(w, `no user`, http.StatusNotFound)
+		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
 		return
 	}
 
 	err := r.ParseMultipartForm(MaxFileSize)
 	if err != nil {
-		http.Error(w, `bad data form`, http.StatusBadRequest)
+		http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
 		return
 	}
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
-		http.Error(w, `bad data form`, http.StatusBadRequest)
+		http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		http.Error(w, `cannot read file`, http.StatusInternalServerError)
+		http.Error(w, `{"error":"cannot read file"}`, http.StatusInternalServerError)
 		return
 	}
 
 	filepath, err := WriteFile(ImageDirectory, header.Filename, data)
 	if err != nil {
-		http.Error(w, `cannot save file`, http.StatusInternalServerError)
+		http.Error(w, `{"error":"cannot save file"}`, http.StatusInternalServerError)
 		return
 	}
 
@@ -241,29 +248,30 @@ func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Reque
 }
 
 func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if id < 0 || err != nil {
-		http.Error(w, `bad id`, http.StatusBadRequest)
+		http.Error(w, `{"error":"bad id"}`, http.StatusBadRequest)
 		return
 	}
 
 	user, ok := userHandler.users.GetById(uint(id))
 	if !ok {
-		http.Error(w, `no user`, http.StatusNotFound)
+		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
 		return
 	}
 
 	data, err := ReadFile(user.Image)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 		return
 	}
 
 	image := ImageJson{Image: data}
 	err = json.NewEncoder(w).Encode(&image)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 		return
 	}
 }
