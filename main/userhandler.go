@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -21,27 +22,31 @@ func createUserHandler() *UserHandler {
 	}
 }
 
-func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
-	in := new(User)
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
-
-	err := decoder.Decode(in)
-	if err != nil {
-		http.Error(w, `bad parameters`, http.StatusBadRequest)
-		return
+func (userHandler *UserHandler) isAuth(r *http.Request) bool {
+	session, err := r.Cookie("session_id")
+	if session == nil || err == http.ErrNoCookie {
+		return false
 	}
-	if in.Username == "" {
+
+	if _, ok := userHandler.sessions[session.Value]; !ok {
+		return false
+	}
+
+	return true
+}
+
+func (userHandler *UserHandler) auth(login, password string, w http.ResponseWriter) {
+	if login == "" {
 		http.Error(w, `bad login`, http.StatusBadRequest)
 		return
 	}
 
-	user, ok := userHandler.users.GetByName(in.Username)
+	user, ok := userHandler.users.GetByName(login)
 	if !ok {
-		http.Error(w, `no user`, http.StatusNotFound)
+		http.Error(w, `no user`, http.StatusUnauthorized)
 		return
 	}
-	if user.Password != in.Password {
+	if user.Password != password {
 		http.Error(w, `bad password`, http.StatusBadRequest)
 		return
 	}
@@ -58,17 +63,30 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	session, err := r.Cookie("session_id")
-	if session == nil || err == http.ErrNoCookie {
-		http.Error(w, `no session`, http.StatusUnauthorized)
+func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	if userHandler.isAuth(r) {
 		return
 	}
 
-	if _, ok := userHandler.sessions[session.Value]; !ok {
+	in := new(User)
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	err := decoder.Decode(in)
+	if err != nil {
+		http.Error(w, `bad parameters`, http.StatusBadRequest)
+		return
+	}
+
+	userHandler.auth(in.Username, in.Password, w)
+}
+
+func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	if !userHandler.isAuth(r) {
 		http.Error(w, `no session`, http.StatusUnauthorized)
 		return
 	}
+	session, _ := r.Cookie("session_id")
 
 	delete(userHandler.sessions, session.Value)
 
@@ -77,6 +95,11 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
+	if userHandler.isAuth(r) {
+		http.Error(w, `already login`, http.StatusForbidden)
+		return
+	}
+
 	user := new(User)
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
@@ -86,15 +109,125 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `bad parameters`, http.StatusBadRequest)
 		return
 	}
+	if userHandler.users.Contains(user.Username) {
+		http.Error(w, `such user already exist`, http.StatusBadRequest)
+		return
+	}
 
 	_, err = userHandler.users.Add(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	userHandler.auth(user.Username, user.Password, w)
+	err = json.NewEncoder(w).Encode(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
-func (userHandler *UserHandler) UserById(w http.ResponseWriter, r *http.Request) {
+func (userHandler *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		userHandler.Get(w, r)
+	case http.MethodPost:
+		userHandler.Update(w, r)
+	}
+}
+
+func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
+	if !userHandler.isAuth(r) {
+		http.Error(w, `no session`, http.StatusUnauthorized)
+		return
+	}
+	session, _ := r.Cookie("session_id")
+	id := userHandler.sessions[session.Value]
+
+	user, ok := userHandler.users.GetById(uint(id))
+	if !ok {
+		http.Error(w, `no user`, http.StatusNotFound)
+		return
+	}
+
+	err := json.NewEncoder(w).Encode(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+	if !userHandler.isAuth(r) {
+		http.Error(w, `no session`, http.StatusUnauthorized)
+		return
+	}
+	session, _ := r.Cookie("session_id")
+	id := userHandler.sessions[session.Value]
+
+	user, ok := userHandler.users.GetById(uint(id))
+	if !ok {
+		http.Error(w, `no user`, http.StatusNotFound)
+		return
+	}
+
+	upUser := new(User)
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
+	err := decoder.Decode(upUser)
+	if err != nil {
+		http.Error(w, `bad parameters`, http.StatusBadRequest)
+		return
+	}
+
+	user.Update(upUser)
+}
+
+func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
+	if !userHandler.isAuth(r) {
+		http.Error(w, `no session`, http.StatusUnauthorized)
+		return
+	}
+	session, _ := r.Cookie("session_id")
+	id := userHandler.sessions[session.Value]
+
+	user, ok := userHandler.users.GetById(uint(id))
+	if !ok {
+		http.Error(w, `no user`, http.StatusNotFound)
+		return
+	}
+
+	err := r.ParseMultipartForm(MaxFileSize)
+	if err != nil {
+		http.Error(w, `bad data form`, http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, `bad data form`, http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		http.Error(w, `cannot read file`, http.StatusInternalServerError)
+		return
+	}
+
+	filepath, err := WriteFile(ImageDirectory, header.Filename, data)
+	if err != nil {
+		http.Error(w, `cannot save file`, http.StatusInternalServerError)
+		return
+	}
+
+	user.Image = filepath
+}
+
+func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if id < 0 || err != nil {
@@ -108,7 +241,14 @@ func (userHandler *UserHandler) UserById(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(&user)
+	data, err := ReadFile(user.Image)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	image := ImageJson{Image: data}
+	err = json.NewEncoder(w).Encode(&image)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
