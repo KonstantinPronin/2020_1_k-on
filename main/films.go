@@ -44,6 +44,8 @@ func CreateFilmList() *FilmsList {
 }
 
 func (filmList *FilmsList) UpdateFilmList() bool {
+	filmList.mutex.Lock()
+	defer filmList.mutex.Unlock()
 	fArr := []Film{}
 	for _, val := range filmList.films {
 		fArr = append(fArr, *val)
