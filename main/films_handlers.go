@@ -70,8 +70,3 @@ func (filmHandler *FilmHandler) createFilm(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "can't update database", http.StatusInternalServerError)
 	}
 }
-
-func (filmHandler *FilmHandler) Cors(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Method", "*")
-}

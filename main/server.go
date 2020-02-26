@@ -21,8 +21,6 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("*", filmHandler.Cors).Methods("OPTIONS")
-
 	router.HandleFunc("/films", filmHandler.getFilmsList)
 	router.HandleFunc("/films/{id:[0-9]+}/", filmHandler.getFilm)
 	router.HandleFunc("/login", userHandler.Login)
