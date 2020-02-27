@@ -92,16 +92,21 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	if !userHandler.isAuth(r) {
-		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
-		return
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Method", "DELETE")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	if r.Method == "DELETE" {
+		if !userHandler.isAuth(r) {
+			http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
+			return
+		}
+		session, _ := r.Cookie("session_id")
+
+		delete(userHandler.sessions, session.Value)
+
+		session.Expires = time.Now().AddDate(0, 0, -1)
+		http.SetCookie(w, session)
 	}
-	session, _ := r.Cookie("session_id")
-
-	delete(userHandler.sessions, session.Value)
-
-	session.Expires = time.Now().AddDate(0, 0, -1)
-	http.SetCookie(w, session)
 }
 
 func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
@@ -146,131 +151,155 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if !userHandler.isAuth(r) {
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Method", "GET,POST")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	if r.Method == "GET" {
 
-		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
-		return
-	}
-	session, _ := r.Cookie("session_id")
-	id := userHandler.sessions[session.Value]
+		w.Header().Set("Content-Type", "application/json")
+		if !userHandler.isAuth(r) {
 
-	user, ok := userHandler.users.GetById(uint(id))
-	if !ok {
-		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
-		return
-	}
+			http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
+			return
+		}
+		session, _ := r.Cookie("session_id")
+		id := userHandler.sessions[session.Value]
 
-	data, err := ReadFile(user.Image)
-	if err != nil {
-		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
-		return
-	}
-	user.ImageBase64 = data
+		user, ok := userHandler.users.GetById(uint(id))
+		if !ok {
+			http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
+			return
+		}
 
-	err = json.NewEncoder(w).Encode(&user)
-	if err != nil {
-		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
-		return
+		data, err := ReadFile(user.Image)
+		if err != nil {
+			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
+			return
+		}
+		user.ImageBase64 = data
+
+		err = json.NewEncoder(w).Encode(&user)
+		if err != nil {
+			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
 func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if !userHandler.isAuth(r) {
-		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
-		return
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	if r.Method == "POST" {
+
+		w.Header().Set("Content-Type", "application/json")
+		if !userHandler.isAuth(r) {
+			http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
+			return
+		}
+		session, _ := r.Cookie("session_id")
+		id := userHandler.sessions[session.Value]
+
+		user, ok := userHandler.users.GetById(uint(id))
+		if !ok {
+			http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
+			return
+		}
+
+		upUser := new(User)
+		decoder := json.NewDecoder(r.Body)
+		defer r.Body.Close()
+
+		err := decoder.Decode(upUser)
+		if err != nil {
+			http.Error(w, `{"error":"bad parameters"}`, http.StatusBadRequest)
+			return
+		}
+
+		user.Update(upUser)
 	}
-	session, _ := r.Cookie("session_id")
-	id := userHandler.sessions[session.Value]
-
-	user, ok := userHandler.users.GetById(uint(id))
-	if !ok {
-		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
-		return
-	}
-
-	upUser := new(User)
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
-
-	err := decoder.Decode(upUser)
-	if err != nil {
-		http.Error(w, `{"error":"bad parameters"}`, http.StatusBadRequest)
-		return
-	}
-
-	user.Update(upUser)
 }
 
 func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if !userHandler.isAuth(r) {
-		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
-		return
-	}
-	session, _ := r.Cookie("session_id")
-	id := userHandler.sessions[session.Value]
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Method", "PUT")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	if r.Method == "PUT" {
 
-	user, ok := userHandler.users.GetById(uint(id))
-	if !ok {
-		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
-		return
-	}
+		w.Header().Set("Content-Type", "application/json")
+		if !userHandler.isAuth(r) {
+			http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
+			return
+		}
+		session, _ := r.Cookie("session_id")
+		id := userHandler.sessions[session.Value]
 
-	err := r.ParseMultipartForm(MaxFileSize)
-	if err != nil {
-		http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
-		return
-	}
+		user, ok := userHandler.users.GetById(uint(id))
+		if !ok {
+			http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
+			return
+		}
 
-	file, header, err := r.FormFile("file")
-	if err != nil {
-		http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
+		err := r.ParseMultipartForm(MaxFileSize)
+		if err != nil {
+			http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
+			return
+		}
 
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		http.Error(w, `{"error":"cannot read file"}`, http.StatusInternalServerError)
-		return
-	}
+		file, header, err := r.FormFile("file")
+		if err != nil {
+			http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
 
-	filepath, err := WriteFile(ImageDirectory, header.Filename, data)
-	if err != nil {
-		http.Error(w, `{"error":"cannot save file"}`, http.StatusInternalServerError)
-		return
-	}
+		data, err := ioutil.ReadAll(file)
+		if err != nil {
+			http.Error(w, `{"error":"cannot read file"}`, http.StatusInternalServerError)
+			return
+		}
 
-	user.Image = filepath
+		filepath, err := WriteFile(ImageDirectory, header.Filename, data)
+		if err != nil {
+			http.Error(w, `{"error":"cannot save file"}`, http.StatusInternalServerError)
+			return
+		}
+
+		user.Image = filepath
+	}
 }
 
 func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if id < 0 || err != nil {
-		http.Error(w, `{"error":"bad id"}`, http.StatusBadRequest)
-		return
-	}
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Method", "GET")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	if r.Method == "GET" {
 
-	user, ok := userHandler.users.GetById(uint(id))
-	if !ok {
-		http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
-		return
-	}
+		w.Header().Set("Content-Type", "application/json")
+		vars := mux.Vars(r)
+		id, err := strconv.Atoi(vars["id"])
+		if id < 0 || err != nil {
+			http.Error(w, `{"error":"bad id"}`, http.StatusBadRequest)
+			return
+		}
 
-	data, err := ReadFile(user.Image)
-	if err != nil {
-		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
-		return
-	}
+		user, ok := userHandler.users.GetById(uint(id))
+		if !ok {
+			http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
+			return
+		}
 
-	image := ImageJson{Image: data}
-	err = json.NewEncoder(w).Encode(&image)
-	if err != nil {
-		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
-		return
+		data, err := ReadFile(user.Image)
+		if err != nil {
+			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
+			return
+		}
+
+		image := ImageJson{Image: data}
+		err = json.NewEncoder(w).Encode(&image)
+		if err != nil {
+			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
+			return
+		}
 	}
 }

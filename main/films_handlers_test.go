@@ -29,7 +29,7 @@ const jsReq = `{
   "Image": "path"
 }`
 
-const jsResp = `[{"ID":1,"Name":"1","YearCreated":1000,"Image":"path"},{"ID":2,"Name":"2","YearCreated":2000,"Image":"path"}]`
+const jsResp = `[{"ID":1,"Name":"1","YearCreated":1000,"Image":"path"}]`
 const jsResp2 = `{"ID":1,"Name":"1","YearCreated":1000,"Image":"path"}`
 
 func TestCreateFilm(t *testing.T) {
@@ -56,12 +56,6 @@ func TestGetFilmsList(t *testing.T) {
 			ID:          1,
 			Name:        "1",
 			YearCreated: 1000,
-			Image:       "path",
-		},
-		{
-			ID:          2,
-			Name:        "2",
-			YearCreated: 2000,
 			Image:       "path",
 		},
 	}

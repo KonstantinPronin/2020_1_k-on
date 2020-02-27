@@ -18,8 +18,8 @@ func main() {
 	router.HandleFunc("/login", userHandler.Login)
 	router.HandleFunc("/logout", userHandler.Logout)
 	router.HandleFunc("/signup", userHandler.Add)
-	router.HandleFunc("/user", userHandler.Get).Methods(http.MethodGet)
-	router.HandleFunc("/user", userHandler.Update).Methods(http.MethodPost)
+	router.HandleFunc("/user", userHandler.Get).Methods(http.MethodGet, http.MethodOptions)
+	router.HandleFunc("/user", userHandler.Update).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/user/image", userHandler.UploadImage)
 	router.HandleFunc("/user/{id:[0-9]+}/image", userHandler.GetImage)
 
