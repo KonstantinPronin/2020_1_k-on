@@ -3,17 +3,19 @@ package main
 import (
 	"encoding/base64"
 	"io/ioutil"
+	filepath2 "path/filepath"
 )
 
-const ImageDirectory string = string("../media/img/")
-const MaxFileSize int64 = 1000000
+
+const ImageDirectory = "./media/img/"
+const MaxFileSize int64 = 5 * 1024 * 1024
 
 type ImageJson struct {
 	Image string `json:"image"`
 }
 
 func WriteFile(directory string, filename string, data []byte) (string, error) {
-	filepath := directory + filename
+	filepath := filepath2.Join(directory, filename)
 	err := ioutil.WriteFile(filepath, data, 0644)
 	if err != nil {
 		return "", err
