@@ -58,6 +58,7 @@ func (userHandler *UserHandler) auth(login, password string, w http.ResponseWrit
 	cookie := &http.Cookie{
 		Name:    "session_id",
 		Value:   sessionId,
+		Path:    "/",
 		Expires: time.Now().Add(10 * time.Hour),
 	}
 
@@ -141,15 +142,6 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 			return
 		}
-	}
-}
-
-func (userHandler *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		userHandler.Get(w, r)
-	case http.MethodPost:
-		userHandler.Update(w, r)
 	}
 }
 

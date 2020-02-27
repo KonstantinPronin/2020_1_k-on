@@ -5,9 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 )
@@ -439,50 +442,49 @@ func TestUserHandler_UploadImage_BadFile(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, response.Code)
 }
 
-//func TestUserHandler_UploadImage(t *testing.T) {
-//	userHandler := createUserHandler()
-//	user := User{
-//		Id:       10,
-//		Username: "test",
-//		Password: "test",
-//	}
-//	userHandler.users.users[user.Username] = &user
-//	userHandler.sessions["test"] = 10
-//
-//
-//	file, err := os.Open("../test/img.png")
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	defer file.Close()
-//	body := new(bytes.Buffer)
-//	bodyWriter := multipart.NewWriter(body)
-//	defer bodyWriter.Close()
-//	fileWriter, err := bodyWriter.CreateFormFile("file", file.Name())
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	_, err = io.Copy(fileWriter, file)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	bodyWriter.FormDataContentType()
-//	bodyWriter.Close()
-//
-//	response := httptest.NewRecorder()
-//	request, err := http.NewRequest("POST", "/user", body)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	cookie := &http.Cookie{
-//		Name:    "session_id",
-//		Value:   "test",
-//		Expires: time.Now().Add(10 * time.Hour),
-//	}
-//	request.AddCookie(cookie)
-//	handler := http.HandlerFunc(userHandler.UploadImage)
-//	handler.ServeHTTP(response, request)
-//
-//	assert.NotEmpty(t, user.Image)
-//	assert.Equal(t, http.StatusOK, response.Code)
-//}
+func Ignore_TestUserHandler_UploadImage(t *testing.T) {
+	userHandler := createUserHandler()
+	user := User{
+		Id:       10,
+		Username: "test",
+		Password: "test",
+	}
+	userHandler.users.users[user.Username] = &user
+	userHandler.sessions["test"] = 10
+
+	file, err := os.Open("../test/img.png")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	body := new(bytes.Buffer)
+	bodyWriter := multipart.NewWriter(body)
+	defer bodyWriter.Close()
+	fileWriter, err := bodyWriter.CreateFormFile("file", file.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = io.Copy(fileWriter, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bodyWriter.FormDataContentType()
+	bodyWriter.Close()
+
+	response := httptest.NewRecorder()
+	request, err := http.NewRequest("POST", "/user", body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cookie := &http.Cookie{
+		Name:    "session_id",
+		Value:   "test",
+		Expires: time.Now().Add(10 * time.Hour),
+	}
+	request.AddCookie(cookie)
+	handler := http.HandlerFunc(userHandler.UploadImage)
+	handler.ServeHTTP(response, request)
+
+	assert.NotEmpty(t, user.Image)
+	assert.Equal(t, http.StatusOK, response.Code)
+}

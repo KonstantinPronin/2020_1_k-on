@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -53,13 +52,13 @@ func (filmHandler *FilmHandler) createFilm(w http.ResponseWriter, r *http.Reques
 	err := decoder.Decode(&film)
 	if err != nil {
 		http.Error(w, `{"error":"can't parse json'"}`, 500)
-		fmt.Printf("%s", err)
+		log.Printf("%s", err)
 		return
 	}
 	_, is := filmHandler.films.GetByName(film.Name)
 	if is {
 		http.Error(w, `bad film name`, http.StatusBadRequest)
-		log.Fatal("film with this name already exists:")
+		log.Print(w, "film with this name already exists:")
 		return
 	}
 	filmHandler.films.Add(&film)
