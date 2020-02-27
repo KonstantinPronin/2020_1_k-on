@@ -68,7 +68,7 @@ func (userHandler *UserHandler) auth(login, password string, w http.ResponseWrit
 func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "POST" {
@@ -95,7 +95,7 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "DELETE" {
@@ -115,7 +115,7 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "POST" {
@@ -157,7 +157,7 @@ func (userHandler *UserHandler) Add(w http.ResponseWriter, r *http.Request) {
 func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET,POST")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "GET" {
@@ -197,7 +197,7 @@ func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "POST,GET")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "POST" {
@@ -233,7 +233,7 @@ func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "PUT" {
@@ -284,7 +284,7 @@ func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Reque
 func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "GET" {
