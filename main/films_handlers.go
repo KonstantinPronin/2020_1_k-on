@@ -20,7 +20,7 @@ func createFilmHandler() *FilmHandler {
 
 func (filmHandler *FilmHandler) getFilmsList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Method", "GET")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
@@ -37,7 +37,7 @@ func (filmHandler *FilmHandler) getFilmsList(w http.ResponseWriter, r *http.Requ
 
 func (filmHandler *FilmHandler) getFilm(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Method", "GET")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
@@ -61,7 +61,7 @@ func (filmHandler *FilmHandler) getFilm(w http.ResponseWriter, r *http.Request) 
 
 func (filmHandler *FilmHandler) createFilm(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Method", "POST")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
