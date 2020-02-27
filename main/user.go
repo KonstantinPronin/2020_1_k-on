@@ -64,6 +64,25 @@ func (userStorage *UserStorage) Add(user *User) (uint, error) {
 	return id, nil
 }
 
+func (userStorage *UserStorage) Update(id uint, upUser *User) bool {
+	user, ok := userStorage.GetById(uint(id))
+	if !ok {
+		return false
+	}
+
+	login := user.Username
+	user.Update(upUser)
+	userStorage.mutex.Lock()
+	defer userStorage.mutex.Unlock()
+
+	if login != user.Username {
+		delete(userStorage.users, login)
+		userStorage.users[user.Username] = user
+	}
+
+	return true
+}
+
 func (userStorage *UserStorage) GetById(id uint) (*User, bool) {
 	userStorage.mutex.RLock()
 	defer userStorage.mutex.RUnlock()

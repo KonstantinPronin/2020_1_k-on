@@ -200,33 +200,31 @@ func (userHandler *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
-	if r.Method == "POST" {
+	if r.Method != http.MethodPost {
+		return
+	}
 
-		w.Header().Set("Content-Type", "application/json")
-		if !userHandler.isAuth(r) {
-			http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
-			return
-		}
-		session, _ := r.Cookie("session_id")
-		id := userHandler.sessions[session.Value]
+	w.Header().Set("Content-Type", "application/json")
+	if !userHandler.isAuth(r) {
+		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
+		return
+	}
+	session, _ := r.Cookie("session_id")
+	id := userHandler.sessions[session.Value]
 
-		user, ok := userHandler.users.GetById(uint(id))
-		if !ok {
-			http.Error(w, `{"error":"no user"}`, http.StatusNotFound)
-			return
-		}
+	upUser := new(User)
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
 
-		upUser := new(User)
-		decoder := json.NewDecoder(r.Body)
-		defer r.Body.Close()
+	err := decoder.Decode(upUser)
+	if err != nil {
+		http.Error(w, `{"error":"bad parameters"}`, http.StatusBadRequest)
+		return
+	}
 
-		err := decoder.Decode(upUser)
-		if err != nil {
-			http.Error(w, `{"error":"bad parameters"}`, http.StatusBadRequest)
-			return
-		}
-
-		user.Update(upUser)
+	if !userHandler.users.Update(id, upUser) {
+		http.Error(w, `{"error":"can not save updates"}`, http.StatusInternalServerError)
+		return
 	}
 }
 
