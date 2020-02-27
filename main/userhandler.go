@@ -171,14 +171,16 @@ func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		data, err := ReadFile(user.Image)
-		if err != nil {
-			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
-			return
+		if user.Image != "" {
+			data, err := ReadFile(user.Image)
+			if err != nil {
+				http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
+				return
+			}
+			user.ImageBase64 = data
 		}
-		user.ImageBase64 = data
 
-		err = json.NewEncoder(w).Encode(&user)
+		err := json.NewEncoder(w).Encode(&user)
 		if err != nil {
 			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 			return

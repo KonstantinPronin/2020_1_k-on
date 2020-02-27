@@ -292,43 +292,43 @@ func TestUserHandler_Get_NoSession(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, response.Code)
 }
 
-//func TestUserHandler_Get(t *testing.T) {
-//	userHandler := createUserHandler()
-//	user := User{
-//		Id:       10,
-//		Username: "test",
-//		Password: "test",
-//	}
-//	userHandler.users.users[user.Username] = &user
-//	userHandler.sessions["test"] = 10
-//
-//	response := httptest.NewRecorder()
-//	request, err := http.NewRequest("POST", "/user", nil)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	cookie := &http.Cookie{
-//		Name:    "session_id",
-//		Value:   "test",
-//		Expires: time.Now().Add(10 * time.Hour),
-//	}
-//	request.AddCookie(cookie)
-//
-//	handler := http.HandlerFunc(userHandler.Get)
-//	handler.ServeHTTP(response, request)
-//	data, err := ioutil.ReadAll(response.Body)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//	result := new(User)
-//	err = json.Unmarshal(data, &result)
-//	if err != nil {
-//		t.Fatal(err)
-//	}
-//
-//	assert.Equal(t, user, *result)
-//	assert.Equal(t, http.StatusOK, response.Code)
-//}
+func TestUserHandler_Get(t *testing.T) {
+	userHandler := createUserHandler()
+	user := User{
+		Id:       10,
+		Username: "test",
+		Password: "test",
+	}
+	userHandler.users.users[user.Username] = &user
+	userHandler.sessions["test"] = 10
+
+	response := httptest.NewRecorder()
+	request, err := http.NewRequest("GET", "/user", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cookie := &http.Cookie{
+		Name:    "session_id",
+		Value:   "test",
+		Expires: time.Now().Add(10 * time.Hour),
+	}
+	request.AddCookie(cookie)
+
+	handler := http.HandlerFunc(userHandler.Get)
+	handler.ServeHTTP(response, request)
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := new(User)
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, user, *result)
+	assert.Equal(t, http.StatusOK, response.Code)
+}
 
 func TestUserHandler_Update_NoSession(t *testing.T) {
 	userHandler := createUserHandler()
