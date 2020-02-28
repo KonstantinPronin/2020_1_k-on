@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -99,6 +100,7 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if r.Method == "DELETE" {
+		w.Header().Set("Content-Type", "application/json")
 		if !userHandler.isAuth(r) {
 			http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
 			return
@@ -274,8 +276,8 @@ func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Reque
 			http.Error(w, `{"error":"cannot save file"}`, http.StatusInternalServerError)
 			return
 		}
-
 		user.Image = filepath
+		fmt.Fprint(w, `{"Answer":"OK"}`)
 	}
 }
 
