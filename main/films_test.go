@@ -23,9 +23,9 @@ const OkData = `Avatar`
 const FailData = `Aang`
 const OkYear = 2000
 
-func prepare() FilmsList {
+func prepare(str string) FilmsList {
 	film := []Film{}
-	data := []byte(FilmsData)
+	data := []byte(str)
 	json.Unmarshal(data, &film)
 	filmList := FilmsList{
 		mutex: sync.RWMutex{},
@@ -40,13 +40,13 @@ func prepare() FilmsList {
 }
 
 func TestFilmsList_Contains(t *testing.T) {
-	fl := prepare()
+	fl := prepare(FilmsData)
 	require.True(t, fl.Contains(OkData))
 	require.False(t, fl.Contains(FailData))
 }
 
 func TestFilmsList_GetById(t *testing.T) {
-	fl := prepare()
+	fl := prepare(FilmsData)
 	f, ok := fl.GetById(1)
 	require.Equal(t, f.Name, OkData)
 	require.NotEqual(t, f.Name, FailData)
@@ -54,7 +54,7 @@ func TestFilmsList_GetById(t *testing.T) {
 }
 
 func TestFilmsList_GetByName(t *testing.T) {
-	fl := prepare()
+	fl := prepare(FilmsData)
 	f, ok := fl.GetByName(OkData)
 	require.Equal(t, f.Name, OkData)
 	require.NotEqual(t, f.Name, FailData)
@@ -62,7 +62,7 @@ func TestFilmsList_GetByName(t *testing.T) {
 }
 
 func TestFilmsList_Add(t *testing.T) {
-	fl := prepare()
+	fl := prepare(FilmsData)
 	f1 := Film{Name: OkData, AgeLimit: OkYear}
 	f2 := Film{Name: FailData, AgeLimit: OkYear}
 	fl.Add(&f1)
