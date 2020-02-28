@@ -90,6 +90,7 @@ func (userHandler *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		userHandler.auth(in.Username, in.Password, w)
+		fmt.Fprint(w, `{"Answer":"OK"}`)
 	}
 }
 
@@ -111,6 +112,7 @@ func (userHandler *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 
 		session.Expires = time.Now().AddDate(0, 0, -1)
 		http.SetCookie(w, session)
+		fmt.Fprint(w, `{"Answer":"OK"}`)
 	}
 }
 
