@@ -1,1 +1,50 @@
-[{"ID":3,"Name":"The Dark Knight","YearCreated":2008,"Image":"path"},{"ID":4,"Name":"Batman","YearCreated":2010,"Image":"path"},{"ID":5,"Name":"Kimi No Nawa","YearCreated":2017,"Image":"path"},{"ID":1,"Name":"Avatar","YearCreated":2009,"Image":"path"},{"ID":2,"Name":"Avengers","YearCreated":2012,"Image":"path"}]
+[
+  {
+    "ID": 0,
+    "Name": "Лучшие в Лос-Анджелесе",
+    "AgeLimit": 16,
+    "Image": "/static/img/series1.jpeg"
+  },
+  {
+    "ID": 1,
+    "Name": "Навстречу тьме",
+    "AgeLimit": 18,
+    "Image": "/static/img/series2.jpg"
+  },
+  {
+    "ID": 2,
+    "Name": "Столкновение",
+    "AgeLimit": 16,
+    "Image": "/static/img/series3.jpg"
+  },
+  {
+    "ID": 3,
+    "Name": "Триггер",
+    "AgeLimit": 18,
+    "Image": "/static/img/series4.jpg"
+  },
+  {
+    "ID": 4,
+    "Name": "Лучшие в Лос-Анджелесе",
+    "AgeLimit": 16,
+    "Image": "/static/img/series1.jpeg"
+  },
+  {
+    "ID": 5,
+    "Name": "Навстречу тьме",
+    "AgeLimit": 18,
+    "Image": "/static/img/series2.jpg"
+  },
+  {
+    "ID": 6,
+    "Name": "Столкновение",
+    "AgeLimit": 16,
+    "Image": "/static/img/series3.jpg"
+  },
+  {
+    "ID": 7,
+    "Name": "Триггер",
+    "AgeLimit": 18,
+    "Image": "/static/img/series4.jpg"
+  }
+]

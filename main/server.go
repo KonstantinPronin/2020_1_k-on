@@ -12,9 +12,9 @@ func main() {
 	filmHandler := createFilmHandler()
 	userHandler := createUserHandler()
 
-	router.HandleFunc("/films/create/", filmHandler.createFilm)
+	router.HandleFunc("/films/create", filmHandler.createFilm)
 	router.HandleFunc("/films", filmHandler.getFilmsList)
-	router.HandleFunc("/films/{id:[0-9]+}/", filmHandler.getFilm)
+	router.HandleFunc("/films/{id:[0-9]+}", filmHandler.getFilm)
 	router.HandleFunc("/login", userHandler.Login)
 	router.HandleFunc("/logout", userHandler.Logout)
 	router.HandleFunc("/signup", userHandler.Add)
