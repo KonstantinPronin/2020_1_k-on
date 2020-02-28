@@ -63,8 +63,8 @@ func TestFilmsList_GetByName(t *testing.T) {
 
 func TestFilmsList_Add(t *testing.T) {
 	fl := prepare()
-	f1 := Film{Name: OkData, YearCreated: OkYear}
-	f2 := Film{Name: FailData, YearCreated: OkYear}
+	f1 := Film{Name: OkData, AgeLimit: OkYear}
+	f2 := Film{Name: FailData, AgeLimit: OkYear}
 	fl.Add(&f1)
 	fl.Add(&f2)
 	require.Equal(t, fl.films[OkData], &f1)

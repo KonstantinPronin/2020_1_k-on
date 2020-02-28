@@ -18,22 +18,22 @@ const jsonIn = `[
   {
     "ID": 6,
     "Name": "New",
-    "YearCreated": 3000,
+    "AgeLimit": 3000,
     "Image": "path"
   }
 ]`
 
 const jsReq = `{
   "name": "New",
-  "YearCreated": 3000,
+  "AgeLimit": 3000,
   "Image": "path"
 }`
 
-const jsResp = `[{"ID":1,"Name":"1","YearCreated":1000,"Image":"path"}]`
-const jsResp2 = `{"ID":1,"Name":"1","YearCreated":1000,"Image":"path"}`
+const jsResp = `[{"ID":1,"Name":"1","AgeLimit":1000,"Image":"path"}]`
+const jsResp2 = `{"ID":1,"Name":"1","AgeLimit":1000,"Image":"path"}`
 
 func TestCreateFilm(t *testing.T) {
-	film := []Film{}
+	var film []Film
 	data := []byte(jsonIn)
 	json.Unmarshal(data, &film)
 	body := bytes.NewReader([]byte(jsReq))
@@ -53,10 +53,10 @@ func TestCreateFilm(t *testing.T) {
 func TestGetFilmsList(t *testing.T) {
 	film := []Film{
 		{
-			ID:          1,
-			Name:        "1",
-			YearCreated: 1000,
-			Image:       "path",
+			ID:       1,
+			Name:     "1",
+			AgeLimit: 1000,
+			Image:    "path",
 		},
 	}
 	filmList := FilmsList{
@@ -81,10 +81,10 @@ func TestGetFilmsList(t *testing.T) {
 func TestGetFilm(t *testing.T) {
 	film := []Film{
 		{
-			ID:          1,
-			Name:        "1",
-			YearCreated: 1000,
-			Image:       "path",
+			ID:       1,
+			Name:     "1",
+			AgeLimit: 1000,
+			Image:    "path",
 		},
 	}
 	filmList := FilmsList{
