@@ -14,47 +14,38 @@ import (
 	"testing"
 )
 
-const jsonIn = `[
-  {
-    "ID": 6,
-    "Name": "New",
-    "AgeLimit": 3000,
-    "Image": "path"
-  }
-]`
+const jsReq = `
+{
+	"ID":5,
+	"name": "New",
+	"AgeLimit": 3000,
+	"Image": "path"
+}
+`
 
-const jsReq = `{
-  "name": "New",
-  "AgeLimit": 3000,
-  "Image": "path"
-}`
-
-const jsResp = `[{"ID":1,"Name":"1","AgeLimit":1000,"Image":"path"}]`
-const jsResp2 = `{"ID":1,"Name":"1","AgeLimit":1000,"Image":"path"}`
+const jsResp = `[{"ID":10,"Name":"1","AgeLimit":1000,"Image":"path"}]`
+const jsResp2 = `{"ID":10,"Name":"1","AgeLimit":1000,"Image":"path"}`
 
 func TestCreateFilm(t *testing.T) {
-	var film []Film
-	data := []byte(jsonIn)
+	var film Film
+	data := []byte(jsReq)
 	json.Unmarshal(data, &film)
 	body := bytes.NewReader([]byte(jsReq))
 	r := httptest.NewRequest("POST", "/films/create", body)
 	w := httptest.NewRecorder()
-	handl := createFilmHandler()
-	*handl.films = prepare(jsonIn)
+	handl := FilmHandler{films: CreateFilmList()}
 	handl.createFilm(w, r)
-	f, ok := handl.films.GetByName("New")
-	require.Equal(t, *f, film[0])
+	f, ok := handl.films.GetByName(film.Name)
+	require.Equal(t, *f, film)
 	require.True(t, ok)
-	handl.createFilm(w, r)
-	//require.Equal(t, w.Code, http.StatusOK)
-	delete(handl.films.films, "New")
+	delete(handl.films.films, film.Name)
 	handl.films.UpdateFilmList()
 }
 
 func TestGetFilmsList(t *testing.T) {
 	film := []Film{
 		{
-			ID:       1,
+			ID:       10,
 			Name:     "1",
 			AgeLimit: 1000,
 			Image:    "path",
@@ -82,7 +73,7 @@ func TestGetFilmsList(t *testing.T) {
 func TestGetFilm(t *testing.T) {
 	film := []Film{
 		{
-			ID:       1,
+			ID:       10,
 			Name:     "1",
 			AgeLimit: 1000,
 			Image:    "path",
@@ -101,7 +92,7 @@ func TestGetFilm(t *testing.T) {
 
 	r := httptest.NewRequest("GET", "/films/"+strconv.Itoa(int(film[0].ID))+"/", nil)
 	r = mux.SetURLVars(r, map[string]string{
-		"id": "1",
+		"id": "10",
 	})
 	w := httptest.NewRecorder()
 	handler.getFilm(w, r)
