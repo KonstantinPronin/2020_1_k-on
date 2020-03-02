@@ -24,7 +24,7 @@ func (mc *StubContext) Value(interface{}) interface{} {
 }
 
 func TestUserHandler_Login_EmptyLogin(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Password: "test",
 	}
@@ -51,7 +51,7 @@ func TestUserHandler_Login_EmptyLogin(t *testing.T) {
 }
 
 func TestUserHandler_Login_UserDoesNotExist(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Username: "test",
 		Password: "test",
@@ -79,7 +79,7 @@ func TestUserHandler_Login_UserDoesNotExist(t *testing.T) {
 }
 
 func TestUserHandler_Login_WrongPassword(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Username: "test",
 		Password: "test",
@@ -113,7 +113,7 @@ func TestUserHandler_Login_WrongPassword(t *testing.T) {
 }
 
 func TestUserHandler_Login(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Username: "test",
 		Password: "test",
@@ -142,7 +142,7 @@ func TestUserHandler_Login(t *testing.T) {
 }
 
 func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 
 	response := httptest.NewRecorder()
 	request, err := http.NewRequest("DELETE", "/logout", nil)
@@ -162,7 +162,7 @@ func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
 }
 
 func TestUserHandler_Logout(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	userHandler.sessions["test"] = 0
 
 	response := httptest.NewRecorder()
@@ -189,7 +189,7 @@ func TestUserHandler_Logout(t *testing.T) {
 }
 
 func TestUserHandler_Add_AlreadyLogin(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	userHandler.sessions["test"] = 0
 
 	response := httptest.NewRecorder()
@@ -217,7 +217,7 @@ func TestUserHandler_Add_AlreadyLogin(t *testing.T) {
 }
 
 func TestUserHandler_Add_EmptyLogin(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Password: "test",
 	}
@@ -244,7 +244,7 @@ func TestUserHandler_Add_EmptyLogin(t *testing.T) {
 }
 
 func TestUserHandler_Add(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Username: "test",
 		Password: "test",
@@ -274,7 +274,7 @@ func TestUserHandler_Add(t *testing.T) {
 }
 
 func TestUserHandler_Get_NoSession(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	response := httptest.NewRecorder()
 	request, err := http.NewRequest("GET", "/user", nil)
 	if err != nil {
@@ -293,7 +293,7 @@ func TestUserHandler_Get_NoSession(t *testing.T) {
 }
 
 func TestUserHandler_Get(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Id:       10,
 		Username: "test",
@@ -331,7 +331,7 @@ func TestUserHandler_Get(t *testing.T) {
 }
 
 func TestUserHandler_Update_NoSession(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	response := httptest.NewRecorder()
 	request, err := http.NewRequest("POST", "/user", nil)
 	if err != nil {
@@ -351,7 +351,7 @@ func TestUserHandler_Update_NoSession(t *testing.T) {
 }
 
 func TestUserHandler_Update(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Id:       10,
 		Username: "test",
@@ -388,7 +388,7 @@ func TestUserHandler_Update(t *testing.T) {
 }
 
 func TestUserHandler_UploadImage_NoSession(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	response := httptest.NewRecorder()
 	request, err := http.NewRequest("PUT", "/user/image", nil)
 	if err != nil {
@@ -408,7 +408,7 @@ func TestUserHandler_UploadImage_NoSession(t *testing.T) {
 }
 
 func TestUserHandler_UploadImage_BadFile(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Id:       10,
 		Username: "test",
@@ -442,7 +442,7 @@ func TestUserHandler_UploadImage_BadFile(t *testing.T) {
 }
 
 func Ignore_TestUserHandler_UploadImage(t *testing.T) {
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 	user := User{
 		Id:       10,
 		Username: "test",

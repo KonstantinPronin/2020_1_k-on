@@ -31,7 +31,7 @@ type UserStorage struct {
 	count uint
 }
 
-func CreateUserStorage() *UserStorage {
+func NewUserStorage() *UserStorage {
 	//for test
 	user := User{
 		Id:       0,

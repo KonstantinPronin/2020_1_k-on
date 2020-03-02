@@ -10,7 +10,7 @@ func main() {
 	router := mux.NewRouter()
 
 	filmHandler := createFilmHandler()
-	userHandler := createUserHandler()
+	userHandler := NewUserHandler()
 
 	router.HandleFunc("/films/create", filmHandler.createFilm)
 	router.HandleFunc("/films", filmHandler.getFilmsList)

@@ -5,21 +5,23 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 )
 
 type UserHandler struct {
-	sessions map[string]uint
-	users    *UserStorage
+	sessions     map[string]uint
+	users        *UserStorage
+	imageHandler *ImageHandler
 }
 
-func createUserHandler() *UserHandler {
+func NewUserHandler() *UserHandler {
+	//TODO use dependency injection
 	return &UserHandler{
-		sessions: make(map[string]uint),
-		users:    CreateUserStorage(),
+		sessions:     make(map[string]uint),
+		users:        NewUserStorage(),
+		imageHandler: NewImageHandler(NewFileHandler(new(IoUtil))),
 	}
 }
 
@@ -191,7 +193,7 @@ func (userHandler *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.Image != "" {
-		data, err := ReadFile(user.Image)
+		data, err := userHandler.imageHandler.fileHandler.ReadFile(user.Image)
 		if err != nil {
 			http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
 			return
@@ -253,6 +255,7 @@ func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Reque
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
 	if !userHandler.isAuth(r) {
 		http.Error(w, `{"error":"no session"}`, http.StatusUnauthorized)
 		return
@@ -266,33 +269,10 @@ func (userHandler *UserHandler) UploadImage(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err := r.ParseMultipartForm(MaxFileSize)
-	if err != nil {
-		http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
-		return
+	user.Image, ok = userHandler.imageHandler.AddImage(w, r)
+	if ok {
+		fmt.Fprint(w, `{"Answer":"OK"}`)
 	}
-
-	file, header, err := r.FormFile("file")
-	if err != nil {
-		http.Error(w, `{"error":"bad data form"}`, http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		http.Error(w, `{"error":"cannot read file"}`, http.StatusInternalServerError)
-		return
-	}
-
-	filepath, err := WriteFile(ImageDirectory, header.Filename, data)
-	if err != nil {
-		http.Error(w, `{"error":"cannot save file"}`, http.StatusInternalServerError)
-		return
-	}
-
-	user.Image = filepath
-	fmt.Fprint(w, `{"Answer":"OK"}`)
 }
 
 func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request) {
@@ -306,6 +286,7 @@ func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if id < 0 || err != nil {
@@ -319,16 +300,5 @@ func (userHandler *UserHandler) GetImage(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	data, err := ReadFile(user.Image)
-	if err != nil {
-		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
-		return
-	}
-
-	image := ImageJson{Image: data}
-	err = json.NewEncoder(w).Encode(&image)
-	if err != nil {
-		http.Error(w, `{"error":"`+string(err.Error())+`"}`, http.StatusInternalServerError)
-		return
-	}
+	userHandler.imageHandler.GetImage(w, user.Image)
 }
