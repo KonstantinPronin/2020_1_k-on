@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "ID": 0,
+    "Name": "Лучшие в Лос-Анджелесе",
+    "AgeLimit": 16,
+    "Image": "",
+    "ImageBase64": ""
+  },
+  {
+    "ID": 1,
+    "Name": "Навстречу тьме",
+    "AgeLimit": 18,
+    "Image": "",
+    "ImageBase64": ""
+  },
+  {
+    "ID": 2,
+    "Name": "Столкновение",
+    "AgeLimit": 16,
+    "Image": "",
+    "ImageBase64": ""
+  },
+  {
+    "ID": 3,
+    "Name": "Триггер",
+    "AgeLimit": 18,
+    "Image": "",
+    "ImageBase64": ""
+  }
+]

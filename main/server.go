@@ -12,9 +12,9 @@ func main() {
 	filmHandler := createFilmHandler()
 	userHandler := NewUserHandler()
 
-	router.HandleFunc("/films/create", filmHandler.createFilm)
-	router.HandleFunc("/films", filmHandler.getFilmsList)
-	router.HandleFunc("/films/{id:[0-9]+}", filmHandler.getFilm)
+	router.HandleFunc("/films", filmHandler.createFilm).Methods(http.MethodOptions, http.MethodPost)
+	router.HandleFunc("/films", filmHandler.getFilmsList).Methods(http.MethodOptions, http.MethodGet)
+	router.HandleFunc("/films/{id:[0-9]+}", filmHandler.getFilm).Methods(http.MethodOptions, http.MethodGet)
 	router.HandleFunc("/login", userHandler.Login)
 	router.HandleFunc("/logout", userHandler.Logout)
 	router.HandleFunc("/signup", userHandler.Add)
@@ -22,6 +22,8 @@ func main() {
 	router.HandleFunc("/user", userHandler.Update).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/user/image", userHandler.UploadImage)
 	router.HandleFunc("/user/{id:[0-9]+}/image", userHandler.GetImage)
+	router.HandleFunc("/film/image", filmHandler.UploadImageFilm)
+	router.HandleFunc("/film/{id:[0-9]+}/image", filmHandler.GetImageFilm)
 
 	log.Println("starting server at :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

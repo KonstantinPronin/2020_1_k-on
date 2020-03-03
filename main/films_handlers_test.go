@@ -19,12 +19,13 @@ const jsReq = `
 	"ID":5,
 	"name": "New",
 	"AgeLimit": 3000,
-	"Image": "path"
+	"Image": "",
+	"ImageBase64":""
 }
 `
 
-const jsResp = `[{"ID":10,"Name":"1","AgeLimit":1000,"Image":"path"}]`
-const jsResp2 = `{"ID":10,"Name":"1","AgeLimit":1000,"Image":"path"}`
+const jsResp = `[{"ID":10,"Name":"1","AgeLimit":1000,"Image":"","ImageBase64":""}]`
+const jsResp2 = `{"ID":10,"Name":"1","AgeLimit":1000,"Image":"","ImageBase64":""}`
 
 func TestCreateFilm(t *testing.T) {
 	var film Film
@@ -45,10 +46,11 @@ func TestCreateFilm(t *testing.T) {
 func TestGetFilmsList(t *testing.T) {
 	film := []Film{
 		{
-			ID:       10,
-			Name:     "1",
-			AgeLimit: 1000,
-			Image:    "path",
+			ID:          10,
+			Name:        "1",
+			AgeLimit:    1000,
+			Image:       "",
+			ImageBase64: "",
 		},
 	}
 	filmList := FilmsList{
@@ -76,7 +78,7 @@ func TestGetFilm(t *testing.T) {
 			ID:       10,
 			Name:     "1",
 			AgeLimit: 1000,
-			Image:    "path",
+			Image:    "",
 		},
 	}
 	filmList := FilmsList{

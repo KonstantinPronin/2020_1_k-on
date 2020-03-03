@@ -25,10 +25,11 @@ func readLines(path string) (string, error) {
 }
 
 type Film struct {
-	ID       uint
-	Name     string
-	AgeLimit int
-	Image    string
+	ID          uint
+	Name        string
+	AgeLimit    int
+	Image       string
+	ImageBase64 string
 }
 
 type FilmsList struct {
