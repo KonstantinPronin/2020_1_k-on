@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -132,8 +131,15 @@ func (filmHandler *FilmHandler) UploadImageFilm(w http.ResponseWriter, r *http.R
 	}
 
 	film.Image, ok = filmHandler.imageHandler.AddImage(w, r)
+	if !ok {
+		return
+	}
+	filmHandler.films.films[film.Name].Image = film.Image
+	ok = filmHandler.films.UpdateFilmList()
 	if ok {
-		fmt.Fprint(w, `{"Answer":"OK"}`)
+		json.NewEncoder(w).Encode(film)
+	} else {
+		http.Error(w, `{"error":"can't update database"}`, http.StatusInternalServerError)
 	}
 }
 

@@ -22,8 +22,8 @@ func main() {
 	router.HandleFunc("/user", userHandler.Update).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/user/image", userHandler.UploadImage)
 	router.HandleFunc("/user/{id:[0-9]+}/image", userHandler.GetImage)
-	router.HandleFunc("/film/image", filmHandler.UploadImageFilm)
-	router.HandleFunc("/film/{id:[0-9]+}/image", filmHandler.GetImageFilm)
+	router.HandleFunc("/film/{id:[0-9]+}/image", filmHandler.UploadImageFilm).Methods(http.MethodPut, http.MethodOptions)
+	router.HandleFunc("/film/{id:[0-9]+}/image", filmHandler.GetImageFilm).Methods(http.MethodGet, http.MethodOptions)
 
 	log.Println("starting server at :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

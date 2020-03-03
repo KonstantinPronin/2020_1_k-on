@@ -46,7 +46,7 @@ func CreateFilmList() *FilmsList {
 		films: make(map[string]*Film),
 		count: 0,
 	}
-	str, _ := readLines("../storage/films.json")
+	str, _ := readLines("./storage/films.json")
 	data := []byte(str)
 	err := json.Unmarshal(data, &film)
 	if err != nil {
@@ -71,7 +71,7 @@ func (filmList *FilmsList) UpdateFilmList() bool {
 	if err != nil {
 		return false
 	}
-	err = ioutil.WriteFile("../storage/films.json", js, os.ModePerm)
+	err = ioutil.WriteFile("./storage/films.json", js, os.ModePerm)
 	if err != nil {
 		return false
 	}
