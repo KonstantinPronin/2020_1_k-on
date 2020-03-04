@@ -77,11 +77,11 @@ func (filmList *FilmsList) UpdateFilmList() bool {
 
 func (filmList *FilmsList) Create(film *models.Film) *models.Film {
 	filmList.mutex.Lock()
-	defer filmList.mutex.Unlock()
 	id := filmList.count + 1
 	film.ID = id
 	filmList.films[film.Name] = film
 	filmList.count++
+	filmList.mutex.Unlock()
 	filmList.UpdateFilmList()
 	return filmList.films[film.Name]
 }

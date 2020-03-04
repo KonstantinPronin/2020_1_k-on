@@ -55,13 +55,16 @@ func (fh FilmHandler) CreateFilm(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s", err)
 		return
 	}
-
 	f := fh.usecase.CreateFilm(film)
 	//if ok {
 	//	json.NewEncoder(w).Encode(film)
 	//} else {
 	//	http.Error(w, "can't update database", http.StatusInternalServerError)
 	//}
-
-	json.NewEncoder(w).Encode(f)
+	//fmt.Print(f)
+	err = json.NewEncoder(w).Encode(f)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
 }
