@@ -1,6 +1,9 @@
 package server
 
-import "net/http"
+import (
+	"go.uber.org/zap"
+	"net/http"
+)
 
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -9,8 +12,16 @@ func Middleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Content-Type", "application/json")
-		//log request
+		//log request example
+		zapLogger, _ := zap.NewProduction()
+		defer zapLogger.Sync()
+		zapLogger.Info(r.URL.String(),
+			zap.String("method", r.Method),
+			zap.String("host", r.Host),
+		)
+
 		next.ServeHTTP(w, r)
 		//log response
+
 	})
 }
