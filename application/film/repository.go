@@ -7,7 +7,7 @@ import (
 //Интерфейсы запросов к бд
 
 type Repository interface {
-	Create(film *models.Film) *models.Film
+	Create(film *models.Film) (models.Film, bool)
 	GetById(id uint) (*models.Film, bool)
 	GetByName(name string) (*models.Film, bool)
 }

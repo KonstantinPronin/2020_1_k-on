@@ -9,6 +9,8 @@ func Middleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Content-Type", "application/json")
+		//log request
 		next.ServeHTTP(w, r)
+		//log response
 	})
 }

@@ -75,15 +75,19 @@ func (filmList *FilmsList) UpdateFilmList() bool {
 	return true
 }
 
-func (filmList *FilmsList) Create(film *models.Film) *models.Film {
+func (filmList *FilmsList) Create(film *models.Film) (models.Film, bool) {
 	filmList.mutex.Lock()
 	id := filmList.count + 1
 	film.ID = id
+	_, ok := filmList.films[film.Name]
+	if ok {
+		return models.Film{}, false
+	}
 	filmList.films[film.Name] = film
 	filmList.count++
 	filmList.mutex.Unlock()
 	filmList.UpdateFilmList()
-	return filmList.films[film.Name]
+	return *filmList.films[film.Name], true
 }
 
 func (filmList *FilmsList) GetById(id uint) (*models.Film, bool) {

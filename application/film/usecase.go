@@ -9,7 +9,7 @@ import (
 type Usecase interface {
 	GetFilmsList() models.Films
 	GetFilm(id uint) (models.Film, bool)
-	CreateFilm(f models.Film) models.Film
+	CreateFilm(f models.Film) (models.Film, bool)
 	UploadImageFilm(id uint) models.Film //?? как правильно вести себя с картинками?
 	GetImageFilm(id uint) string         //(model.File)????????????
 }

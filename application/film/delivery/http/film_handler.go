@@ -3,10 +3,9 @@ package http
 import (
 	"2020_1_k-on/application/film"
 	"2020_1_k-on/application/models"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"log"
+	"github.com/mailru/easyjson"
 	"net/http"
 	"strconv"
 )
@@ -29,40 +28,43 @@ func (fh FilmHandler) GetFilm(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		fmt.Fprint(w, `{"Answer":"BAD"}`)
+		resp, _ := models.Generate(400, `{"Answer":"Bad id param"}`).MarshalJSON()
+		w.Write(resp)
 		return
 	}
 	f, ok := fh.usecase.GetFilm(uint(id))
 	if !ok {
-		fmt.Fprint(w, `{"Answer":"BAD"}`)
+		resp, _ := models.Generate(404, `{"Answer":"Not found"}`).MarshalJSON()
+		w.Write(resp)
 		return
 	}
-	json.NewEncoder(w).Encode(f)
+	resp, _ := models.Generate(200, f).MarshalJSON()
+	w.Write(resp)
 }
 
 func (fh FilmHandler) GetFilmList(w http.ResponseWriter, r *http.Request) {
 	f := fh.usecase.GetFilmsList()
-	json.NewEncoder(w).Encode(f)
+	resp, _ := models.Generate(200, f).MarshalJSON()
+	w.Write(resp)
 }
 
 func (fh FilmHandler) CreateFilm(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	decoder := json.NewDecoder(r.Body)
 	var film models.Film
-	err := decoder.Decode(&film)
+	err := easyjson.UnmarshalFromReader(r.Body, &film)
 	if err != nil {
-		http.Error(w, `{"error":"can't parse json'"}`, 500)
-		log.Printf("%s", err)
+		resp, _ := models.Generate(500, `{"error":"can't parse json'"}`).MarshalJSON()
+		w.Write(resp)
 		return
 	}
-	f := fh.usecase.CreateFilm(film)
-	//if ok {
-	//	json.NewEncoder(w).Encode(film)
-	//} else {
-	//	http.Error(w, "can't update database", http.StatusInternalServerError)
-	//}
-	//fmt.Print(f)
-	err = json.NewEncoder(w).Encode(f)
+	f, ok := fh.usecase.CreateFilm(film)
+	if !ok {
+		resp, _ := models.Generate(500, `{"error":"can't update db'"}`).MarshalJSON()
+		w.Write(resp)
+		return
+	}
+	resp, _ := models.Generate(200, f).MarshalJSON()
+	_, err = w.Write(resp)
 	if err != nil {
 		fmt.Print(err)
 		return

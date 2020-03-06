@@ -34,8 +34,10 @@ func (FU filmUsecase) GetFilm(id uint) (models.Film, bool) {
 	return *f, true
 }
 
-func (FU filmUsecase) CreateFilm(f models.Film) models.Film {
-	return *FU.filmRepo.Create(&f)
+func (FU filmUsecase) CreateFilm(f models.Film) (models.Film, bool) {
+	var ok bool
+	f, ok = FU.filmRepo.Create(&f)
+	return f, ok
 }
 
 func (FU filmUsecase) UploadImageFilm(id uint) models.Film {
