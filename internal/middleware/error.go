@@ -13,11 +13,12 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 			switch err.(type) {
 			case *echo.HTTPError:
 				return err
-			case *errors.InvalidArgument:
+			case *errors.InvalidArgumentError:
 				return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 			default:
 				return echo.ErrInternalServerError
 			}
 		}
+		return nil
 	}
 }

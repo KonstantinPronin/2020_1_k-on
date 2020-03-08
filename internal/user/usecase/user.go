@@ -55,12 +55,11 @@ func (uc *User) Add(usr *models.User) (*models.User, error) {
 		return nil, errors.NewInvalidArgument("User already exists")
 	}
 
-	id, err := uc.users.Add(usr)
+	err := uc.users.Add(usr)
 	if err != nil {
 		return nil, err
 	}
 
-	usr.Id = id
 	return usr, nil
 }
 
