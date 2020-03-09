@@ -1,113 +1,127 @@
 package repository
 
 import (
+	"2020_1_k-on/application/film"
 	"2020_1_k-on/application/models"
-	"2020_1_k-on/infrastructure"
-	"bufio"
-	"encoding/json"
-	"io/ioutil"
-	"log"
-	"os"
-	"sync"
+	"context"
+	"errors"
+	"fmt"
+	"github.com/jackc/pgx/pgxpool"
 )
 
 //Интерфейсы запросов к бд
 
-type FilmsList struct {
-	mutex sync.RWMutex
-	films map[string]*models.Film
-	count uint
+type PostgresForFilms struct {
+	connPool *pgxpool.Pool
 }
 
-func readLines(path string) (string, error) {
-	file, err := os.Open(path)
+func NewPostgresForFilms(cp *pgxpool.Pool) film.Repository {
+	return &PostgresForFilms{connPool: cp}
+}
+
+func (p PostgresForFilms) Create(film *models.Film) (models.Film, bool) {
+	sql := "INSERT INTO FILMS (NAME, AGELIMIT, IMAGE) VALUES ($1, $2, $3)"
+	p.exec(sql, film.Name, film.AgeLimit, film.Image)
+	f, _ := p.GetByName(film.Name)
+	return *f, true
+}
+
+func (p PostgresForFilms) GetById(id uint) (*models.Film, bool) {
+	sql := "SELECT * FROM FILMS WHERE ID=$1"
+	film := new(models.Film)
+	p.get(sql, film, id)
+	return film, true
+}
+
+func (p PostgresForFilms) GetByName(name string) (*models.Film, bool) {
+	sql := "SELECT * FROM FILMS WHERE NAME=$1"
+	film := new(models.Film)
+	p.get(sql, film, name)
+	return film, true
+}
+
+func (p PostgresForFilms) GetFilmsArr(begin, end uint) (*models.Films, bool) {
+	sql := "SELECT * FROM FILMS LIMIT $1 OFFSET $2"
+	films := new(models.Films)
+	p.getInterval(sql, films, begin, end)
+	return films, true
+}
+
+func (p PostgresForFilms) exec(sql string, args ...interface{}) (models.Film, error) {
+	conn, err := p.connPool.Acquire(context.Background())
 	if err != nil {
-		return "", err
+		return models.Film{}, err
 	}
-	defer file.Close()
+	defer conn.Release()
 
-	var lines string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = lines + scanner.Text()
-	}
-	return lines, scanner.Err()
-}
-
-func CreateFilmList() *FilmsList {
-	film := []models.Film{}
-	filmList := FilmsList{}
-	filmList = FilmsList{
-		mutex: sync.RWMutex{},
-		films: make(map[string]*models.Film),
-		count: 0,
-	}
-	str, _ := readLines(infrastructure.DBpath)
-	data := []byte(str)
-	err := json.Unmarshal(data, &film)
+	res, err := conn.Exec(context.Background(), sql, args...)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(err)
+		return models.Film{}, err
+	}
+	fmt.Print("RES OK")
+	if res.RowsAffected() == 0 {
+		return models.Film{}, errors.New("film was not created")
 	}
 
-	for ind, val := range film {
-		filmList.films[val.Name] = &(film[ind])
-		filmList.count += 1
-	}
-
-	return &filmList
+	return models.Film{}, nil
 }
 
-func (filmList *FilmsList) UpdateFilmList() bool {
-	filmList.mutex.Lock()
-	defer filmList.mutex.Unlock()
-	fArr := []models.Film{}
-	for _, val := range filmList.films {
-		fArr = append(fArr, *val)
-	}
-	js, err := json.Marshal(fArr)
+func (p PostgresForFilms) get(sql string, film *models.Film, args ...interface{}) error {
+	conn, err := p.connPool.Acquire(context.Background())
 	if err != nil {
-		return false
+		return err
 	}
-	err = ioutil.WriteFile(infrastructure.DBpath, js, os.ModePerm)
+	defer conn.Release()
+	res, err := conn.Query(context.Background(), sql, args[0])
 	if err != nil {
-		return false
+		fmt.Print(err)
+		return err
 	}
-	return true
-}
-
-func (filmList *FilmsList) Create(film *models.Film) (models.Film, bool) {
-	filmList.mutex.Lock()
-	id := filmList.count + 1
-	film.ID = id
-	_, ok := filmList.films[film.Name]
-	if ok {
-		return models.Film{}, false
-	}
-	filmList.films[film.Name] = film
-	filmList.count++
-	filmList.mutex.Unlock()
-	filmList.UpdateFilmList()
-	return *filmList.films[film.Name], true
-}
-
-func (filmList *FilmsList) GetById(id uint) (*models.Film, bool) {
-	filmList.mutex.RLock()
-	defer filmList.mutex.RUnlock()
-	for _, f := range filmList.films {
-		if f.ID == id {
-			return f, true
+	defer res.Close()
+	if res.Next() {
+		err = res.Scan(&film.ID, &film.Name, &film.AgeLimit, &film.Image)
+		if err != nil {
+			fmt.Print(err)
+			return err
 		}
+
+		return nil
 	}
-	return nil, false
+
+	return errors.New("user was not found")
 }
 
-func (filmList *FilmsList) GetByName(name string) (*models.Film, bool) {
-	filmList.mutex.RLock()
-	defer filmList.mutex.RUnlock()
-
-	f, ok := filmList.films[name]
-	if !ok {
-		return nil, false
+func (p PostgresForFilms) getInterval(sql string, films *models.Films, begin, end uint) error {
+	conn, err := p.connPool.Acquire(context.Background())
+	if err != nil {
+		fmt.Print(err)
+		return err
 	}
-	return f, true
+	defer conn.Release()
+
+	res, err := conn.Query(context.Background(), sql, begin, end)
+	if err != nil {
+		fmt.Print(err)
+		return err
+	}
+	defer res.Close()
+	for res.Next() {
+		var id uint
+		var name string
+		var ageLimit int
+		var image string
+		err := res.Scan(&id, &name, &ageLimit, &image)
+		if err != nil {
+			return err
+		}
+		*films = append(*films, models.Film{
+			ID:          id,
+			Name:        name,
+			AgeLimit:    ageLimit,
+			Image:       image,
+			ImageBase64: "",
+		})
+	}
+	return errors.New("film was not found")
 }

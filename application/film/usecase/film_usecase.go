@@ -2,28 +2,25 @@ package usecase
 
 import (
 	"2020_1_k-on/application/film"
-	"2020_1_k-on/application/film/repository"
 	"2020_1_k-on/application/models"
+	"fmt"
 )
 
 type filmUsecase struct {
 	filmRepo film.Repository
 }
 
-func NewUserUsecase(filmRepo *repository.FilmsList) film.Usecase {
+func NewUserUsecase(filmRepo film.Repository) film.Usecase {
 	return &filmUsecase{filmRepo: filmRepo}
 }
 
 func (FU filmUsecase) GetFilmsList() models.Films {
-	var fms models.Films
-	counter := 1
-	f, ok := FU.filmRepo.GetById(uint(counter))
-	for ok {
-		fms = append(fms, *f)
-		counter += 1
-		f, ok = FU.filmRepo.GetById(uint(counter))
+	//var fms models.Films
+	films, ok := FU.filmRepo.GetFilmsArr(2, 1)
+	if !ok {
+		fmt.Print(films)
 	}
-	return fms
+	return *films
 }
 
 func (FU filmUsecase) GetFilm(id uint) (models.Film, bool) {

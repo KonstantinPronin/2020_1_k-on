@@ -5,6 +5,7 @@ import (
 	"2020_1_k-on/application/film/repository"
 	"2020_1_k-on/application/film/usecase"
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/pgxpool"
 	"net/http"
 )
 
@@ -13,11 +14,11 @@ type server struct {
 	router *mux.Router
 }
 
-func NewServer(port string) *server {
+func NewServer(port string, connection *pgxpool.Pool) *server {
 	router := mux.NewRouter()
 	router.Use(Middleware)
 
-	filmrepo := repository.CreateFilmList()
+	filmrepo := repository.NewPostgresForFilms(connection)
 	filmUsecase := usecase.NewUserUsecase(filmrepo)
 
 	http1.NewFilmHandler(router, filmUsecase)

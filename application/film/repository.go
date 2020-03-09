@@ -10,4 +10,5 @@ type Repository interface {
 	Create(film *models.Film) (models.Film, bool)
 	GetById(id uint) (*models.Film, bool)
 	GetByName(name string) (*models.Film, bool)
+	GetFilmsArr(begin, end uint) (*models.Films, bool)
 }
