@@ -13,8 +13,8 @@ type User struct {
 	users    user.Repository
 }
 
-func NewUser(s session.Repository, u user.Repository) User {
-	return User{sessions: s, users: u}
+func NewUser(s session.Repository, u user.Repository) user.UseCase {
+	return &User{sessions: s, users: u}
 }
 
 func (uc *User) Login(login string, password string) (sessionId string, err error) {

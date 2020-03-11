@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-type userHandler struct {
+type UserHandler struct {
 	useCase user.UseCase
 }
 
 func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth) {
-	handler := userHandler{useCase: us}
+	handler := UserHandler{useCase: us}
 
 	e.Use(middleware.ParseErrors)
 	e.POST("/login", handler.Login, auth.AlreadyLoginErr)
@@ -25,7 +25,7 @@ func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth) {
 	e.POST("/user", handler.Update, auth.GetSession)
 }
 
-func (uh *userHandler) Login(ctx echo.Context) error {
+func (uh *UserHandler) Login(ctx echo.Context) error {
 	usr := new(models.User)
 	if err := ctx.Bind(usr); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "request parser error")
@@ -47,12 +47,12 @@ func (uh *userHandler) Login(ctx echo.Context) error {
 	return nil
 }
 
-func (uh *userHandler) Logout(ctx echo.Context) error {
+func (uh *UserHandler) Logout(ctx echo.Context) error {
 	sessionId := ctx.Get(session.CookieName)
 	return uh.useCase.Logout(sessionId.(string))
 }
 
-func (uh *userHandler) Signup(ctx echo.Context) error {
+func (uh *UserHandler) Signup(ctx echo.Context) error {
 	usr := new(models.User)
 	if err := ctx.Bind(usr); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "request parser error")
@@ -67,7 +67,7 @@ func (uh *userHandler) Signup(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, usr)
 }
 
-func (uh *userHandler) Profile(ctx echo.Context) error {
+func (uh *UserHandler) Profile(ctx echo.Context) error {
 	uid := ctx.Get(session.UserIdKey)
 
 	usr, err := uh.useCase.Get(uid.(int64))
@@ -79,7 +79,7 @@ func (uh *userHandler) Profile(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, usr)
 }
 
-func (uh *userHandler) Update(ctx echo.Context) error {
+func (uh *UserHandler) Update(ctx echo.Context) error {
 	uid := ctx.Get(session.UserIdKey)
 	usr := new(models.User)
 	if err := ctx.Bind(usr); err != nil {
