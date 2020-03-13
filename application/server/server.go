@@ -4,20 +4,19 @@ import (
 	http1 "2020_1_k-on/application/film/delivery/http"
 	"2020_1_k-on/application/film/repository"
 	"2020_1_k-on/application/film/usecase"
-	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/pgxpool"
+	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 	"net/http"
 )
 
 type server struct {
 	port   string
-	router *mux.Router
+	router *echo.Echo
 }
 
-func NewServer(port string, connection *pgxpool.Pool) *server {
-	router := mux.NewRouter()
+func NewServer(port string, connection *gorm.DB) *server {
+	router := echo.New()
 	router.Use(Middleware)
-
 	filmrepo := repository.NewPostgresForFilms(connection)
 	filmUsecase := usecase.NewUserUsecase(filmrepo)
 

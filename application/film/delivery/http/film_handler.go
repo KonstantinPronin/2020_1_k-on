@@ -3,10 +3,8 @@ package http
 import (
 	"2020_1_k-on/application/film"
 	"2020_1_k-on/application/models"
-	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
-	"net/http"
 	"strconv"
 )
 
@@ -14,59 +12,63 @@ type FilmHandler struct {
 	usecase film.Usecase
 }
 
-func NewFilmHandler(router *mux.Router, usecase film.Usecase) {
+func NewFilmHandler(e *echo.Echo, usecase film.Usecase) {
 	handler := &FilmHandler{
 		usecase: usecase,
 	}
-	router.HandleFunc("/films/{id:[0-9]+}", handler.GetFilm).Methods(http.MethodGet)
-	router.HandleFunc("/films", handler.CreateFilm).Methods(http.MethodPost)
-	router.HandleFunc("/films", handler.GetFilmList).Methods(http.MethodGet)
-
+	e.GET("/films/:id", handler.GetFilm)
+	e.GET("/films", handler.GetFilmList)
+	e.POST("/films", handler.CreateFilm)
 }
 
-func (fh FilmHandler) GetFilm(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (fh FilmHandler) GetFilm(ctx echo.Context) error {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		resp, _ := models.Generate(400, `{"Answer":"Bad id param"}`).MarshalJSON()
-		w.Write(resp)
-		return
+		resp, _ := models.Generate(400, "not number").MarshalJSON()
+		ctx.Response().Status = 400
+		ctx.Response().Write(resp)
+		return err
 	}
 	f, ok := fh.usecase.GetFilm(uint(id))
 	if !ok {
-		resp, _ := models.Generate(404, `{"Answer":"Not found"}`).MarshalJSON()
-		w.Write(resp)
-		return
+		resp, _ := models.Generate(404, "Not Found").MarshalJSON()
+		ctx.Response().Status = 404
+		ctx.Response().Write(resp)
+		return err
 	}
 	resp, _ := models.Generate(200, f).MarshalJSON()
-	w.Write(resp)
+	ctx.Response().Status = 200
+	_, err = ctx.Response().Write(resp)
+	return err
 }
 
-func (fh FilmHandler) GetFilmList(w http.ResponseWriter, r *http.Request) {
+func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 	f := fh.usecase.GetFilmsList()
 	resp, _ := models.Generate(200, f).MarshalJSON()
-	w.Write(resp)
+	ctx.Response().Status = 200
+	_, err := ctx.Response().Write(resp)
+	return err
 }
 
-func (fh FilmHandler) CreateFilm(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	var film models.Film
-	err := easyjson.UnmarshalFromReader(r.Body, &film)
+func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
+	film := new(models.Film)
+	defer ctx.Request().Body.Close()
+	err := easyjson.UnmarshalFromReader(ctx.Request().Body, film)
 	if err != nil {
-		resp, _ := models.Generate(500, `{"error":"can't parse json'"}`).MarshalJSON()
-		w.Write(resp)
-		return
+		resp, _ := models.Generate(400, "request parser error").MarshalJSON()
+		ctx.Response().Status = 400
+		_, err = ctx.Response().Write(resp)
+		return err
 	}
-	f, ok := fh.usecase.CreateFilm(film)
+	f, ok := fh.usecase.CreateFilm(*film)
 	if !ok {
-		resp, _ := models.Generate(500, `{"error":"can't update db'"}`).MarshalJSON()
-		w.Write(resp)
-		return
+		resp, _ := models.Generate(500, "can't create film").MarshalJSON()
+		ctx.Response().Status = 500
+		_, err = ctx.Response().Write(resp)
+		return err
 	}
 	resp, _ := models.Generate(200, f).MarshalJSON()
-	_, err = w.Write(resp)
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
+	ctx.Response().Status = 200
+	_, err = ctx.Response().Write(resp)
+	return err
 }

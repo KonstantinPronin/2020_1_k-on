@@ -15,8 +15,7 @@ func NewUserUsecase(filmRepo film.Repository) film.Usecase {
 }
 
 func (FU filmUsecase) GetFilmsList() models.Films {
-	//var fms models.Films
-	films, ok := FU.filmRepo.GetFilmsArr(2, 1)
+	films, ok := FU.filmRepo.GetFilmsArr(10, 0)
 	if !ok {
 		fmt.Print(films)
 	}

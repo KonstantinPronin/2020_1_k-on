@@ -1,27 +1,33 @@
 package server
 
 import (
+	"github.com/labstack/echo"
 	"go.uber.org/zap"
-	"net/http"
 )
 
-func Middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Content-Type", "application/json")
+func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		ctx.Response().Header().Set("Access-Control-Allow-Origin", ctx.Request().Header.Get("Origin"))
+		ctx.Response().Header().Set("Access-Control-Allow-Credentials", "true")
+		ctx.Response().Header().Set("Content-Type", "application/json")
 		//log request example
 		zapLogger, _ := zap.NewProduction()
 		defer zapLogger.Sync()
-		zapLogger.Info(r.URL.String(),
-			zap.String("method", r.Method),
-			zap.String("host", r.Host),
+		zapLogger.Info(ctx.Request().URL.String(),
+			zap.String("method", ctx.Request().Method),
+			zap.String("host", ctx.Request().Host),
 		)
-
-		next.ServeHTTP(w, r)
-		//log response
-
-	})
+		err := next(ctx)
+		if err != nil {
+			//log response
+			zapLogger.Debug("",
+				zap.Int("Status", ctx.Response().Status),
+				zap.Int64("size", ctx.Response().Size),
+			)
+			return err
+		}
+		return nil
+	}
 }

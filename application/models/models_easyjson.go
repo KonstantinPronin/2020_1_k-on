@@ -261,8 +261,6 @@ func easyjsonD2b7633eDecode20201KOnApplicationModels3(in *jlexer.Lexer, out *Fil
 			out.AgeLimit = int(in.Int())
 		case "image":
 			out.Image = string(in.String())
-		case "base":
-			out.ImageBase64 = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -297,11 +295,6 @@ func easyjsonD2b7633eEncode20201KOnApplicationModels3(out *jwriter.Writer, in Fi
 		out.RawString(prefix)
 		out.String(string(in.Image))
 	}
-	if in.ImageBase64 != "" {
-		const prefix string = ",\"base\":"
-		out.RawString(prefix)
-		out.String(string(in.ImageBase64))
-	}
 	out.RawByte('}')
 }
 
@@ -327,4 +320,164 @@ func (v *Film) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Film) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonD2b7633eDecode20201KOnApplicationModels3(l, v)
+}
+func easyjsonD2b7633eDecode20201KOnApplicationModels4(in *jlexer.Lexer, out *Actors) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Actors, 0, 1)
+			} else {
+				*out = Actors{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v7 Actor
+			(v7).UnmarshalEasyJSON(in)
+			*out = append(*out, v7)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonD2b7633eEncode20201KOnApplicationModels4(out *jwriter.Writer, in Actors) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v8, v9 := range in {
+			if v8 > 0 {
+				out.RawByte(',')
+			}
+			(v9).MarshalEasyJSON(out)
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v Actors) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonD2b7633eEncode20201KOnApplicationModels4(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Actors) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonD2b7633eEncode20201KOnApplicationModels4(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *Actors) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonD2b7633eDecode20201KOnApplicationModels4(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Actors) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonD2b7633eDecode20201KOnApplicationModels4(l, v)
+}
+func easyjsonD2b7633eDecode20201KOnApplicationModels5(in *jlexer.Lexer, out *Actor) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "ID":
+			out.ID = uint(in.Uint())
+		case "name":
+			out.Name = string(in.String())
+		case "secondname":
+			out.SecondName = string(in.String())
+		case "age":
+			out.Age = int(in.Int())
+		case "image":
+			out.Image = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonD2b7633eEncode20201KOnApplicationModels5(out *jwriter.Writer, in Actor) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"ID\":"
+		out.RawString(prefix[1:])
+		out.Uint(uint(in.ID))
+	}
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
+	}
+	{
+		const prefix string = ",\"secondname\":"
+		out.RawString(prefix)
+		out.String(string(in.SecondName))
+	}
+	{
+		const prefix string = ",\"age\":"
+		out.RawString(prefix)
+		out.Int(int(in.Age))
+	}
+	if in.Image != "" {
+		const prefix string = ",\"image\":"
+		out.RawString(prefix)
+		out.String(string(in.Image))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v Actor) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonD2b7633eEncode20201KOnApplicationModels5(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Actor) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonD2b7633eEncode20201KOnApplicationModels5(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *Actor) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonD2b7633eDecode20201KOnApplicationModels5(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Actor) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonD2b7633eDecode20201KOnApplicationModels5(l, v)
 }

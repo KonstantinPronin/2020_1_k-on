@@ -7,7 +7,10 @@ import (
 )
 
 func main() {
-	conn, _ := infrastructure.InitDatabaseConnection()
+	conn, err := infrastructure.InitDatabaseConnection()
+	if err != nil {
+		log.Print(err)
+	}
 	serv := server.NewServer(":8080", conn)
 	log.Println("starting server at :8080")
 	log.Fatal(serv.ListenAndServe())
