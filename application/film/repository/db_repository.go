@@ -5,6 +5,7 @@ import (
 	"2020_1_k-on/application/models"
 	_ "context"
 	_ "errors"
+	"fmt"
 	"github.com/jinzhu/gorm"
 )
 
@@ -29,9 +30,11 @@ func (p PostgresForFilms) Create(film *models.Film) (models.Film, bool) {
 
 func (p PostgresForFilms) GetById(id uint) (*models.Film, bool) {
 	film := &models.Film{}
-	db := p.DB.Find(film, id)
+	//fmt.Print(id,"\n\n\n\n\n\n")
+	db := p.DB.Select("id,name,agelimit,image").Find(film, id)
 	err := db.Error
 	if err != nil {
+		fmt.Print(err)
 		return &models.Film{}, false
 	}
 	return film, true
