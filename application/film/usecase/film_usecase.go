@@ -10,12 +10,13 @@ type filmUsecase struct {
 	filmRepo film.Repository
 }
 
-func NewUserUsecase(filmRepo film.Repository) film.Usecase {
+func NewFilmUsecase(filmRepo film.Repository) film.Usecase {
 	return &filmUsecase{filmRepo: filmRepo}
 }
 
 func (FU filmUsecase) GetFilmsList() models.Films {
-	films, ok := FU.filmRepo.GetFilmsArr(10, 0)
+	b, e := uint(10), uint(0)
+	films, ok := FU.filmRepo.GetFilmsArr(b, e)
 	if !ok {
 		fmt.Print(films)
 	}

@@ -22,7 +22,7 @@ func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		err := next(ctx)
 		if err != nil {
 			//log response
-			zapLogger.Debug("",
+			zapLogger.Debug("Response",
 				zap.Int("Status", ctx.Response().Status),
 				zap.Int64("size", ctx.Response().Size),
 			)

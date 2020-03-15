@@ -29,7 +29,6 @@ func (p PostgresForFilms) Create(film *models.Film) (models.Film, bool) {
 
 func (p PostgresForFilms) GetById(id uint) (*models.Film, bool) {
 	film := &models.Film{}
-	//fmt.Print(id,"\n\n\n\n\n\n")
 	db := p.DB.Select("id,name,agelimit,image").Find(film, id)
 	err := db.Error
 	if err != nil {

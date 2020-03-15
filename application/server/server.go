@@ -18,7 +18,7 @@ func NewServer(port string, connection *gorm.DB) *server {
 	router := echo.New()
 	router.Use(Middleware)
 	filmrepo := repository.NewPostgresForFilms(connection)
-	filmUsecase := usecase.NewUserUsecase(filmrepo)
+	filmUsecase := usecase.NewFilmUsecase(filmrepo)
 
 	http1.NewFilmHandler(router, filmUsecase)
 
