@@ -17,17 +17,17 @@ func NewPostgresForUser(cp *pgxpool.Pool) user.Repository {
 }
 
 func (p PostgresForUser) Add(usr *models.User) (err error) {
-	sql := "INSERT INTO USERS (USERNAME, PASSWORD, EMAIL, IMAGE) VALUES ($1, $2, $3, $3)"
+	sql := "INSERT INTO KINOPOISK.USERS (USERNAME, PASSWORD, EMAIL, IMAGE) VALUES ($1, $2, $3, $4)"
 	return p.exec(sql, usr.Username, usr.Password, usr.Email, usr.ImagePath)
 }
 
 func (p PostgresForUser) Update(id int64, usr *models.User) error {
-	sql := "UPDATE USERS SET USERNAME=$1, PASSWORD=$2, EMAIL=$3, IMAGE=$4 WHERE ID=$5"
+	sql := "UPDATE KINOPOISK.USERS SET USERNAME=$1, PASSWORD=$2, EMAIL=$3, IMAGE=$4 WHERE ID=$5"
 	return p.exec(sql, usr.Username, usr.Password, usr.Email, usr.ImagePath, id)
 }
 
 func (p PostgresForUser) GetById(id int64) (*models.User, error) {
-	sql := "SELECT * FROM USERS WHERE ID=$1"
+	sql := "SELECT * FROM KINOPOISK.USERS WHERE ID=$1"
 	usr := new(models.User)
 	err := p.get(sql, usr, id)
 
@@ -39,7 +39,7 @@ func (p PostgresForUser) GetById(id int64) (*models.User, error) {
 }
 
 func (p PostgresForUser) GetByName(login string) (*models.User, error) {
-	sql := "SELECT * FROM USERS WHERE USERNAME=$1"
+	sql := "SELECT * FROM KINOPOISK.USERS WHERE USERNAME=$1"
 	usr := new(models.User)
 	err := p.get(sql, usr, login)
 
@@ -72,7 +72,7 @@ func (p PostgresForUser) exec(sql string, args ...interface{}) error {
 	}
 	defer conn.Release()
 
-	res, err := conn.Exec(context.Background(), sql, args)
+	res, err := conn.Exec(context.Background(), sql, args...)
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func (p PostgresForUser) get(sql string, usr *models.User, args ...interface{}) 
 	}
 	defer conn.Release()
 
-	res, err := conn.Query(context.Background(), sql, args)
+	res, err := conn.Query(context.Background(), sql, args...)
 	if err != nil {
 		return err
 	}
