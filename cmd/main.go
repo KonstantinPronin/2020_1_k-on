@@ -8,20 +8,18 @@ import (
 )
 
 func main() {
+	logger, err := infrastructure.InitLog()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer logger.Sync()
+
 	e := echo.New()
 	db, err := infrastructure.InitGorm()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	server.NewServer(e, db)
+	server.NewServer(e, db, logger)
 	e.Logger.Fatal(e.Start(":8080"))
-	//e := echo.New()
-	//cp, err := infrastructure.InitDatabaseConnection()
-	//if err != nil {
-	//	log.Fatal(err.Error())
-	//}
-	//
-	//server.NewServer(e, cp)
-	//
-	//e.Logger.Fatal(e.Start(":8080"))
+
 }

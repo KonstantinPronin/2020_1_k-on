@@ -7,16 +7,18 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/internal/user"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
 
 type UserHandler struct {
 	useCase user.UseCase
+	logger  *zap.Logger
 }
 
-func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth) {
-	handler := UserHandler{useCase: us}
+func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth, logger *zap.Logger) {
+	handler := UserHandler{useCase: us, logger: logger}
 
 	e.Use(middleware.ParseErrors)
 	e.POST("/login", handler.Login, auth.AlreadyLoginErr)
@@ -29,6 +31,7 @@ func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth) {
 func (uh *UserHandler) Login(ctx echo.Context) error {
 	usr := new(models.User)
 	if err := easyjson.UnmarshalFromReader(ctx.Request().Body, usr); err != nil {
+		uh.logger.Error("request parser error")
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
 
@@ -52,6 +55,7 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 func (uh *UserHandler) Logout(ctx echo.Context) error {
 	cookie, err := ctx.Cookie(session.CookieName)
 	if err != nil {
+		uh.logger.Warn("request without cookie")
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "no cookie")
 	}
 
@@ -67,6 +71,7 @@ func (uh *UserHandler) Logout(ctx echo.Context) error {
 func (uh *UserHandler) SignUp(ctx echo.Context) error {
 	usr := new(models.User)
 	if err := easyjson.UnmarshalFromReader(ctx.Request().Body, usr); err != nil {
+		uh.logger.Error("request parser error")
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
 
@@ -83,7 +88,7 @@ func (uh *UserHandler) Profile(ctx echo.Context) error {
 	uid := ctx.Get(session.UserIdKey)
 	usr, err := uh.useCase.Get(uid.(int64))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, err.Error())
+		return err
 	}
 
 	usr.Password = ""
@@ -94,6 +99,7 @@ func (uh *UserHandler) Update(ctx echo.Context) error {
 	uid := ctx.Get(session.UserIdKey)
 	usr := new(models.User)
 	if err := easyjson.UnmarshalFromReader(ctx.Request().Body, usr); err != nil {
+		uh.logger.Error("request parser error")
 		return echo.NewHTTPError(http.StatusBadRequest, "request parser error")
 	}
 

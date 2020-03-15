@@ -4,14 +4,16 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/internal/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/internal/user"
 	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
 )
 
 type UserDatabase struct {
-	conn *gorm.DB
+	conn   *gorm.DB
+	logger *zap.Logger
 }
 
-func NewUserDatabase(db *gorm.DB) user.Repository {
-	return &UserDatabase{conn: db}
+func NewUserDatabase(db *gorm.DB, logger *zap.Logger) user.Repository {
+	return &UserDatabase{conn: db, logger: logger}
 }
 
 func (udb *UserDatabase) Add(user *models.User) (err error) {
