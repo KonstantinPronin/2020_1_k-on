@@ -43,3 +43,16 @@ func TestFilmUsecase_GetFilmsList(t *testing.T) {
 	f := usecase.GetFilmsList()
 	require.Equal(t, tfilms, f)
 }
+
+func TestFilmUsecase_CreateFilm(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	films := mockfilm.NewMockRepository(ctrl)
+	usecase := NewFilmUsecase(films)
+	films.EXPECT().Create(&testFilm).Return(testFilm, true)
+
+	f, ok := usecase.CreateFilm(testFilm)
+	if !ok {
+		t.Error(f)
+	}
+	require.Equal(t, testFilm, f)
+}
