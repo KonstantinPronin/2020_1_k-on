@@ -5,39 +5,39 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/require"
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
+	"log"
 	"testing"
 )
 
-func TestPostgresForFilms_GetById(t *testing.T) {
-	var db *gorm.DB
-	_, mock, err := sqlmock.NewWithDSN("sqlmock_db_0")
+func SetupDB() (sqlmock.Sqlmock, *gorm.DB) {
+	db, mock, err := sqlmock.New()
 	if err != nil {
-		t.Fatalf("cant create mock: %s", err)
+		log.Fatalf("cant create mock: %s", err)
 	}
-	db, err = gorm.Open("sqlmock", "sqlmock_db_0")
-	if err != nil {
-		t.Fatalf("Got an unexpected error: %s", err)
+	DB, erro := gorm.Open("postgres", db)
+	if erro != nil {
+		log.Fatalf("Got an unexpected error: %s", err)
 
 	}
-	defer db.Close()
+	return mock, DB
+}
+
+func TestPostgresForFilms_GetById(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
 
 	var elemID uint = 1
-
 	// good query
 	rows := sqlmock.
 		NewRows([]string{"id", "name", "agelimit", "image"})
-	//expect := *models.Film{elemID, "name", 10, "image"}
 	expect := models.Film{elemID, "name", 10, "image"}
-	//for _, item := range expect {
 	rows = rows.AddRow(expect.ID, expect.Name, expect.AgeLimit, expect.Image)
-	//}
-
 	mock.ExpectQuery(`SELECT id,name,agelimit,image FROM "films" WHERE.*$`).
 		//WithArgs(elemID).
 		WillReturnRows(rows)
 
 	repo := &PostgresForFilms{
-		DB: db,
+		DB: DB,
 	}
 	item, ok := repo.GetById(elemID)
 	if !ok {
@@ -48,4 +48,96 @@ func TestPostgresForFilms_GetById(t *testing.T) {
 		return
 	}
 	require.Equal(t, *item, expect)
+}
+
+func TestPostgresForFilms_GetByName(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	elemName := "name"
+	// good query
+	rows := sqlmock.
+		NewRows([]string{"id", "name", "agelimit", "image"})
+	expect := models.Film{1, elemName, 10, "image"}
+	rows = rows.AddRow(expect.ID, expect.Name, expect.AgeLimit, expect.Image)
+	mock.ExpectQuery(`SELECT id,name,agelimit,image FROM "films" WHERE.*$`).
+		//WithArgs(elemID).
+		WillReturnRows(rows)
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	item, ok := repo.GetByName(elemName)
+	if !ok {
+		t.Error(ok)
+		t.Error(rows)
+		t.Error(expect)
+		t.Error(item)
+		return
+	}
+	require.Equal(t, *item, expect)
+}
+
+func TestPostgresForFilms_GetFilmsArr(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	elemName := "name"
+	// good query
+	rows := sqlmock.
+		NewRows([]string{"id", "name", "agelimit", "image"})
+	expect := models.Film{1, elemName, 10, "image"}
+	rows = rows.AddRow(expect.ID, expect.Name, expect.AgeLimit, expect.Image)
+	mock.ExpectQuery(`SELECT id,name,agelimit,image FROM "films" LIMIT.*$`).
+		//WithArgs(elemID).
+		WillReturnRows(rows)
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	item, ok := repo.GetFilmsArr(0, 1)
+	if !ok {
+		t.Error(ok)
+		t.Error(rows)
+		t.Error(expect)
+		t.Error(item)
+		return
+	}
+	require.Equal(t, *item, models.Films{expect})
+}
+
+func TestPostgresForFilms_Create(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	name := "name"
+	image := "image"
+	agelimit := 10
+
+	testFilm := models.Film{
+		Name:     name,
+		AgeLimit: agelimit,
+		Image:    image,
+	}
+
+	// good query
+	rows := sqlmock.
+		NewRows([]string{"id"})
+	rows = rows.AddRow(1)
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(`INSERT INTO`).
+		WithArgs(name, agelimit, image).WillReturnRows(rows)
+	mock.ExpectCommit()
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	item, ok := repo.Create(&testFilm)
+	if !ok {
+		t.Error(ok)
+		t.Error(item)
+		return
+	}
+	require.Equal(t, item.ID, uint(1))
 }
