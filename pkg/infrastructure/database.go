@@ -1,16 +1,20 @@
 package infrastructure
 
 import (
-	"context"
-	"github.com/jackc/pgx/pgxpool"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=k_on pool_max_conns=100"
+const dsn = `host=localhost port=5432 user=postgres password=postgres dbname=k_on sslmode=disable`
 
-func InitDatabaseConnection() (*pgxpool.Pool, error) {
-	config, err := pgxpool.ParseConfig(dsn)
+func InitGorm() (db *gorm.DB, err error) {
+	db, err = gorm.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
 	}
-	return pgxpool.ConnectConfig(context.Background(), config)
+	if err = db.DB().Ping(); err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

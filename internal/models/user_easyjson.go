@@ -45,9 +45,7 @@ func easyjson9e1087fdDecodeGithubComGoParkMailRu20201KOnInternalModels(in *jlexe
 		case "email":
 			out.Email = string(in.String())
 		case "image":
-			out.ImagePath = string(in.String())
-		case "avatar":
-			out.ImageBase64 = string(in.String())
+			out.Image = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -85,12 +83,7 @@ func easyjson9e1087fdEncodeGithubComGoParkMailRu20201KOnInternalModels(out *jwri
 	{
 		const prefix string = ",\"image\":"
 		out.RawString(prefix)
-		out.String(string(in.ImagePath))
-	}
-	{
-		const prefix string = ",\"avatar\":"
-		out.RawString(prefix)
-		out.String(string(in.ImageBase64))
+		out.String(string(in.Image))
 	}
 	out.RawByte('}')
 }

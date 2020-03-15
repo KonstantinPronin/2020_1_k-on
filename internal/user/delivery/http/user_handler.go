@@ -23,7 +23,7 @@ func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth) {
 	e.POST("/logout", handler.Logout, auth.GetSession)
 	e.PUT("/signup", handler.SignUp, auth.AlreadyLoginErr)
 	e.GET("/user", handler.Profile, auth.GetSession)
-	e.POST("/user", handler.Update, auth.AlreadyLoginErr)
+	e.POST("/user", handler.Update, auth.GetSession)
 }
 
 func (uh *UserHandler) Login(ctx echo.Context) error {

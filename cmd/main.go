@@ -9,12 +9,19 @@ import (
 
 func main() {
 	e := echo.New()
-	cp, err := infrastructure.InitDatabaseConnection()
+	db, err := infrastructure.InitGorm()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	server.NewServer(e, cp)
-
+	server.NewServer(e, db)
 	e.Logger.Fatal(e.Start(":8080"))
+	//e := echo.New()
+	//cp, err := infrastructure.InitDatabaseConnection()
+	//if err != nil {
+	//	log.Fatal(err.Error())
+	//}
+	//
+	//server.NewServer(e, cp)
+	//
+	//e.Logger.Fatal(e.Start(":8080"))
 }

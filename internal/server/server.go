@@ -6,13 +6,14 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/internal/user/delivery/http"
 	"github.com/go-park-mail-ru/2020_1_k-on/internal/user/repository"
 	"github.com/go-park-mail-ru/2020_1_k-on/internal/user/usecase"
-	"github.com/jackc/pgx/pgxpool"
+	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
 
-func NewServer(e *echo.Echo, cp *pgxpool.Pool) {
+func NewServer(e *echo.Echo, db *gorm.DB) {
 	sessions := repository2.NewSessionStorage()
-	users := repository.NewPostgresForUser(cp)
+	users := repository.NewUserDatabase(db)
+	//users := repository.NewPostgresForUser(cp)
 	auth := middleware.NewAuth(sessions)
 	user := usecase.NewUser(sessions, users)
 
