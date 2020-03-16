@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/server"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/server"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/infrastructure"
 	"github.com/labstack/echo"
 	"log"

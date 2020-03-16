@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/models"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"

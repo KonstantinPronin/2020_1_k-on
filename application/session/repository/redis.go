@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/session"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-redis/redis/v7"
 	"go.uber.org/zap"
 	"strconv"

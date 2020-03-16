@@ -1,10 +1,10 @@
 package usecase
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/models"
-	sessionmock "github.com/go-park-mail-ru/2020_1_k-on/internal/session/mocks"
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/user"
-	usermock "github.com/go-park-mail-ru/2020_1_k-on/internal/user/mocks"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	sessionmock "github.com/go-park-mail-ru/2020_1_k-on/application/session/mocks"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
+	usermock "github.com/go-park-mail-ru/2020_1_k-on/application/user/mocks"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

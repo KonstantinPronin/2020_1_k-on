@@ -1,11 +1,11 @@
 package server
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/middleware"
-	repository2 "github.com/go-park-mail-ru/2020_1_k-on/internal/session/repository"
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/user/delivery/http"
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/user/repository"
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/user/usecase"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/middleware"
+	repository2 "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"

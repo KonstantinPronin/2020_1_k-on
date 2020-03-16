@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/models"
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/user"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )

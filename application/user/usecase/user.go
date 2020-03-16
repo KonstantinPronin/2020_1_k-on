@@ -1,9 +1,9 @@
 package usecase
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/models"
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/session"
-	"github.com/go-park-mail-ru/2020_1_k-on/internal/user"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
