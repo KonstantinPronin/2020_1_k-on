@@ -44,7 +44,7 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 		Name:    session.CookieName,
 		Value:   sessionId,
 		Path:    "/",
-		Expires: time.Now().Add(10 * time.Hour),
+		Expires: time.Now().Add(session.CookieDuration),
 	}
 	ctx.SetCookie(cookie)
 

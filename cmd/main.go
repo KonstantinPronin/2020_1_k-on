@@ -12,14 +12,23 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			log.Fatal(err.Error())
+		}
+	}()
+
+	rd, err := infrastructure.InitRedis()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	e := echo.New()
 	db, err := infrastructure.InitGorm()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	server.NewServer(e, db, logger)
-	e.Logger.Fatal(e.Start(":8080"))
 
+	server.NewServer(e, db, rd, logger)
+	e.Logger.Fatal(e.Start(":8080"))
 }

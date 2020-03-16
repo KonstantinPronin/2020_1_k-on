@@ -8,6 +8,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 	"testing"
 )
 
@@ -21,7 +22,7 @@ func beforeTest(t *testing.T) (*sessionmock.MockRepository, *usermock.MockReposi
 	ctrl := gomock.NewController(t)
 	sessions := sessionmock.NewMockRepository(ctrl)
 	users := usermock.NewMockRepository(ctrl)
-	usecase := NewUser(sessions, users)
+	usecase := NewUser(sessions, users, zap.NewExample())
 
 	return sessions, users, usecase
 }
