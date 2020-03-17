@@ -1,9 +1,27 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
+	"log"
 )
+
+var logConf = []byte(`{
+    "level": "debug",
+    "encoding": "console",
+    "outputPaths": ["stdout", "/tmp/logs"],
+    "errorOutputPaths": ["stderr"],
+    "encoderConfig": {
+      "messageKey": "message",
+          "callerKey": "caller",
+      "callerEncoder": "short",
+      "levelKey": "level",
+      "levelEncoder": "capital",
+      "timeKey": "time",
+       "timeEncoder": "ISO8601"
+    }
+    }`)
 
 func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
@@ -11,18 +29,27 @@ func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		ctx.Response().Header().Set("Access-Control-Allow-Origin", ctx.Request().Header.Get("Origin"))
 		ctx.Response().Header().Set("Access-Control-Allow-Credentials", "true")
-		ctx.Response().Header().Set("Content-Type", "application/json")
+		ctx.Response().Header().Set("Content-Type", "application/json; charset=utf8")
 		//log request example
-		zapLogger, _ := zap.NewProduction()
+
+		var cfg zap.Config
+		if err := json.Unmarshal(logConf, &cfg); err != nil {
+			log.Print("config problem in middleware")
+		}
+		zapLogger, err := cfg.Build()
+		if err != nil {
+			log.Print("logger build problem in middleware")
+		}
 		defer zapLogger.Sync()
+
 		zapLogger.Info(ctx.Request().URL.String(),
 			zap.String("method", ctx.Request().Method),
 			zap.String("host", ctx.Request().Host),
 		)
-		err := next(ctx)
+		err = next(ctx)
 		if err != nil {
 			//log response
-			zapLogger.Debug("Response",
+			zapLogger.Debug(ctx.Request().URL.String(),
 				zap.Int("Status", ctx.Response().Status),
 				zap.Int64("size", ctx.Response().Size),
 			)

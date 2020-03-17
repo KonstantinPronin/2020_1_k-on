@@ -15,8 +15,8 @@ func NewFilmUsecase(filmRepo film.Repository) film.Usecase {
 }
 
 func (FU filmUsecase) GetFilmsList() models.Films {
-	b, e := uint(10), uint(0)
-	films, ok := FU.filmRepo.GetFilmsArr(b, e)
+	begin, end := uint(10), uint(0)
+	films, ok := FU.filmRepo.GetFilmsArr(begin, end)
 	if !ok {
 		fmt.Print(films)
 	}
