@@ -3,7 +3,6 @@ package usecase
 import (
 	"2020_1_k-on/application/film"
 	"2020_1_k-on/application/models"
-	"fmt"
 )
 
 type filmUsecase struct {
@@ -14,13 +13,13 @@ func NewFilmUsecase(filmRepo film.Repository) film.Usecase {
 	return &filmUsecase{filmRepo: filmRepo}
 }
 
-func (FU filmUsecase) GetFilmsList() models.Films {
+func (FU filmUsecase) GetFilmsList() (models.Films, bool) {
 	begin, end := uint(10), uint(0)
 	films, ok := FU.filmRepo.GetFilmsArr(begin, end)
 	if !ok {
-		fmt.Print(films)
+		return models.Films{}, false
 	}
-	return *films
+	return *films, true
 }
 
 func (FU filmUsecase) GetFilm(id uint) (models.Film, bool) {

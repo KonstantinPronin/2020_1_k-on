@@ -7,7 +7,7 @@ import (
 //Человеко читаемые методы, которые и будут вызываться в хендлерах в деливери
 
 type Usecase interface {
-	GetFilmsList() models.Films
+	GetFilmsList() (models.Films, bool)
 	GetFilm(id uint) (models.Film, bool)
 	CreateFilm(f models.Film) (models.Film, bool)
 	UploadImageFilm(id uint) models.Film //?? как правильно вести себя с картинками?
