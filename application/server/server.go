@@ -17,6 +17,7 @@ type server struct {
 func NewServer(port string, connection *gorm.DB) *server {
 	router := echo.New()
 	router.Use(Middleware)
+	router.Use(CORS)
 	filmrepo := repository.NewPostgresForFilms(connection)
 	filmUsecase := usecase.NewFilmUsecase(filmrepo)
 

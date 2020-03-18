@@ -25,13 +25,7 @@ var logConf = []byte(`{
 
 func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		ctx.Response().Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
-		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		ctx.Response().Header().Set("Access-Control-Allow-Origin", ctx.Request().Header.Get("Origin"))
-		ctx.Response().Header().Set("Access-Control-Allow-Credentials", "true")
-		ctx.Response().Header().Set("Content-Type", "application/json; charset=utf8")
 		//log request example
-
 		var cfg zap.Config
 		if err := json.Unmarshal(logConf, &cfg); err != nil {
 			log.Print("config problem in middleware")
@@ -56,5 +50,16 @@ func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return err
 		}
 		return nil
+	}
+}
+
+func CORS(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		ctx.Response().Header().Set("Access-Control-Allow-Origin", ctx.Request().Header.Get("Origin"))
+		ctx.Response().Header().Set("Access-Control-Allow-Credentials", "true")
+		ctx.Response().Header().Set("Content-Type", "application/json; charset=utf8")
+		return next(ctx)
 	}
 }

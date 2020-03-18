@@ -41,7 +41,12 @@ func (fh FilmHandler) GetFilm(ctx echo.Context) error {
 }
 
 func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
-	f := fh.usecase.GetFilmsList()
+	f, ok := fh.usecase.GetFilmsList()
+	if !ok {
+		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
+		ctx.Response().Write(resp)
+		return errors.New("can't create film")
+	}
 	resp, _ := models.Generate(200, f, &ctx).MarshalJSON()
 	_, err := ctx.Response().Write(resp)
 	return err
