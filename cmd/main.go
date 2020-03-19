@@ -16,7 +16,7 @@ func main() {
 	}
 	defer func() {
 		if err := logger.Sync(); err != nil {
-			log.Fatal(err.Error())
+			log.Fatalf(`error '%s' while closing resource`, err)
 		}
 	}()
 
@@ -24,12 +24,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	defer func() {
+		if err := rd.Close(); err != nil {
+			log.Fatalf(`error '%s' while closing resource`, err)
+		}
+	}()
 
 	e := echo.New()
 	db, err := infrastructure.InitDatabase()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Fatalf(`error '%s' while closing resource`, err)
+		}
+	}()
 
 	srv := server.NewServer(port, e, db, rd, logger)
 	log.Fatal(srv.ListenAndServe())

@@ -3,6 +3,7 @@ module github.com/go-park-mail-ru/2020_1_k-on
 go 1.13
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/golang/mock v1.4.3
