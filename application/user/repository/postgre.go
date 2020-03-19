@@ -23,6 +23,7 @@ func (udb *UserDatabase) Add(user *models.User) (err error) {
 func (udb *UserDatabase) Update(id int64, upUser *models.User) error {
 	usr := new(models.User)
 	udb.conn.Table("kinopoisk.users").Where("id = ?", id).First(usr)
+	upUser.Id = id
 	if upUser.Username != "" {
 		usr.Username = upUser.Username
 	}
@@ -32,7 +33,7 @@ func (udb *UserDatabase) Update(id int64, upUser *models.User) error {
 	if upUser.Email != "" {
 		usr.Email = upUser.Email
 	}
-	return udb.conn.Table("kinopoisk.users").Save(usr).Error
+	return udb.conn.Table("kinopoisk.users").Update(usr).Error
 }
 
 func (udb *UserDatabase) GetById(id int64) (usr *models.User, err error) {
