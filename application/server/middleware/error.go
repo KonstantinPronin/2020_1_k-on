@@ -20,7 +20,8 @@ func WriteOkResponse(ctx echo.Context, body interface{}) error {
 }
 
 func WriteErrResponse(ctx echo.Context, code int, message string) error {
-	ctx.Response().Writer.WriteHeader(code)
+	//TODO:AHTUNG!
+	//ctx.Response().Writer.WriteHeader(code)
 	ctx.Response().Committed = true
 
 	resp := models.Response{Status: code, Body: message}

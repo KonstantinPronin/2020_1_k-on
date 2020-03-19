@@ -4,12 +4,11 @@ import (
 	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
 	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
 	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
 	userRepository "github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
 	userUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
-
-	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"

@@ -19,7 +19,7 @@ func NewPostgresForFilms(db *gorm.DB) film.Repository {
 }
 
 func (p PostgresForFilms) Create(film *models.Film) (models.Film, bool) {
-	db := p.DB.Create(film)
+	db := p.DB.Table("kinopoisk.films").Create(film)
 	err := db.Error
 	if err != nil {
 		return models.Film{}, false
@@ -29,7 +29,7 @@ func (p PostgresForFilms) Create(film *models.Film) (models.Film, bool) {
 
 func (p PostgresForFilms) GetById(id uint) (*models.Film, bool) {
 	f := &models.Film{}
-	db := p.DB.Select("id,name,agelimit,image").Find(f, id)
+	db := p.DB.Table("kinopoisk.films").Find(f, id)
 	err := db.Error
 	if err != nil {
 		return &models.Film{}, false
@@ -39,7 +39,7 @@ func (p PostgresForFilms) GetById(id uint) (*models.Film, bool) {
 
 func (p PostgresForFilms) GetByName(name string) (*models.Film, bool) {
 	f := &models.Film{}
-	db := p.DB.Select("id,name,agelimit,image").Where("name = ?", name).First(&f)
+	db := p.DB.Table("kinopoisk.films").Where("name = ?", name).First(&f)
 	err := db.Error
 	if err != nil {
 		return &models.Film{}, false
@@ -49,7 +49,7 @@ func (p PostgresForFilms) GetByName(name string) (*models.Film, bool) {
 
 func (p PostgresForFilms) GetFilmsArr(begin, end uint) (*models.Films, bool) {
 	films := &models.Films{}
-	db := p.DB.Select("id,name,agelimit,image").Offset(end).Limit(begin).Find(films)
+	db := p.DB.Table("kinopoisk.films").Offset(end).Limit(begin).Find(films)
 	err := db.Error
 	if err != nil {
 		return &models.Films{}, false

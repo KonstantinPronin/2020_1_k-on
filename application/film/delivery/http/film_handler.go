@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/labstack/echo"
@@ -56,7 +57,8 @@ func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
 	film := models.Film{}
 	defer ctx.Request().Body.Close()
 	err := easyjson.UnmarshalFromReader(ctx.Request().Body, &film)
-	if err != nil || film.Name == "" {
+	fmt.Print(film, "\n")
+	if err != nil || film.EnglishName == "" {
 		resp, _ := models.Generate(400, "request parser error", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
 		return err

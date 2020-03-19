@@ -1,10 +1,20 @@
 package models
 
 type Film struct {
-	ID       uint   `json:"ID" gorm:"primary_key"`
-	Name     string `json:"name"`
-	AgeLimit int    `json:"agelimit,omitempty" gorm:"column:agelimit"`
-	Image    string `json:"image,omitempty"`
+	ID          uint    `json:"ID" gorm:"primary_key"`
+	Type        string  `json:"type"`
+	MainGenre   string  `json:"maingenre" gorm:"column:maingenre"`
+	RussianName string  `json:"russianname" gorm:"column:russianname"`
+	EnglishName string  `json:"englishname" gorm:"column:englishname"`
+	Seasons     int     `json:"seasons"`
+	TrailerLink string  `json:"trailerlink" gorm:"column:trailerlink"`
+	Rating      float64 `json:"rating"`
+	ImdbRating  float64 `json:"imdbrating" gorm:"column:imdbrating"`
+	Description string  `json:"description"`
+	Image       string  `json:"image,omitempty"`
+	Country     string  `json:"country"`
+	Year        int     `json:"year"`
+	AgeLimit    int     `json:"agelimit,omitempty" gorm:"column:agelimit"`
 }
 
 //easyjson:json
