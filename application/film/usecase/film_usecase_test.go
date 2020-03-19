@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	mockfilm "2020_1_k-on/application/film/mocks"
-	"2020_1_k-on/application/models"
+	mockfilm "github.com/go-park-mail-ru/2020_1_k-on/application/film/mocks"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"testing"

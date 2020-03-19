@@ -7,6 +7,8 @@ import (
 	"log"
 )
 
+const port = ":8080"
+
 func main() {
 	logger, err := infrastructure.InitLog()
 	if err != nil {
@@ -24,11 +26,11 @@ func main() {
 	}
 
 	e := echo.New()
-	db, err := infrastructure.InitGorm()
+	db, err := infrastructure.InitDatabase()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	server.NewServer(e, db, rd, logger)
-	e.Logger.Fatal(e.Start(":8080"))
+	srv := server.NewServer(port, e, db, rd, logger)
+	log.Fatal(srv.ListenAndServe())
 }

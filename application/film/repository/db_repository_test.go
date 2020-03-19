@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"2020_1_k-on/application/models"
 	"errors"
+	sqlmock "github.com/DATA-DOG/go-sqlmock"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/require"
-	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"log"
 	"testing"
 )

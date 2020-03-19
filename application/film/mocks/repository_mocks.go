@@ -5,7 +5,7 @@
 package mock_film
 
 import (
-	models "2020_1_k-on/application/models"
+	models "github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )

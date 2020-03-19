@@ -1,14 +1,15 @@
 package server
 
 import (
-	"2020_1_k-on/application/film/delivery/http"
-	"2020_1_k-on/application/film/repository"
-	"2020_1_k-on/application/film/usecase"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/middleware"
-	repository2 "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
+	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
+	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
+	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
+	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
+	userRepository "github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
+	userUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
+
+	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
@@ -20,24 +21,22 @@ type Server struct {
 	e    *echo.Echo
 }
 
-func NewServer(port string, db *gorm.DB, rd *redis.Client, logger *zap.Logger) *server {
-	e := echo.New()
-
+func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger *zap.Logger) *Server {
 	//middleware
-	e.Use(Middleware)
-	e.Use(CORS)
+	e.Use(middleware.Middleware)
+	e.Use(middleware.CORS)
 
 	//film handler
-	filmrepo := repository.NewPostgresForFilms(db)
-	filmUsecase := usecase.NewFilmUsecase(filmrepo)
-	http.NewFilmHandler(router, filmUsecase)
+	films := filmRepository.NewPostgresForFilms(db)
+	film := filmUsecase.NewFilmUsecase(films)
+	filmHandler.NewFilmHandler(e, film)
 
 	//user handler
-	sessions := repository2.NewSessionDatabase(rd, logger)
-	users := repository.NewUserDatabase(db, logger)
+	sessions := session.NewSessionDatabase(rd, logger)
+	users := userRepository.NewUserDatabase(db, logger)
 	auth := middleware.NewAuth(sessions)
-	user := usecase.NewUser(sessions, users, logger)
-	http.NewUserHandler(e, user, auth, logger)
+	user := userUsecase.NewUser(sessions, users, logger)
+	userHandler.NewUserHandler(e, user, auth, logger)
 
 	return &Server{
 		port: port,
@@ -46,5 +45,5 @@ func NewServer(port string, db *gorm.DB, rd *redis.Client, logger *zap.Logger) *
 }
 
 func (s Server) ListenAndServe() error {
-	return http.ListenAndServe(s.port, s.e)
+	return s.e.Start(s.port)
 }

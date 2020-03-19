@@ -1,8 +1,8 @@
 package http
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/application/middleware"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
 	"github.com/labstack/echo"

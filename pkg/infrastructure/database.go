@@ -7,7 +7,7 @@ import (
 
 const dsn = `host=localhost port=5432 user=postgres password=postgres dbname=k_on sslmode=disable`
 
-func InitGorm() (db *gorm.DB, err error) {
+func InitDatabase() (db *gorm.DB, err error) {
 	db, err = gorm.Open("postgres", dsn)
 	if err != nil {
 		return nil, err

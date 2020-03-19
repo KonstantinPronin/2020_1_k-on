@@ -1,10 +1,10 @@
 package http
 
 import (
-	mockfilm "2020_1_k-on/application/film/mocks"
-	"2020_1_k-on/application/film/usecase"
-	"2020_1_k-on/application/models"
 	"bytes"
+	mockfilm "github.com/go-park-mail-ru/2020_1_k-on/application/film/mocks"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"

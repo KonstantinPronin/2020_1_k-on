@@ -1,9 +1,9 @@
 package http
 
 import (
-	"2020_1_k-on/application/film"
-	"2020_1_k-on/application/models"
 	"errors"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
 	"strconv"

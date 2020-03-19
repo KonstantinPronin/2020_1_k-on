@@ -1,7 +1,7 @@
 package actor
 
 import (
-	"2020_1_k-on/application/models"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 )
 
 type Repository interface {
