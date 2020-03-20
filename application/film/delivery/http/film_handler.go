@@ -47,7 +47,8 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 		ctx.Response().Write(resp)
 		return errors.New("can't create film")
 	}
-	resp, _ := models.Generate(200, f, &ctx).MarshalJSON()
+	var fl models.ListsFilm
+	resp, _ := models.Generate(200, fl.Convert(f), &ctx).MarshalJSON()
 	_, err := ctx.Response().Write(resp)
 	return err
 }

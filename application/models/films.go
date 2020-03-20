@@ -23,3 +23,35 @@ type Films []Film
 func (f *Film) TableName() string {
 	return "films"
 }
+
+type ListFilm struct {
+	ID          uint    `json:"ID" gorm:"primary_key"`
+	Type        string  `json:"type"`
+	EnglishName string  `json:"englishname" gorm:"column:englishname"`
+	Image       string  `json:"image,omitempty"`
+	MainGenre   string  `json:"maingenre" gorm:"column:maingenre"`
+	AgeLimit    int     `json:"agelimit,omitempty" gorm:"column:agelimit"`
+	Rating      float64 `json:"rating"`
+}
+
+//easyjson:json
+type ListsFilm []ListFilm
+
+func Format(film Film) (list ListFilm) {
+	list.ID = film.ID
+	list.Type = film.Type
+	list.EnglishName = film.EnglishName
+	list.Image = film.Image
+	list.MainGenre = film.MainGenre
+	list.AgeLimit = film.AgeLimit
+	list.Rating = film.Rating
+	return list
+}
+
+func (lists *ListsFilm) Convert(films Films) ListsFilm {
+	var lf ListsFilm
+	for _, f := range films {
+		lf = append(lf, Format(f))
+	}
+	return lf
+}
