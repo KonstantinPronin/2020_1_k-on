@@ -39,7 +39,7 @@ func (p PostgresForFilms) GetById(id uint) (*models.Film, bool) {
 
 func (p PostgresForFilms) GetByName(name string) (*models.Film, bool) {
 	f := &models.Film{}
-	db := p.DB.Table("kinopoisk.films").Where("name = ?", name).First(&f)
+	db := p.DB.Table("kinopoisk.films").Where("englishname = ?", name).First(&f)
 	err := db.Error
 	if err != nil {
 		return &models.Film{}, false

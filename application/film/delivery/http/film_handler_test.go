@@ -13,16 +13,37 @@ import (
 	"testing"
 )
 
-var name = "name"
 var image = "image"
+var ftype1 = "film"
+var ftype2 = "serial"
+var mg = "mg"
+var rn = "rn"
+var en = "en"
+var seasons = 1
+var tl = "tl"
+var rating = 1.2
+var imdbrating = 9.87
+var d = "d"
+var c = "c"
+var year = 2012
 var agelimit = 10
 var fid = uint(1)
 
 var testFilm = models.Film{
-	ID:       fid,
-	Name:     name,
-	AgeLimit: agelimit,
-	Image:    image,
+	ID:          fid,
+	Type:        ftype1,
+	MainGenre:   mg,
+	RussianName: rn,
+	EnglishName: en,
+	Seasons:     seasons,
+	TrailerLink: tl,
+	Rating:      rating,
+	ImdbRating:  imdbrating,
+	Description: d,
+	Image:       image,
+	Country:     c,
+	Year:        year,
+	AgeLimit:    agelimit,
 }
 
 func setupEcho(t *testing.T, url, method string) (echo.Context, FilmHandler, *mockfilm.MockRepository) {
