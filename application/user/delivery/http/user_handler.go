@@ -37,18 +37,10 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 
 	sessionId, err := uh.useCase.Login(usr.Username, usr.Password)
 	if err != nil {
-		return err
+		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	cookie := &http.Cookie{
-		Name:     session.CookieName,
-		Value:    sessionId,
-		Path:     "/",
-		Expires:  time.Now().Add(session.CookieDuration),
-		SameSite: http.SameSiteStrictMode,
-		HttpOnly: true,
-	}
-	ctx.SetCookie(cookie)
+	uh.setCookie(ctx, sessionId)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
@@ -77,10 +69,18 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
 
+	password := usr.Password
 	usr, err := uh.useCase.Add(usr)
 	if err != nil {
 		return err
 	}
+
+	sessionId, err := uh.useCase.Login(usr.Username, password)
+	if err != nil {
+		return err
+	}
+
+	uh.setCookie(ctx, sessionId)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
@@ -113,4 +113,16 @@ func (uh *UserHandler) Update(ctx echo.Context) error {
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
+}
+
+func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {
+	cookie := &http.Cookie{
+		Name:     session.CookieName,
+		Value:    sessionId,
+		Path:     "/",
+		Expires:  time.Now().Add(session.CookieDuration),
+		SameSite: http.SameSiteStrictMode,
+		HttpOnly: true,
+	}
+	ctx.SetCookie(cookie)
 }

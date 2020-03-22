@@ -113,6 +113,10 @@ func TestUserHandler_SignUp(t *testing.T) {
 
 	ctx.EXPECT().Request().Return(request)
 	uc.EXPECT().Add(&testUser).Return(&testUser, nil)
+	uc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, nil)
+	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
+		assert.Equal(t, sessionId, arg.Value)
+	})
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
 

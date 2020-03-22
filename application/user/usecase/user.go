@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
@@ -23,6 +25,8 @@ func (uc *User) Login(login string, password string) (sessionId string, err erro
 	if login == "" || password == "" {
 		return "", errors.NewInvalidArgument("Empty login or password")
 	}
+
+	password = uc.hashPassword(password)
 
 	usr, err := uc.users.GetByName(login)
 	if err != nil {
@@ -57,6 +61,7 @@ func (uc *User) Add(usr *models.User) (*models.User, error) {
 		return nil, errors.NewInvalidArgument("User already exists")
 	}
 
+	usr.Password = uc.hashPassword(usr.Password)
 	err := uc.users.Add(usr)
 	if err != nil {
 		return nil, err
@@ -76,4 +81,9 @@ func (uc *User) Update(usr *models.User) error {
 	}
 
 	return uc.users.Update(usr.Id, usr)
+}
+
+func (uc *User) hashPassword(password string) string {
+	hash := sha256.Sum256([]byte(password))
+	return hex.EncodeToString(hash[:])
 }
