@@ -20,12 +20,12 @@ type UserHandler struct {
 func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth, logger *zap.Logger) {
 	handler := UserHandler{useCase: us, logger: logger}
 
-	e.Use(middleware.ParseErrors)
-	e.POST("/login", handler.Login, auth.AlreadyLoginErr)
-	e.POST("/logout", handler.Logout, auth.GetSession)
-	e.PUT("/signup", handler.SignUp, auth.AlreadyLoginErr)
-	e.GET("/user", handler.Profile, auth.GetSession)
-	e.POST("/user", handler.Update, auth.GetSession)
+	//e.Use(middleware.ParseErrors)
+	e.POST("/login", handler.Login, auth.AlreadyLoginErr, middleware.ParseErrors)
+	e.POST("/logout", handler.Logout, auth.GetSession, middleware.ParseErrors)
+	e.PUT("/signup", handler.SignUp, auth.AlreadyLoginErr, middleware.ParseErrors)
+	e.GET("/user", handler.Profile, auth.GetSession, middleware.ParseErrors)
+	e.POST("/user", handler.Update, auth.GetSession, middleware.ParseErrors)
 }
 
 func (uh *UserHandler) Login(ctx echo.Context) error {
@@ -41,10 +41,12 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 	}
 
 	cookie := &http.Cookie{
-		Name:    session.CookieName,
-		Value:   sessionId,
-		Path:    "/",
-		Expires: time.Now().Add(session.CookieDuration),
+		Name:     session.CookieName,
+		Value:    sessionId,
+		Path:     "/",
+		Expires:  time.Now().Add(session.CookieDuration),
+		SameSite: http.SameSiteStrictMode,
+		HttpOnly: true,
 	}
 	ctx.SetCookie(cookie)
 

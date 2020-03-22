@@ -4,6 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/labstack/echo"
 	"net/http"
+	"time"
 )
 
 type Auth struct {
@@ -23,6 +24,8 @@ func (a *Auth) GetSession(next echo.HandlerFunc) echo.HandlerFunc {
 
 		uid, err := a.sessions.GetUserId(cookie.Value)
 		if err != nil {
+			cookie.Expires = time.Now().AddDate(0, 0, -1)
+			ctx.SetCookie(cookie)
 			return WriteErrResponse(ctx, http.StatusUnauthorized, "session does not exist")
 		}
 
