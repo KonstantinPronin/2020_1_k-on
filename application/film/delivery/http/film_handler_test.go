@@ -15,7 +15,8 @@ import (
 
 var image = "image"
 var ftype1 = "film"
-var ftype2 = "serial"
+
+//var ftype2 = "serial"
 var mg = "mg"
 var rn = "rn"
 var en = "en"
@@ -85,6 +86,13 @@ func TestFilmHandler_GetFilmList(t *testing.T) {
 	require.Equal(t, err, nil)
 }
 
+func TestFilmHandler_GetFilmList2(t *testing.T) {
+	c, fh, films := setupEcho(t, "/", http.MethodGet)
+	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&models.Films{}, false)
+	err := fh.GetFilmList(c)
+	require.NotEqual(t, err, nil)
+}
+
 func TestFilmHandler_CreateFilm(t *testing.T) {
 	c, fh, films := setupEcho(t, "/films", http.MethodPost)
 	films.EXPECT().Create(&testFilm).Return(testFilm, true)
@@ -119,5 +127,39 @@ func TestFilmHandler_GetFilm3(t *testing.T) {
 	c.SetParamValues("1")
 	films.EXPECT().GetById(testFilm.ID).Return(&models.Film{}, false)
 	err := fh.GetFilm(c)
+	require.NotEqual(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmList(t *testing.T) {
+	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	films.EXPECT().FilterFilmData().Return(nil, true)
+	err := fh.FilterFilmList(c)
+	require.Equal(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmList2(t *testing.T) {
+	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	films.EXPECT().FilterFilmData().Return(nil, false)
+	err := fh.FilterFilmList(c)
+	require.NotEqual(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmList3(t *testing.T) {
+	q := make(map[string][]string)
+	q["year"] = []string{"year"}
+	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	c.QueryParams().Add("year", "year")
+	films.EXPECT().FilterFilmsList(q).Return(&models.Films{}, true)
+	err := fh.FilterFilmList(c)
+	require.Equal(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmList4(t *testing.T) {
+	q := make(map[string][]string)
+	q["year"] = []string{"year"}
+	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	c.QueryParams().Add("year", "year")
+	films.EXPECT().FilterFilmsList(q).Return(&models.Films{}, false)
+	err := fh.FilterFilmList(c)
 	require.NotEqual(t, err, nil)
 }

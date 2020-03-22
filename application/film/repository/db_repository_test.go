@@ -10,6 +10,14 @@ import (
 	"testing"
 )
 
+var name = "name"
+var reference = "reference"
+var testGenre = models.Genre{
+	ID:        fid,
+	Name:      name,
+	Reference: reference,
+}
+
 var image = "image"
 var ftype1 = "film"
 var ftype2 = "serial"
@@ -275,4 +283,114 @@ func TestPostgresForFilms_Create2(t *testing.T) {
 	item, ok := repo.Create(&testFilm)
 	require.Equal(t, item, models.Film{})
 	require.False(t, ok)
+}
+
+func TestPostgresForFilms_FilterFilmsList(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+
+	rows := sqlmock.
+		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
+			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
+		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID+1, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
+		expect.Year, expect.AgeLimit)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)`).
+		WillReturnRows(rows)
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	query := make(map[string][]string)
+	query["year"] = []string{"2012"}
+	item, ok := repo.FilterFilmsList(query)
+	if !ok {
+		t.Error(ok)
+		t.Error(rows)
+		t.Error(expect)
+		t.Error(item)
+		return
+	}
+	expect2 := expect
+	expect2.ID += 1
+	require.Equal(t, *item, models.Films{expect, expect2})
+	require.True(t, ok)
+}
+
+func TestPostgresForFilms_FilterFilmsList2(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+
+	rows := sqlmock.
+		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
+			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
+		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID+1, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
+		expect.Year, expect.AgeLimit)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)`).
+		WillReturnError(errors.New(""))
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	query := make(map[string][]string)
+	query["year"] = []string{"2012"}
+	item, ok := repo.FilterFilmsList(query)
+	expect2 := expect
+	expect2.ID += 1
+	require.NotEqual(t, *item, models.Films{expect, expect2})
+	require.False(t, ok)
+}
+
+func TestPostgresForFilms_FilterFilmData(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnRows(rows2)
+
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.Year+1, expect.Year)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnRows(rows)
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	item, ok := repo.FilterFilmData()
+	if !ok {
+		t.Error(ok)
+		t.Error(rows)
+		t.Error(expect)
+		t.Error(item)
+		return
+	}
+	resp := make(map[string]interface{})
+	resp["genres"] = &models.Genres{expect2}
+	resp["minyear"] = expect.Year
+	resp["maxyear"] = expect.Year + 1
+
+	require.Equal(t, item["genres"], resp["genres"])
+	require.Equal(t, item["minyear"], resp["minyear"])
+	require.Equal(t, item["maxyear"], resp["maxyear"])
+	require.True(t, ok)
 }
