@@ -56,7 +56,7 @@ func (uh *UserHandler) Logout(ctx echo.Context) error {
 	cookie, err := ctx.Cookie(session.CookieName)
 	if err != nil {
 		uh.logger.Warn("request without cookie")
-		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "no cookie")
+		return middleware.WriteErrResponse(ctx, http.StatusUnauthorized, "no cookie")
 	}
 
 	if err := uh.useCase.Logout(cookie.Value); err != nil {
