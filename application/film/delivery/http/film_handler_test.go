@@ -79,7 +79,7 @@ func TestFilmHandler_GetFilm(t *testing.T) {
 }
 
 func TestFilmHandler_GetFilmList(t *testing.T) {
-	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	c, fh, films := setupEcho(t, "/", http.MethodGet)
 	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&models.Films{testFilm}, true)
 	err := fh.GetFilmList(c)
 	require.Equal(t, err, nil)
