@@ -20,11 +20,13 @@ var testGenre = models.Genre{
 
 var image = "image"
 var ftype1 = "film"
-var ftype2 = "series"
+
+//var ftype2 = "series"
 var mg = "mg"
 var rn = "rn"
 var en = "en"
-var seasons = 1
+var sumvotes = 0
+var totalvotes = 0
 var tl = "tl"
 var rating = 1.2
 var imdbrating = 9.87
@@ -35,20 +37,21 @@ var agelimit = 10
 var fid = uint(1)
 
 var testFilm = models.Film{
-	ID:          fid,
-	Type:        ftype1,
-	MainGenre:   mg,
-	RussianName: rn,
-	EnglishName: en,
-	Seasons:     seasons,
-	TrailerLink: tl,
-	Rating:      rating,
-	ImdbRating:  imdbrating,
-	Description: d,
-	Image:       image,
-	Country:     c,
-	Year:        year,
-	AgeLimit:    agelimit,
+	ID:              fid,
+	MainGenre:       mg,
+	RussianName:     rn,
+	EnglishName:     en,
+	TrailerLink:     tl,
+	Rating:          rating,
+	ImdbRating:      imdbrating,
+	Description:     d,
+	Image:           image,
+	Country:         c,
+	Year:            year,
+	AgeLimit:        agelimit,
+	SumVotes:        sumvotes,
+	TotalVotes:      totalvotes,
+	BackgroundImage: image,
 }
 
 func SetupDB() (sqlmock.Sqlmock, *gorm.DB) {
@@ -71,12 +74,13 @@ func TestPostgresForFilms_GetById(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)"films"."id" (.*)`).
 		//WithArgs(elemID).
 		WillReturnRows(rows)
@@ -103,12 +107,13 @@ func TestPostgresForFilms_GetById2(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
-	expect := testFilm
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)"films"."id" (.*)`).
 		//WithArgs(elemID).
 		WillReturnError(errors.New(""))
@@ -128,12 +133,13 @@ func TestPostgresForFilms_GetByName(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)"films"."id" (.*)`).
 		WillReturnRows(rows)
 
@@ -159,12 +165,13 @@ func TestPostgresForFilms_GetByName2(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)"films"."id" (.*)`).
 		WillReturnError(errors.New(""))
 
@@ -183,12 +190,13 @@ func TestPostgresForFilms_GetFilmsArr(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" LIMIT (.*)`).
 		WillReturnRows(rows)
 
@@ -214,12 +222,13 @@ func TestPostgresForFilms_GetFilmsArr2(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" LIMIT (.*)`).
 		WillReturnError(errors.New(""))
 	repo := &PostgresForFilms{
@@ -241,9 +250,9 @@ func TestPostgresForFilms_Create(t *testing.T) {
 	expect := testFilm
 	mock.ExpectBegin()
 	mock.ExpectQuery(`INSERT INTO`).
-		WithArgs(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-			expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-			expect.Year, expect.AgeLimit). //13 штук
+		WithArgs(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+			expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+			expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit). //13 штук
 		WillReturnRows(rows)
 	mock.ExpectCommit()
 
@@ -271,9 +280,9 @@ func TestPostgresForFilms_Create2(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(`INSERT INTO`).
-		WithArgs(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-			expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-			expect.Year, expect.AgeLimit).
+		WithArgs(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+			expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+			expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit). //13 штук
 		WillReturnRows(rows)
 	mock.ExpectCommit().WillReturnError(errors.New(""))
 
@@ -292,15 +301,16 @@ func TestPostgresForFilms_FilterFilmsList(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
-	rows = rows.AddRow(expect.ID+1, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID+1, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)`).
 		WillReturnRows(rows)
 
@@ -331,15 +341,16 @@ func TestPostgresForFilms_FilterFilmsList2(t *testing.T) {
 	// good query
 
 	rows := sqlmock.
-		NewRows([]string{"id", "type", "maingenre", "russianname", "englishname", "seasons", "trailerlink",
-			"rating", "imdbrating", "description", "image", "country", "year", "agelimit"})
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
-	rows = rows.AddRow(expect.ID+1, expect.Type, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.Seasons, expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.Description, expect.Image, expect.Country,
-		expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID+1, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)`).
 		WillReturnError(errors.New(""))
 
