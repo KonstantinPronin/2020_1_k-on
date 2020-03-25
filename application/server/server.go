@@ -4,6 +4,9 @@ import (
 	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
 	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	serialHandler "github.com/go-park-mail-ru/2020_1_k-on/application/serial/delivery/http"
+	serialRepository "github.com/go-park-mail-ru/2020_1_k-on/application/serial/repository"
+	serialUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/serial/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
 	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
@@ -29,6 +32,11 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	films := filmRepository.NewPostgresForFilms(db)
 	film := filmUsecase.NewFilmUsecase(films)
 	filmHandler.NewFilmHandler(e, film)
+
+	//serial handler
+	serials := serialRepository.NewPostgresForserial(db)
+	serial := serialUsecase.NewSerialUsecase(serials)
+	serialHandler.NewSerialHandler(e, serial)
 
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)

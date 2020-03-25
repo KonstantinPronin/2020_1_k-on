@@ -130,21 +130,21 @@ func TestFilmHandler_GetFilm3(t *testing.T) {
 	require.NotEqual(t, err, nil)
 }
 
-func TestFilmHandler_FilterFilmList(t *testing.T) {
-	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+func TestFilmHandler_FilterFilmData(t *testing.T) {
+	c, fh, films := setupEcho(t, "/films/filter", http.MethodGet)
 	films.EXPECT().FilterFilmData().Return(nil, true)
-	err := fh.FilterFilmList(c)
+	err := fh.FilterFilmData(c)
 	require.Equal(t, err, nil)
 }
 
-func TestFilmHandler_FilterFilmList2(t *testing.T) {
-	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+func TestFilmHandler_FilterFilmData2(t *testing.T) {
+	c, fh, films := setupEcho(t, "/films/filter", http.MethodGet)
 	films.EXPECT().FilterFilmData().Return(nil, false)
-	err := fh.FilterFilmList(c)
+	err := fh.FilterFilmData(c)
 	require.NotEqual(t, err, nil)
 }
 
-func TestFilmHandler_FilterFilmList3(t *testing.T) {
+func TestFilmHandler_FilterFilmList(t *testing.T) {
 	q := make(map[string][]string)
 	q["year"] = []string{"year"}
 	c, fh, films := setupEcho(t, "/films", http.MethodGet)
@@ -154,7 +154,7 @@ func TestFilmHandler_FilterFilmList3(t *testing.T) {
 	require.Equal(t, err, nil)
 }
 
-func TestFilmHandler_FilterFilmList4(t *testing.T) {
+func TestFilmHandler_FilterFilmList2(t *testing.T) {
 	q := make(map[string][]string)
 	q["year"] = []string{"year"}
 	c, fh, films := setupEcho(t, "/films", http.MethodGet)

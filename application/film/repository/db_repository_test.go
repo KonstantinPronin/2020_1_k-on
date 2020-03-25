@@ -309,6 +309,7 @@ func TestPostgresForFilms_FilterFilmsList(t *testing.T) {
 	}
 	query := make(map[string][]string)
 	query["year"] = []string{"2012"}
+	query["page"] = []string{"1"}
 	item, ok := repo.FilterFilmsList(query)
 	if !ok {
 		t.Error(ok)
@@ -347,6 +348,7 @@ func TestPostgresForFilms_FilterFilmsList2(t *testing.T) {
 	}
 	query := make(map[string][]string)
 	query["year"] = []string{"2012"}
+	query["page"] = []string{"1"}
 	item, ok := repo.FilterFilmsList(query)
 	expect2 := expect
 	expect2.ID += 1
@@ -385,12 +387,13 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 		return
 	}
 	resp := make(map[string]interface{})
+	filters := make(map[string]interface{})
 	resp["genres"] = &models.Genres{expect2}
-	resp["minyear"] = expect.Year
-	resp["maxyear"] = expect.Year + 1
+	filters["minyear"] = expect.Year
+	filters["maxyear"] = expect.Year + 1
+	resp["filters"] = filters
 
 	require.Equal(t, item["genres"], resp["genres"])
-	require.Equal(t, item["minyear"], resp["minyear"])
-	require.Equal(t, item["maxyear"], resp["maxyear"])
+	require.Equal(t, item["filters"], resp["filters"])
 	require.True(t, ok)
 }

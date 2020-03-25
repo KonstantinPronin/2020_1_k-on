@@ -6,9 +6,12 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/jinzhu/gorm"
+	"strconv"
 )
 
 //Интерфейсы запросов к бд
+
+var FilmPerPage = 10
 
 type PostgresForFilms struct {
 	DB *gorm.DB
@@ -34,21 +37,44 @@ func (p PostgresForFilms) FilterFilmData() (map[string]interface{}, bool) {
 		return nil, false
 	}
 	resp := make(map[string]interface{})
+	filters := make(map[string]interface{})
+	filters["minyear"] = min
+	filters["maxyear"] = max
 	resp["genres"] = genres
-	resp["minyear"] = min
-	resp["maxyear"] = max
+	resp["filters"] = filters
 
 	return resp, true
 }
 
 func (p PostgresForFilms) FilterFilmsList(fields map[string][]string) (*models.Films, bool) {
 	films := &models.Films{}
+	var db *gorm.DB
+	var offset int
+	var err error
+	err = nil
 	query := make(map[string]interface{})
+	order, ok := fields["order"]
+	if ok {
+		delete(fields, "order")
+	}
+	page, pok := fields["page"]
+	if pok {
+		delete(fields, "page")
+		offset, err = strconv.Atoi(page[0])
+		offset = (offset - 1) * FilmPerPage
+	}
+	if !pok || (err != nil) {
+		return &models.Films{}, false
+	}
 	for key, val := range fields {
 		query[key] = val[0]
 	}
-	db := p.DB.Table("kinopoisk.films").Where(query).Find(films)
-	err := db.Error
+	if ok {
+		db = p.DB.Table("kinopoisk.films").Where(query).Order(order).Offset(offset).Limit(FilmPerPage).Find(films)
+	} else {
+		db = p.DB.Table("kinopoisk.films").Where(query).Offset(offset).Limit(FilmPerPage).Find(films)
+	}
+	err = db.Error
 	if err != nil {
 		return &models.Films{}, false
 	}

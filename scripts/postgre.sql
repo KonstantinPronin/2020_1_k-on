@@ -11,26 +11,38 @@ grant all privileges on schema kinopoisk to usr;
 grant all privileges on all tables in schema kinopoisk to usr;
 grant all privileges on all sequences in schema kinopoisk to usr;
 
-
-create type filmtype as enum ('films','series');
-
 create table kinopoisk.films
 (
-    id          serial primary key,
-    type        filmtype,
-    maingenre   varchar(80), --русский вариант
-    russianname varchar(80),
-    englishname varchar(80),
-    seasons     integer,
-    trailerlink varchar(80),
-    rating      numeric(4, 2),
-    imdbrating  numeric(4, 2),
-    description varchar(80), --русское
-    image       varchar(80),
-    country      varchar(80), --русское
-    year        integer,
-    agelimit    varchar(80)
+    id              serial primary key,
+    maingenre       varchar(80), --русский вариант
+    russianname     varchar(80),
+    englishname     varchar(80),
+    trailerlink     varchar(80),
+    rating          numeric(4, 2),
+    imdbrating      numeric(4, 2),
+    totalvotes      integer,
+    sumvotes        integer,
+    description     varchar(80), --русское
+    image           varchar(80),
+    backgroundimage varchar(80),
+    country         varchar(80), --русское
+    year            integer,
+    agelimit        varchar(80)
 );
+
+insert into kinopoisk.films
+values (default, 'Комедия', 'Бригада', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/1.jpg', '/static/1.jpg', 'Россия', 2010, 12),
+       (default, 'Приключения', 'Бригада', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/2.jpg', '/static/2.jpg', 'Россия', 2015, 12),
+       (default, 'Приключения', 'Бригада', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/3.jpg', '/static/3.jpg', 'Россия', 2017, 12),
+       (default, 'Ужасы', 'Бригада', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/4.jpg', '/static/4.jpg', 'Россия', 2019, 12),
+       (default, 'Комедия', 'Бригада', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/5.jpg', '/static/5.jpg', 'Россия', 2017, 12),
+       (default, 'Ужасы', 'Бригада', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/6.jpg', '/static/6.jpg', 'Россия', 2017, 12);
 
 create table kinopoisk.genres
 (
@@ -45,22 +57,6 @@ create table kinopoisk.films_genres
     genre_id int references kinopoisk.genres (id) on update cascade on delete cascade,
     constraint films_genres_pkey primary key (film_id, genre_id)
 );
-
--- example
-
-insert into kinopoisk.films
-values (default, 'series', 'Комедия', 'Бригада', 'Brigada', 5, '/trailer', 0.12, 10.0, 'brigada description',
-        '/static/1.jpg', 'Россия', 2019, 12),
-       (default, 'films', 'Приключения', 'Приключение Мухтара', 'Mukhtar', 1, '/trailer2', 1.23, 9.99,
-        'Описание Мухтара', '/static/2.jpg', 'Казахстан', 2017, 6),
-       (default, 'films', 'Ужасы', 'Лекарство от здоровья', 'Cure', 1, '/trailer3', 3.45, 4.56,
-        'Описание лекарства', '/static/3.jpg', 'США', 2017, 6),
-       (default, 'series', 'Приключения', 'Флэш', 'The Flash', 6, '/trailer4', 7.0, 6.9,
-        'Описание скорости', '/static/4.jpg', 'США', 2015, 6),
-       (default, 'films', 'Приключения', 'Мстители', 'The Avengers', 1, '/trailer5', 9.9, 9.89,
-        'Описание мстителей', '/static/5.jpg', 'США', 2015, 6),
-       (default, 'series', 'Приключения', 'Время Приключений', 'Adventure Time', 10, '/trailer6', 10.0, 10.0,
-        'Джей зе дог энд Фин зе хьюман', '/static/6.jpg', 'США', 2015, 0);
 
 insert into kinopoisk.genres
 values (default, 'Приключения', 'Adventures'),
@@ -79,6 +75,32 @@ values (1, 3),
        (6, 1),
        (6, 3);
 
+create table kinopoisk.serials
+(
+    id              serial primary key,
+    maingenre       varchar(80), --русский вариант
+    russianname     varchar(80),
+    englishname     varchar(80),
+    trailerlink     varchar(80),
+    rating          numeric(4, 2),
+    imdbrating      numeric(4, 2),
+    totalvotes      integer,
+    sumvotes        integer,
+    description     varchar(80), --русское
+    image           varchar(80),
+    backgroundimage varchar(80),
+    country         varchar(80), --русское
+    yearfirst       integer,
+    yearlast        integer,
+    agelimit        varchar(80)
+);
+
+insert into kinopoisk.serials
+values (default, 'Комедия', 'Бригада', 'Brigada', '/trailer', 0.12, 10.0, 'brigada description',
+        '/static/1.jpg', 'Россия', 2019, 12);
+
+
+--example
 select *
 from kinopoisk.films f1
          join kinopoisk.films_genres fg1 on (f1.id = fg1.film_id)

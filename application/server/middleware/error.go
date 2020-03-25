@@ -22,12 +22,12 @@ func WriteOkResponse(ctx echo.Context, body interface{}) error {
 func WriteErrResponse(ctx echo.Context, code int, message string) error {
 	//TODO:AHTUNG!
 	//ctx.Response().Writer.WriteHeader(code)
-	ctx.Response().Committed = true
-
-	resp := models.Response{Status: code, Body: message}
-	if _, err := easyjson.MarshalToWriter(resp, ctx.Response().Writer); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
+	//ctx.Response().Committed = true
+	//
+	//resp := models.Response{Status: code, Body: message}
+	//if _, err := easyjson.MarshalToWriter(resp, ctx.Response().Writer); err != nil {
+	//	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	//}
 
 	return echo.NewHTTPError(code, message)
 }
