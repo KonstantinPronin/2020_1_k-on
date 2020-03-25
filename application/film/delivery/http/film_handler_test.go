@@ -16,7 +16,7 @@ import (
 var image = "image"
 var ftype1 = "film"
 
-//var ftype2 = "serial"
+//var ftype2 = "series"
 var mg = "mg"
 var rn = "rn"
 var en = "en"

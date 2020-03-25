@@ -4,9 +4,9 @@ import (
 	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
 	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
-	serialHandler "github.com/go-park-mail-ru/2020_1_k-on/application/serial/delivery/http"
-	serialRepository "github.com/go-park-mail-ru/2020_1_k-on/application/serial/repository"
-	serialUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/serial/usecase"
+	serialHandler "github.com/go-park-mail-ru/2020_1_k-on/application/series/delivery/http"
+	serialRepository "github.com/go-park-mail-ru/2020_1_k-on/application/series/repository"
+	serialUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/series/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
 	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
@@ -33,10 +33,10 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	film := filmUsecase.NewFilmUsecase(films)
 	filmHandler.NewFilmHandler(e, film)
 
-	//serial handler
-	serials := serialRepository.NewPostgresForserial(db)
-	serial := serialUsecase.NewSerialUsecase(serials)
-	serialHandler.NewSerialHandler(e, serial)
+	//series handler
+	series := serialRepository.NewPostgresForserial(db)
+	seriesUC := serialUsecase.NewSeriesUsecase(series)
+	serialHandler.NewSerialHandler(e, seriesUC)
 
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)

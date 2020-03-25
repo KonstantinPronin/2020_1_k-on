@@ -3,32 +3,32 @@ package http
 import (
 	"errors"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/serial"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
 	"github.com/labstack/echo"
 	"strconv"
 )
 
 type SerialHandler struct {
-	usecase serial.Usecase
+	usecase series.Usecase
 }
 
-func NewSerialHandler(e *echo.Echo, usecase serial.Usecase) {
+func NewSerialHandler(e *echo.Echo, usecase series.Usecase) {
 	handler := &SerialHandler{
 		usecase: usecase,
 	}
-	e.GET("/serial/:id", handler.GetSerial)
-	e.GET("/serial/:id/seasons", handler.GetSerialSeasons)
-	e.GET("/seasons/:id/series", handler.GetSerialSeries)
+	e.GET("/series/:id", handler.GetSeries)
+	e.GET("/series/:id/seasons", handler.GetSeriesSeasons)
+	e.GET("/seasons/:id/series", handler.GetSeasonEpisodes)
 }
 
-func (sh SerialHandler) GetSerial(ctx echo.Context) error {
+func (sh SerialHandler) GetSeries(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
 		return err
 	}
-	serial, ok := sh.usecase.GetSerialByID(uint(id))
+	serial, ok := sh.usecase.GetSeriesByID(uint(id))
 	if !ok {
 		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
@@ -39,14 +39,14 @@ func (sh SerialHandler) GetSerial(ctx echo.Context) error {
 	return err
 }
 
-func (sh SerialHandler) GetSerialSeasons(ctx echo.Context) error {
+func (sh SerialHandler) GetSeriesSeasons(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
 		return err
 	}
-	seasons, ok := sh.usecase.GetSerialSeasons(uint(id))
+	seasons, ok := sh.usecase.GetSeriesSeasons(uint(id))
 	if !ok {
 		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
@@ -57,14 +57,14 @@ func (sh SerialHandler) GetSerialSeasons(ctx echo.Context) error {
 	return err
 }
 
-func (sh SerialHandler) GetSerialSeries(ctx echo.Context) error {
+func (sh SerialHandler) GetSeasonEpisodes(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
 		return err
 	}
-	seasons, ok := sh.usecase.GetSeasonSeries(uint(id))
+	seasons, ok := sh.usecase.GetSeasonEpisodes(uint(id))
 	if !ok {
 		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)

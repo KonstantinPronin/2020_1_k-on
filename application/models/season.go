@@ -2,7 +2,7 @@ package models
 
 type Season struct {
 	ID          uint   `json:"ID" gorm:"primary_key"`
-	SerialID    uint   `json:"serialid" gorm:"column:serialid"`
+	SeriesID    uint   `json:"seriesid" gorm:"column:serialid"`
 	Name        string `json:"name"`
 	Number      int    `json:"number"`
 	TrailerLink string `json:"trailerlink" gorm:"column:trailerlink"`
