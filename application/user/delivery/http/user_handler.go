@@ -88,7 +88,7 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 
 func (uh *UserHandler) Profile(ctx echo.Context) error {
 	uid := ctx.Get(session.UserIdKey)
-	usr, err := uh.useCase.Get(uid.(int64))
+	usr, err := uh.useCase.Get(uid.(uint))
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (uh *UserHandler) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "request parser error")
 	}
 
-	usr.Id = uid.(int64)
+	usr.Id = uid.(uint)
 	err := uh.useCase.Update(usr)
 	if err != nil {
 		return err

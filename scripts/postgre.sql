@@ -27,3 +27,12 @@ create table kinopoisk.films
     agelimit    varchar(80)
 );
 
+create table kinopoisk.reviews
+(
+    id       bigserial primary key,
+    rating   integer,
+    body     text,
+    filmId   bigint references kinopoisk.films(id) on delete cascade,
+    userId   bigint references kinopoisk.users(id) on delete cascade
+);
+

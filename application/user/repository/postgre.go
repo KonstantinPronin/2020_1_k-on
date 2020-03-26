@@ -20,7 +20,7 @@ func (udb *UserDatabase) Add(user *models.User) (err error) {
 	return udb.conn.Table("kinopoisk.users").Create(user).Error
 }
 
-func (udb *UserDatabase) Update(id int64, upUser *models.User) error {
+func (udb *UserDatabase) Update(id uint, upUser *models.User) error {
 	usr := new(models.User)
 	udb.conn.Table("kinopoisk.users").Where("id = ?", id).First(usr)
 	upUser.Id = id
@@ -36,7 +36,7 @@ func (udb *UserDatabase) Update(id int64, upUser *models.User) error {
 	return udb.conn.Table("kinopoisk.users").Update(usr).Error
 }
 
-func (udb *UserDatabase) GetById(id int64) (usr *models.User, err error) {
+func (udb *UserDatabase) GetById(id uint) (usr *models.User, err error) {
 	usr = new(models.User)
 	err = udb.conn.Table("kinopoisk.users").Where("id = ?", id).First(usr).Error
 	return usr, err

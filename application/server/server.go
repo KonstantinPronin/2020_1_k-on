@@ -4,6 +4,9 @@ import (
 	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
 	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	reviewHandler "github.com/go-park-mail-ru/2020_1_k-on/application/review/delivery/http"
+	reviewRepository "github.com/go-park-mail-ru/2020_1_k-on/application/review/repository"
+	reviewUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/review/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
 	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
@@ -36,6 +39,11 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	auth := middleware.NewAuth(sessions)
 	user := userUsecase.NewUser(sessions, users, logger)
 	userHandler.NewUserHandler(e, user, auth, logger)
+
+	//review handler
+	reviews := reviewRepository.NewReviewDatabase(db, logger)
+	review := reviewUsecase.NewReview(reviews, films)
+	reviewHandler.NewReviewHandler(e, review, auth, logger)
 
 	return &Server{
 		port: port,
