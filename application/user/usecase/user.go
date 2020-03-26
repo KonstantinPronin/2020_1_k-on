@@ -70,12 +70,12 @@ func (uc *User) Add(usr *models.User) (*models.User, error) {
 	return usr, nil
 }
 
-func (uc *User) Get(id int64) (*models.User, error) {
+func (uc *User) Get(id uint) (*models.User, error) {
 	return uc.users.GetById(id)
 }
 
 func (uc *User) Update(usr *models.User) error {
-	if usr.Id == -1 {
+	if usr.Id == 0 {
 		uc.logger.Warn("User does not exist")
 		return errors.NewInvalidArgument("User does not exist")
 	}

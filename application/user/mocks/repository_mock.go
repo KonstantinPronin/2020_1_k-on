@@ -48,7 +48,7 @@ func (mr *MockRepositoryMockRecorder) Add(user interface{}) *gomock.Call {
 }
 
 // Update mocks base method
-func (m *MockRepository) Update(id int64, upUser *models.User) error {
+func (m *MockRepository) Update(id uint, upUser *models.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", id, upUser)
 	ret0, _ := ret[0].(error)
@@ -62,7 +62,7 @@ func (mr *MockRepositoryMockRecorder) Update(id, upUser interface{}) *gomock.Cal
 }
 
 // GetById mocks base method
-func (m *MockRepository) GetById(id int64) (*models.User, error) {
+func (m *MockRepository) GetById(id uint) (*models.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetById", id)
 	ret0, _ := ret[0].(*models.User)

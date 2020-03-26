@@ -33,6 +33,15 @@ create table kinopoisk.films
     agelimit        varchar(80)
 );
 
+create table kinopoisk.reviews
+(
+    id       bigserial primary key,
+    rating   integer,
+    body     text,
+    filmId   bigint references kinopoisk.films(id) on delete cascade,
+    userId   bigint references kinopoisk.users(id) on delete cascade
+);
+
 insert into kinopoisk.films
 values (default, 'Комедия', 'Бригада1', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
         '/static/1.jpg', '/static/1.jpg', 'Россия', 2010, 12),

@@ -126,7 +126,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 
 func TestUserHandler_Profile(t *testing.T) {
 	uh, ctx, uc, w := beforeTest(t)
-	id := int64(0)
+	id := uint(0)
 
 	ctx.EXPECT().Get(gomock.Any()).Return(id)
 	uc.EXPECT().Get(id).Return(&testUser, nil)
@@ -140,7 +140,7 @@ func TestUserHandler_Profile(t *testing.T) {
 func TestUserHandler_Update(t *testing.T) {
 	uh, ctx, uc, w := beforeTest(t)
 
-	id := int64(0)
+	id := uint(0)
 	body, err := easyjson.Marshal(testUser)
 	if err != nil {
 		t.Errorf("unexpected error: '%s'", err)
