@@ -11,4 +11,6 @@ type Repository interface {
 	GetById(id uint) (*models.Film, bool)
 	GetByName(name string) (*models.Film, bool)
 	GetFilmsArr(begin, end uint) (*models.Films, bool)
+	FilterFilmsList(map[string][]string) (*models.Films, bool)
+	FilterFilmData() (map[string]interface{}, bool)
 }

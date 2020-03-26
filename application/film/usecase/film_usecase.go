@@ -13,6 +13,22 @@ func NewFilmUsecase(filmRepo film.Repository) film.Usecase {
 	return &filmUsecase{filmRepo: filmRepo}
 }
 
+func (FU filmUsecase) FilterFilmData() (interface{}, bool) {
+	data, ok := FU.filmRepo.FilterFilmData()
+	if !ok {
+		return nil, false
+	}
+	return data, true
+}
+
+func (FU filmUsecase) FilterFilmList(fields map[string][]string) (models.Films, bool) {
+	films, ok := FU.filmRepo.FilterFilmsList(fields)
+	if !ok {
+		return models.Films{}, false
+	}
+	return *films, true
+}
+
 func (FU filmUsecase) GetFilmsList() (models.Films, bool) {
 	begin, end := uint(10), uint(0)
 	films, ok := FU.filmRepo.GetFilmsArr(begin, end)

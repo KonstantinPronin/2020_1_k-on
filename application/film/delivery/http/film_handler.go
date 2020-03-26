@@ -18,8 +18,36 @@ func NewFilmHandler(e *echo.Echo, usecase film.Usecase) {
 		usecase: usecase,
 	}
 	e.GET("/films/:id", handler.GetFilm)
-	e.GET("/films", handler.GetFilmList)
+	e.GET("/", handler.GetFilmList)
+	e.GET("/films", handler.FilterFilmList)
+	e.GET("/films/filter", handler.FilterFilmData)
 	e.POST("/films", handler.CreateFilm)
+}
+
+func (fh FilmHandler) FilterFilmData(ctx echo.Context) error {
+	d, ok := fh.usecase.FilterFilmData()
+	if !ok {
+		resp, _ := models.Generate(500, "can't get data", &ctx).MarshalJSON()
+		ctx.Response().Write(resp)
+		return errors.New("can't get data")
+	}
+	resp, _ := models.Generate(200, d, &ctx).MarshalJSON()
+	_, err := ctx.Response().Write(resp)
+	return err
+}
+
+func (fh FilmHandler) FilterFilmList(ctx echo.Context) error {
+	query := ctx.QueryParams()
+	f, ok := fh.usecase.FilterFilmList(query)
+	if !ok {
+		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
+		ctx.Response().Write(resp)
+		return errors.New("can't get films")
+	}
+	var fl models.ListsFilm
+	resp, _ := models.Generate(200, fl.Convert(f), &ctx).MarshalJSON()
+	_, err := ctx.Response().Write(resp)
+	return err
 }
 
 func (fh FilmHandler) GetFilm(ctx echo.Context) error {
@@ -45,7 +73,7 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 	if !ok {
 		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
-		return errors.New("can't create film")
+		return errors.New("can't get films")
 	}
 	var fl models.ListsFilm
 	resp, _ := models.Generate(200, fl.Convert(f), &ctx).MarshalJSON()

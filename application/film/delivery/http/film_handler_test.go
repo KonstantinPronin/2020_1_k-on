@@ -15,11 +15,13 @@ import (
 
 var image = "image"
 var ftype1 = "film"
-var ftype2 = "serial"
+
+//var ftype2 = "series"
 var mg = "mg"
 var rn = "rn"
 var en = "en"
-var seasons = 1
+var sumvotes = 0
+var totalvotes = 0
 var tl = "tl"
 var rating = 1.2
 var imdbrating = 9.87
@@ -30,20 +32,21 @@ var agelimit = 10
 var fid = uint(1)
 
 var testFilm = models.Film{
-	ID:          fid,
-	Type:        ftype1,
-	MainGenre:   mg,
-	RussianName: rn,
-	EnglishName: en,
-	Seasons:     seasons,
-	TrailerLink: tl,
-	Rating:      rating,
-	ImdbRating:  imdbrating,
-	Description: d,
-	Image:       image,
-	Country:     c,
-	Year:        year,
-	AgeLimit:    agelimit,
+	ID:              fid,
+	MainGenre:       mg,
+	RussianName:     rn,
+	EnglishName:     en,
+	TrailerLink:     tl,
+	Rating:          rating,
+	ImdbRating:      imdbrating,
+	Description:     d,
+	Image:           image,
+	Country:         c,
+	Year:            year,
+	AgeLimit:        agelimit,
+	SumVotes:        sumvotes,
+	TotalVotes:      totalvotes,
+	BackgroundImage: image,
 }
 
 func setupEcho(t *testing.T, url, method string) (echo.Context, FilmHandler, *mockfilm.MockRepository) {
@@ -79,10 +82,17 @@ func TestFilmHandler_GetFilm(t *testing.T) {
 }
 
 func TestFilmHandler_GetFilmList(t *testing.T) {
-	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	c, fh, films := setupEcho(t, "/", http.MethodGet)
 	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&models.Films{testFilm}, true)
 	err := fh.GetFilmList(c)
 	require.Equal(t, err, nil)
+}
+
+func TestFilmHandler_GetFilmList2(t *testing.T) {
+	c, fh, films := setupEcho(t, "/", http.MethodGet)
+	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&models.Films{}, false)
+	err := fh.GetFilmList(c)
+	require.NotEqual(t, err, nil)
 }
 
 func TestFilmHandler_CreateFilm(t *testing.T) {
@@ -119,5 +129,39 @@ func TestFilmHandler_GetFilm3(t *testing.T) {
 	c.SetParamValues("1")
 	films.EXPECT().GetById(testFilm.ID).Return(&models.Film{}, false)
 	err := fh.GetFilm(c)
+	require.NotEqual(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmData(t *testing.T) {
+	c, fh, films := setupEcho(t, "/films/filter", http.MethodGet)
+	films.EXPECT().FilterFilmData().Return(nil, true)
+	err := fh.FilterFilmData(c)
+	require.Equal(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmData2(t *testing.T) {
+	c, fh, films := setupEcho(t, "/films/filter", http.MethodGet)
+	films.EXPECT().FilterFilmData().Return(nil, false)
+	err := fh.FilterFilmData(c)
+	require.NotEqual(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmList(t *testing.T) {
+	q := make(map[string][]string)
+	q["year"] = []string{"year"}
+	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	c.QueryParams().Add("year", "year")
+	films.EXPECT().FilterFilmsList(q).Return(&models.Films{}, true)
+	err := fh.FilterFilmList(c)
+	require.Equal(t, err, nil)
+}
+
+func TestFilmHandler_FilterFilmList2(t *testing.T) {
+	q := make(map[string][]string)
+	q["year"] = []string{"year"}
+	c, fh, films := setupEcho(t, "/films", http.MethodGet)
+	c.QueryParams().Add("year", "year")
+	films.EXPECT().FilterFilmsList(q).Return(&models.Films{}, false)
+	err := fh.FilterFilmList(c)
 	require.NotEqual(t, err, nil)
 }
