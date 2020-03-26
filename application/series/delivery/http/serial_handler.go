@@ -18,7 +18,7 @@ func NewSeriesHandler(e *echo.Echo, usecase series.Usecase) {
 	}
 	e.GET("/series/:id", handler.GetSeries)
 	e.GET("/series/:id/seasons", handler.GetSeriesSeasons)
-	e.GET("/seasons/:id/series", handler.GetSeasonEpisodes)
+	e.GET("/seasons/:id/episodes", handler.GetSeasonEpisodes)
 }
 
 func (sh SeriesHandler) GetSeries(ctx echo.Context) error {
