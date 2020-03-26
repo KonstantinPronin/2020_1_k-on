@@ -8,12 +8,12 @@ import (
 	"strconv"
 )
 
-type SerialHandler struct {
+type SeriesHandler struct {
 	usecase series.Usecase
 }
 
-func NewSerialHandler(e *echo.Echo, usecase series.Usecase) {
-	handler := &SerialHandler{
+func NewSeriesHandler(e *echo.Echo, usecase series.Usecase) {
+	handler := &SeriesHandler{
 		usecase: usecase,
 	}
 	e.GET("/series/:id", handler.GetSeries)
@@ -21,7 +21,7 @@ func NewSerialHandler(e *echo.Echo, usecase series.Usecase) {
 	e.GET("/seasons/:id/series", handler.GetSeasonEpisodes)
 }
 
-func (sh SerialHandler) GetSeries(ctx echo.Context) error {
+func (sh SeriesHandler) GetSeries(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
@@ -39,7 +39,7 @@ func (sh SerialHandler) GetSeries(ctx echo.Context) error {
 	return err
 }
 
-func (sh SerialHandler) GetSeriesSeasons(ctx echo.Context) error {
+func (sh SeriesHandler) GetSeriesSeasons(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
@@ -57,7 +57,7 @@ func (sh SerialHandler) GetSeriesSeasons(ctx echo.Context) error {
 	return err
 }
 
-func (sh SerialHandler) GetSeasonEpisodes(ctx echo.Context) error {
+func (sh SeriesHandler) GetSeasonEpisodes(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
