@@ -556,8 +556,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels5(in *j
 			out.Body = string(in.String())
 		case "userId":
 			out.UserId = uint(in.Uint())
-		case "filmId":
-			out.FilmId = uint(in.Uint())
+		case "productId":
+			out.ProductId = uint(in.Uint())
 		default:
 			in.SkipRecursive()
 		}
@@ -593,9 +593,9 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels5(out *
 		out.Uint(uint(in.UserId))
 	}
 	{
-		const prefix string = ",\"filmId\":"
+		const prefix string = ",\"productId\":"
 		out.RawString(prefix)
-		out.Uint(uint(in.FilmId))
+		out.Uint(uint(in.ProductId))
 	}
 	out.RawByte('}')
 }

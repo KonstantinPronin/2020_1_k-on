@@ -13,7 +13,6 @@ grant all privileges on all sequences in schema kinopoisk to usr;
 
 ALTER SEQUENCE kinopoisk.episodes_id_seq RESTART WITH 1; --сериалы ресетить
 
-
 create table kinopoisk.films
 (
     id              serial primary key,
@@ -31,15 +30,6 @@ create table kinopoisk.films
     country         varchar(80), --русское
     year            integer,
     agelimit        varchar(80)
-);
-
-create table kinopoisk.reviews
-(
-    id       bigserial primary key,
-    rating   integer,
-    body     text,
-    filmId   bigint references kinopoisk.films(id) on delete cascade,
-    userId   bigint references kinopoisk.users(id) on delete cascade
 );
 
 insert into kinopoisk.films
@@ -153,3 +143,22 @@ from kinopoisk.films f1
          join kinopoisk.films_genres fg1 on (f1.id = fg1.film_id)
          join kinopoisk.genres g1 on (fg1.genre_id = g1.id)
 where g1.name = 'Приключения';
+
+
+create table kinopoisk.film_reviews
+(
+    id          bigserial primary key,
+    rating      integer,
+    body        text,
+    product_id  bigint references kinopoisk.films(id) on delete cascade,
+    user_id     bigint references kinopoisk.users(id) on delete cascade
+);
+
+create table kinopoisk.serial_reviews
+(
+    id          bigserial primary key,
+    rating      integer,
+    body        text,
+    product_id  bigint references kinopoisk.series(id) on delete cascade,
+    user_id     bigint references kinopoisk.users(id) on delete cascade
+);
