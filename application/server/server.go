@@ -36,7 +36,7 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	//series handler
 	series := serialRepository.NewPostgresForserial(db)
 	seriesUC := serialUsecase.NewSeriesUsecase(series)
-	serialHandler.NewSerialHandler(e, seriesUC)
+	serialHandler.NewSeriesHandler(e, seriesUC)
 
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
