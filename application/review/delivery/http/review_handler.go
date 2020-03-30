@@ -28,7 +28,7 @@ func NewReviewHandler(e *echo.Echo, review review.UseCase, series review.UseCase
 	e.POST("/films/review", handler.AddFilmReview, auth.GetSession, middleware.ParseErrors)
 	e.POST("/series/review", handler.AddSeriesReview, auth.GetSession, middleware.ParseErrors)
 	e.GET("/films/:id/reviews", handler.GetByFilm, middleware.ParseErrors)
-	e.GET("/serials/:id/reviews", handler.GetBySeries, middleware.ParseErrors)
+	e.GET("/series/:id/reviews", handler.GetBySeries, middleware.ParseErrors)
 }
 
 func (r *ReviewHandler) AddFilmReview(ctx echo.Context) error {

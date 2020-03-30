@@ -26,10 +26,25 @@ func (r *FilmReviewDatabase) Add(review *models.Review) error {
 func (r *FilmReviewDatabase) GetByProductId(id uint) ([]models.Review, error) {
 	var reviews []models.Review
 
-	err := r.conn.Table("kinopoisk.film_reviews").Where("product_id = ?", id).Find(&reviews).Error
-
+	rows, err := r.conn.Table("kinopoisk.film_reviews rev").
+		Select("rev.id, rev.rating, rev.body, rev.user_id, rev.product_id, usr.username, usr.image").
+		Joins("inner join kinopoisk.users usr on usr.id = rev.user_id").
+		Where("rev.product_id = ?", id).Rows()
 	if err != nil {
 		return nil, err
 	}
+
+	rev := new(models.Review)
+	usr := new(models.ListUser)
+	for rows.Next() {
+		err = rows.Scan(&rev.Id, &rev.Rating, &rev.Body, &rev.UserId, &rev.ProductId, &usr.Username, &usr.Image)
+		if err != nil {
+			return nil, err
+		}
+
+		rev.Usr = *usr
+		reviews = append(reviews, *rev)
+	}
+
 	return reviews, nil
 }

@@ -7,3 +7,8 @@ type User struct {
 	Email    string `json:"email"`
 	Image    string `json:"image"`
 }
+
+type ListUser struct {
+	Username string `json:"username"`
+	Image    string `json:"image"`
+}
