@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	mocks2 "github.com/go-park-mail-ru/2020_1_k-on/application/server/mocks"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user/mocks"
 	"github.com/golang/mock/gomock"
@@ -36,10 +37,10 @@ const (
 	ok        = 200
 )
 
-func beforeTest(t *testing.T) (*UserHandler, *mocks.MockContext, *mocks.MockUseCase, *mocks.MockResponseWriter) {
+func beforeTest(t *testing.T) (*UserHandler, *mocks2.MockContext, *mocks.MockUseCase, *mocks2.MockResponseWriter) {
 	ctrl := gomock.NewController(t)
-	w := mocks.NewMockResponseWriter(ctrl)
-	ctx := mocks.NewMockContext(ctrl)
+	w := mocks2.NewMockResponseWriter(ctrl)
+	ctx := mocks2.NewMockContext(ctrl)
 	uc := mocks.NewMockUseCase(ctrl)
 	response := echo.NewResponse(w, echo.New())
 
