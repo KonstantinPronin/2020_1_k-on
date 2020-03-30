@@ -14,21 +14,21 @@ import (
 
 type ReviewHandler struct {
 	film   review.UseCase
-	serial review.UseCase
+	series review.UseCase
 	logger *zap.Logger
 }
 
-func NewReviewHandler(e *echo.Echo, review review.UseCase, serial review.UseCase, auth middleware.Auth, logger *zap.Logger) {
+func NewReviewHandler(e *echo.Echo, review review.UseCase, series review.UseCase, auth middleware.Auth, logger *zap.Logger) {
 	handler := ReviewHandler{
 		film:   review,
-		serial: serial,
+		series: series,
 		logger: logger,
 	}
 
 	e.POST("/films/review", handler.AddFilmReview, auth.GetSession, middleware.ParseErrors)
-	e.POST("/serials/review", handler.AddSerialReview, auth.GetSession, middleware.ParseErrors)
+	e.POST("/series/review", handler.AddSeriesReview, auth.GetSession, middleware.ParseErrors)
 	e.GET("/films/:id/reviews", handler.GetByFilm, middleware.ParseErrors)
-	e.GET("/serials/:id/reviews", handler.GetBySerial, middleware.ParseErrors)
+	e.GET("/serials/:id/reviews", handler.GetBySeries, middleware.ParseErrors)
 }
 
 func (r *ReviewHandler) AddFilmReview(ctx echo.Context) error {
@@ -44,13 +44,13 @@ func (r *ReviewHandler) AddFilmReview(ctx echo.Context) error {
 	return middleware.WriteOkResponse(ctx, nil)
 }
 
-func (r *ReviewHandler) AddSerialReview(ctx echo.Context) error {
+func (r *ReviewHandler) AddSeriesReview(ctx echo.Context) error {
 	rev, err := r.parseRequestBody(ctx)
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
 
-	if err := r.serial.Add(rev); err != nil {
+	if err := r.series.Add(rev); err != nil {
 		return err
 	}
 
@@ -71,13 +71,13 @@ func (r *ReviewHandler) GetByFilm(ctx echo.Context) error {
 	return middleware.WriteOkResponse(ctx, reviews)
 }
 
-func (r *ReviewHandler) GetBySerial(ctx echo.Context) error {
+func (r *ReviewHandler) GetBySeries(ctx echo.Context) error {
 	id, err := r.getProductId(ctx)
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
 
-	reviews, err := r.serial.GetByProductId(uint(id))
+	reviews, err := r.series.GetByProductId(uint(id))
 	if err != nil {
 		return err
 	}

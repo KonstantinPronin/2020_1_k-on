@@ -51,9 +51,9 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	//review handler
 	filmReviewsRep := reviewRepository.NewFilmReviewDatabase(db, logger)
 	filmReview := reviewUsecase.NewFilmReview(filmReviewsRep, films)
-	serialReviewsRep := reviewRepository.NewSerialReviewDatabase(db, logger)
-	serialReview := reviewUsecase.NewSerialReview(serialReviewsRep, series)
-	reviewHandler.NewReviewHandler(e, filmReview, serialReview, auth, logger)
+	seriesReviewsRep := reviewRepository.NewSeriesReviewDatabase(db, logger)
+	seriesReview := reviewUsecase.NewSeriesReview(seriesReviewsRep, series)
+	reviewHandler.NewReviewHandler(e, filmReview, seriesReview, auth, logger)
 
 	return &Server{
 		port: port,
