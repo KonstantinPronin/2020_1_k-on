@@ -16,7 +16,7 @@ func NewSessionDatabase(conn *redis.Client, logger *zap.Logger) session.Reposito
 	return &SessionDatabase{conn: conn, logger: logger}
 }
 
-func (sd *SessionDatabase) Add(sessionId string, userId int64) error {
+func (sd *SessionDatabase) Add(sessionId string, userId uint) error {
 	err := sd.conn.Set(sessionId, userId, session.CookieDuration).Err()
 	if err != nil {
 		sd.logger.Error(err.Error())
@@ -25,20 +25,20 @@ func (sd *SessionDatabase) Add(sessionId string, userId int64) error {
 	return err
 }
 
-func (sd *SessionDatabase) GetUserId(sessionId string) (int64, error) {
+func (sd *SessionDatabase) GetUserId(sessionId string) (uint, error) {
 	res, err := sd.conn.Get(sessionId).Result()
 	if err != nil {
 		sd.logger.Error(err.Error())
-		return -1, err
+		return 0, err
 	}
 
 	userId, err := strconv.Atoi(res)
 	if err != nil {
 		sd.logger.Error(err.Error())
-		return -1, err
+		return 0, err
 	}
 
-	return int64(userId), nil
+	return uint(userId), nil
 }
 
 func (sd *SessionDatabase) Delete(sessionId string) error {

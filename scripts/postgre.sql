@@ -13,7 +13,6 @@ grant all privileges on all sequences in schema kinopoisk to usr;
 
 ALTER SEQUENCE kinopoisk.episodes_id_seq RESTART WITH 1; --сериалы ресетить
 
-
 create table kinopoisk.films
 (
     id              serial primary key,
@@ -144,3 +143,53 @@ from kinopoisk.films f1
          join kinopoisk.films_genres fg1 on (f1.id = fg1.film_id)
          join kinopoisk.genres g1 on (fg1.genre_id = g1.id)
 where g1.name = 'Приключения';
+
+-- reviews tables
+create table kinopoisk.film_reviews
+(
+    id          bigserial primary key,
+    rating      integer,
+    body        text,
+    product_id  bigint references kinopoisk.films(id) on delete cascade,
+    user_id     bigint references kinopoisk.users(id) on delete cascade
+);
+
+create table kinopoisk.series_reviews
+(
+    id          bigserial primary key,
+    rating      integer,
+    body        text,
+    product_id  bigint references kinopoisk.series(id) on delete cascade,
+    user_id     bigint references kinopoisk.users(id) on delete cascade
+);
+
+-- triggers for review table
+create or replace function kinopoisk.film_rating() returns trigger as $film_rating$
+	begin
+		update kinopoisk.films
+			set totalvotes = totalvotes + 1,
+				sumvotes = sumvotes + new.rating,
+				rating = sumvotes / (totalvotes + 1)
+			where id = new.product_id;
+		return new;
+	end;
+$film_rating$ LANGUAGE plpgsql;
+
+create trigger film_rating
+	after insert on kinopoisk.film_reviews
+	for each row execute procedure kinopoisk.film_rating();
+	
+create or replace function kinopoisk.series_rating() returns trigger as $series_rating$
+	begin
+		update kinopoisk.series
+			set totalvotes = totalvotes + 1,
+				sumvotes = sumvotes + new.rating,
+				rating = sumvotes / (totalvotes + 1)
+			where id = new.product_id;
+		return new;
+	end;
+$series_rating$ LANGUAGE plpgsql;
+
+create trigger series_rating
+	after insert on kinopoisk.series_reviews
+	for each row execute procedure kinopoisk.series_rating();

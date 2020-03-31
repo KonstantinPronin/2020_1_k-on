@@ -78,7 +78,7 @@ func (mr *MockUseCaseMockRecorder) Add(usr interface{}) *gomock.Call {
 }
 
 // Get mocks base method
-func (m *MockUseCase) Get(id int64) (*models.User, error) {
+func (m *MockUseCase) Get(id uint) (*models.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", id)
 	ret0, _ := ret[0].(*models.User)

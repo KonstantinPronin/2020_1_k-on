@@ -63,7 +63,7 @@ func TestUserDatabase_Update(t *testing.T) {
 		}
 	}()
 	ud := NewUserDatabase(db, zap.NewExample())
-	id := int64(0)
+	id := uint(0)
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"users" WHERE (.*)"users"."id" (.*) LIMIT 1`).WithArgs(
 		id).WillReturnRows(sqlmock.NewRows(
@@ -93,7 +93,7 @@ func TestUserDatabase_GetById(t *testing.T) {
 		}
 	}()
 	ud := NewUserDatabase(db, zap.NewExample())
-	id := int64(0)
+	id := uint(0)
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"users" WHERE (.*)"users"."id" (.*) LIMIT 1`).WithArgs(
 		id).WillReturnRows(sqlmock.NewRows(

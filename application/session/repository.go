@@ -1,7 +1,7 @@
 package session
 
 type Repository interface {
-	Add(sessionId string, userId int64) error
-	GetUserId(sessionId string) (userId int64, err error)
+	Add(sessionId string, userId uint) error
+	GetUserId(sessionId string) (userId uint, err error)
 	Delete(sessionId string) error
 }

@@ -15,7 +15,7 @@ import (
 )
 
 var testUser = models.User{
-	Id:       0,
+	Id:       1,
 	Username: "test",
 	Password: "test",
 }
@@ -130,7 +130,7 @@ func TestUser_Add_Success(t *testing.T) {
 }
 
 func TestUser_Get_Success(t *testing.T) {
-	id := int64(0)
+	id := uint(0)
 	_, users, us := beforeTest(t)
 
 	users.EXPECT().GetById(id).Return(&testUser, nil)
@@ -144,7 +144,7 @@ func TestUser_Get_Success(t *testing.T) {
 func TestUser_Update_WrongUser(t *testing.T) {
 	_, _, us := beforeTest(t)
 
-	err := us.Update(&models.User{Id: -1})
+	err := us.Update(&models.User{Id: 0})
 
 	assert.NotNil(t, err)
 }

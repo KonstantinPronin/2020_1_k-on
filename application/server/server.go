@@ -4,6 +4,9 @@ import (
 	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
 	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	reviewHandler "github.com/go-park-mail-ru/2020_1_k-on/application/review/delivery/http"
+	reviewRepository "github.com/go-park-mail-ru/2020_1_k-on/application/review/repository"
+	reviewUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/review/usecase"
 	serialHandler "github.com/go-park-mail-ru/2020_1_k-on/application/series/delivery/http"
 	serialRepository "github.com/go-park-mail-ru/2020_1_k-on/application/series/repository"
 	serialUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/series/usecase"
@@ -44,6 +47,13 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	auth := middleware.NewAuth(sessions)
 	user := userUsecase.NewUser(sessions, users, logger)
 	userHandler.NewUserHandler(e, user, auth, logger)
+
+	//review handler
+	filmReviewsRep := reviewRepository.NewFilmReviewDatabase(db, logger)
+	filmReview := reviewUsecase.NewFilmReview(filmReviewsRep, films)
+	seriesReviewsRep := reviewRepository.NewSeriesReviewDatabase(db, logger)
+	seriesReview := reviewUsecase.NewSeriesReview(seriesReviewsRep, series)
+	reviewHandler.NewReviewHandler(e, filmReview, seriesReview, auth, logger)
 
 	return &Server{
 		port: port,

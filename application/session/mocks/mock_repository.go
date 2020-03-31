@@ -32,25 +32,25 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
-// Add mocks base method
-func (m *MockRepository) Add(sessionId string, userId int64) error {
+// AddFilmReview mocks base method
+func (m *MockRepository) Add(sessionId string, userId uint) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Add", sessionId, userId)
+	ret := m.ctrl.Call(m, "AddFilmReview", sessionId, userId)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Add indicates an expected call of Add
+// AddFilmReview indicates an expected call of AddFilmReview
 func (mr *MockRepositoryMockRecorder) Add(sessionId, userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockRepository)(nil).Add), sessionId, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddFilmReview", reflect.TypeOf((*MockRepository)(nil).Add), sessionId, userId)
 }
 
 // GetUserId mocks base method
-func (m *MockRepository) GetUserId(sessionId string) (int64, error) {
+func (m *MockRepository) GetUserId(sessionId string) (uint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserId", sessionId)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(uint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
