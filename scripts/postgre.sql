@@ -193,3 +193,26 @@ $series_rating$ LANGUAGE plpgsql;
 create trigger series_rating
 	after insert on kinopoisk.series_reviews
 	for each row execute procedure kinopoisk.series_rating();
+
+create table kinopoisk.persons
+(
+    id          bigserial primary key,
+    name        varchar(80) not null,
+    occupation  varchar(80),
+    birth_date  varchar(80),
+    birth_place varchar(80)
+);
+
+create table kinopoisk.film_actor
+(
+    id          bigserial primary key,
+    film_id     bigint references kinopoisk.films(id) on delete cascade,
+    person_id   bigint references kinopoisk.persons(id) on delete cascade
+);
+
+create table kinopoisk.series_actor
+(
+    id          bigserial primary key,
+    series_id   bigint references kinopoisk.series(id) on delete cascade,
+    person_id   bigint references kinopoisk.persons(id) on delete cascade
+);

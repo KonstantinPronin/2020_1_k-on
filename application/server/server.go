@@ -4,6 +4,9 @@ import (
 	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
 	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	personHandler "github.com/go-park-mail-ru/2020_1_k-on/application/person/delivery/http"
+	personRepository "github.com/go-park-mail-ru/2020_1_k-on/application/person/repository"
+	personUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
 	reviewHandler "github.com/go-park-mail-ru/2020_1_k-on/application/review/delivery/http"
 	reviewRepository "github.com/go-park-mail-ru/2020_1_k-on/application/review/repository"
 	reviewUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/review/usecase"
@@ -54,6 +57,11 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	seriesReviewsRep := reviewRepository.NewSeriesReviewDatabase(db, logger)
 	seriesReview := reviewUsecase.NewSeriesReview(seriesReviewsRep, series)
 	reviewHandler.NewReviewHandler(e, filmReview, seriesReview, auth, logger)
+
+	//person handler
+	persons := personRepository.NewPersonDatabase(db, logger)
+	person := personUsecase.NewPerson(persons, logger)
+	personHandler.NewPersonHandler(e, person, logger)
 
 	return &Server{
 		port: port,

@@ -33,7 +33,7 @@ func (udb *UserDatabase) Update(id uint, upUser *models.User) error {
 	if upUser.Email != "" {
 		usr.Email = upUser.Email
 	}
-	return udb.conn.Table("kinopoisk.users").Update(usr).Error
+	return udb.conn.Table("kinopoisk.users").Save(usr).Error
 }
 
 func (udb *UserDatabase) GetById(id uint) (usr *models.User, err error) {
