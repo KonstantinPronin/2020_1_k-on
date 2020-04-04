@@ -70,7 +70,7 @@ func (p PostgresForFilms) FilterFilmsList(fields map[string][]string) (*models.F
 		query[key] = val[0]
 	}
 	if ok {
-		db = p.DB.Table("kinopoisk.films").Where(query).Order(order).Offset(offset).Limit(FilmPerPage).Find(films)
+		db = p.DB.Table("kinopoisk.films").Where(query).Order(order[0]).Offset(offset).Limit(FilmPerPage).Find(films)
 	} else {
 		db = p.DB.Table("kinopoisk.films").Where(query).Offset(offset).Limit(FilmPerPage).Find(films)
 	}

@@ -4,14 +4,76 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
 	"github.com/jinzhu/gorm"
+	"strconv"
 )
+
+var SeriesPerPage = 10
 
 type PostgresForSerials struct {
 	DB *gorm.DB
 }
 
-func NewPostgresForserial(db *gorm.DB) series.Repository {
+func NewPostgresForSeries(db *gorm.DB) series.Repository {
 	return &PostgresForSerials{DB: db}
+}
+
+func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*models.SeriesArr, bool) {
+	series := &models.SeriesArr{}
+	var db *gorm.DB
+	var offset int
+	var err error = nil
+	query := make(map[string]interface{})
+	order, ok := fields["order"]
+	if ok {
+		delete(fields, "order")
+	}
+	page, pok := fields["page"]
+	if pok {
+		delete(fields, "page")
+		offset, err = strconv.Atoi(page[0])
+		offset = (offset - 1) * SeriesPerPage
+	}
+	if !pok || (err != nil) {
+		return &models.SeriesArr{}, false
+	}
+	for key, val := range fields {
+		query[key] = val[0]
+	}
+	if ok {
+		db = p.DB.Table("kinopoisk.series").Where(query).Order(order[0]).Offset(offset).Limit(SeriesPerPage).Find(series)
+	} else {
+		db = p.DB.Table("kinopoisk.series").Where(query).Offset(offset).Limit(SeriesPerPage).Find(series)
+	}
+	err = db.Error
+	if err != nil {
+		return &models.SeriesArr{}, false
+	}
+	return series, true
+}
+
+func (p PostgresForSerials) FilterSeriesData() (map[string]interface{}, bool) {
+	genres := &models.Genres{}
+
+	db := p.DB.Table("kinopoisk.genres").Find(genres)
+	err := db.Error
+	if err != nil {
+		return nil, false
+	}
+	var max, min int
+	row := db.Table("kinopoisk.series").Select("MAX(yearlast),MIN(yearfirst)").Row()
+	row.Scan(&max, &min)
+	err = db.Error
+	if err != nil {
+		return nil, false
+	}
+	resp := make(map[string]interface{})
+	filters := make(map[string]interface{})
+	filters["minyear"] = min
+	filters["maxyear"] = max
+	resp["genres"] = genres
+	resp["filters"] = filters
+
+	return resp, true
 }
 
 func (p PostgresForSerials) GetSeriesByID(id uint) (models.Series, bool) {

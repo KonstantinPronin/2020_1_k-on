@@ -19,6 +19,35 @@ func NewSeriesHandler(e *echo.Echo, usecase series.Usecase) {
 	e.GET("/series/:id", handler.GetSeries)
 	e.GET("/series/:id/seasons", handler.GetSeriesSeasons)
 	e.GET("/seasons/:id/episodes", handler.GetSeasonEpisodes)
+
+	e.GET("/series", handler.FilterSeriesList)
+	e.GET("/series/filter", handler.FilterSeriesData)
+}
+
+func (sh SeriesHandler) FilterSeriesData(ctx echo.Context) error {
+	d, ok := sh.usecase.FilterSeriesData()
+	if !ok {
+		resp, _ := models.Generate(500, "can't get data", &ctx).MarshalJSON()
+		ctx.Response().Write(resp)
+		return errors.New("can't get data")
+	}
+	resp, _ := models.Generate(200, d, &ctx).MarshalJSON()
+	_, err := ctx.Response().Write(resp)
+	return err
+}
+
+func (sh SeriesHandler) FilterSeriesList(ctx echo.Context) error {
+	query := ctx.QueryParams()
+	s, ok := sh.usecase.FilterSeriesList(query)
+	if !ok {
+		resp, _ := models.Generate(500, "can't get series", &ctx).MarshalJSON()
+		ctx.Response().Write(resp)
+		return errors.New("can't get series")
+	}
+	var sl models.ListSeriesArr
+	resp, _ := models.Generate(200, sl.Convert(s), &ctx).MarshalJSON()
+	_, err := ctx.Response().Write(resp)
+	return err
 }
 
 func (sh SeriesHandler) GetSeries(ctx echo.Context) error {

@@ -37,7 +37,7 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	filmHandler.NewFilmHandler(e, film)
 
 	//series handler
-	series := serialRepository.NewPostgresForserial(db)
+	series := serialRepository.NewPostgresForSeries(db)
 	seriesUC := serialUsecase.NewSeriesUsecase(series)
 	serialHandler.NewSeriesHandler(e, seriesUC)
 
