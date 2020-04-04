@@ -223,8 +223,8 @@ values (default, 1, 'ep11', 1, 'img1'),
        (default, 3, 'ep31', 1, 'img3'),
        (default, 4, 'ep41', 1, 'img21');
 
-insert into kinopoisk.persons values(default, 'ivan ivanov', 'actor', '2020-01-01', 'Moscow')
-insert into kinopoisk.persons values(default, 'alex alexov', 'actor', '2020-01-01', 'Moscow')
+insert into kinopoisk.persons values(default, 'ivan ivanov', 'actor', '2020-01-01', 'Moscow');
+insert into kinopoisk.persons values(default, 'alex alexov', 'actor', '2020-01-01', 'Moscow');
 
-insert into kinopoisk.film_actor values(default, 1, 1)
-insert into kinopoisk.series_actor values(default, 1, 2)
+insert into kinopoisk.film_actor values(default, 1, 1);
+insert into kinopoisk.series_actor values(default, 1, 2);
