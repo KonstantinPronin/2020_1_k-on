@@ -65,11 +65,12 @@ func (sh SeriesHandler) GetSeries(ctx echo.Context) error {
 		ctx.Response().Write(resp)
 		return errors.New("Not Found")
 	}
-	a, _ := sh.pusecase.GetActorsForSeries(serial.ID)
+	//a, err:= sh.pusecase.GetActorsForSeries(serial.ID)
+	//fmt.Print(err,"\n\n\n\n")
 	g, _ := sh.usecase.GetSeriesGenres(serial.ID)
 	r := make(map[string]interface{})
 	r["object"] = serial
-	r["actors"] = a
+	//r["actors"] = a
 	r["genres"] = g
 	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
 	_, err = ctx.Response().Write(resp)
