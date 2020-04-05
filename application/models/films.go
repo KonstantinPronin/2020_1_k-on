@@ -1,21 +1,21 @@
 package models
 
 type Film struct {
-	ID              uint    `json:"ID" gorm:"primary_key"`
-	MainGenre       string  `json:"maingenre" gorm:"column:maingenre"`
-	RussianName     string  `json:"russianname" gorm:"column:russianname"`
-	EnglishName     string  `json:"englishname" gorm:"column:englishname"`
-	TrailerLink     string  `json:"trailerlink" gorm:"column:trailerlink"`
+	ID              uint    `json:"id" gorm:"primary_key"`
+	MainGenre       string  `json:"mainGenre" gorm:"column:maingenre"`
+	RussianName     string  `json:"russianName" gorm:"column:russianname"`
+	EnglishName     string  `json:"englishName" gorm:"column:englishname"`
+	TrailerLink     string  `json:"trailerLink" gorm:"column:trailerlink"`
 	Rating          float64 `json:"rating"`
-	ImdbRating      float64 `json:"imdbrating" gorm:"column:imdbrating"`
-	TotalVotes      int     `json:"totalvotes" gorm:"column:totalvotes"` //всего голосов
-	SumVotes        int     `json:"sumvotes" gorm:"column:sumvotes"`     //сумма голосов,нужна только бэку
+	ImdbRating      float64 `json:"imdbRating" gorm:"column:imdbrating"`
+	TotalVotes      int     `json:"totalVotes" gorm:"column:totalvotes"` //всего голосов
+	SumVotes        int     `json:"-" gorm:"column:sumvotes"`            //сумма голосов,нужна только бэку
 	Description     string  `json:"description"`
 	Image           string  `json:"image,omitempty"`
-	BackgroundImage string  `json:"backgroundimage,omitempty" gorm:"column:backgroundimage"`
+	BackgroundImage string  `json:"backgroundImage,omitempty" gorm:"column:backgroundimage"`
 	Country         string  `json:"country"`
 	Year            int     `json:"year"`
-	AgeLimit        int     `json:"agelimit,omitempty" gorm:"column:agelimit"`
+	AgeLimit        int     `json:"ageLimit,omitempty" gorm:"column:agelimit"`
 }
 
 //easyjson:json

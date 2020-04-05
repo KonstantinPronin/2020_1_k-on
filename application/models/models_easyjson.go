@@ -196,37 +196,35 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels2(in *j
 			continue
 		}
 		switch key {
-		case "ID":
+		case "id":
 			out.ID = uint(in.Uint())
-		case "maingenre":
+		case "mainGenre":
 			out.MainGenre = string(in.String())
-		case "russianname":
+		case "russianName":
 			out.RussianName = string(in.String())
-		case "englishname":
+		case "englishName":
 			out.EnglishName = string(in.String())
-		case "trailerlink":
+		case "trailerLink":
 			out.TrailerLink = string(in.String())
 		case "rating":
 			out.Rating = float64(in.Float64())
-		case "imdbrating":
+		case "imdbRating":
 			out.ImdbRating = float64(in.Float64())
-		case "totalvotes":
+		case "totalVotes":
 			out.TotalVotes = int(in.Int())
-		case "sumvotes":
-			out.SumVotes = int(in.Int())
 		case "description":
 			out.Description = string(in.String())
 		case "image":
 			out.Image = string(in.String())
-		case "backgroundimage":
+		case "backgroundImage":
 			out.BackgroundImage = string(in.String())
 		case "country":
 			out.Country = string(in.String())
-		case "yearfirst":
+		case "yearFirst":
 			out.YearFirst = int(in.Int())
-		case "yearlast":
+		case "yearLast":
 			out.YearLast = int(in.Int())
-		case "agelimit":
+		case "ageLimit":
 			out.AgeLimit = int(in.Int())
 		default:
 			in.SkipRecursive()
@@ -243,27 +241,27 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels2(out *
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"ID\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.Uint(uint(in.ID))
 	}
 	{
-		const prefix string = ",\"maingenre\":"
+		const prefix string = ",\"mainGenre\":"
 		out.RawString(prefix)
 		out.String(string(in.MainGenre))
 	}
 	{
-		const prefix string = ",\"russianname\":"
+		const prefix string = ",\"russianName\":"
 		out.RawString(prefix)
 		out.String(string(in.RussianName))
 	}
 	{
-		const prefix string = ",\"englishname\":"
+		const prefix string = ",\"englishName\":"
 		out.RawString(prefix)
 		out.String(string(in.EnglishName))
 	}
 	{
-		const prefix string = ",\"trailerlink\":"
+		const prefix string = ",\"trailerLink\":"
 		out.RawString(prefix)
 		out.String(string(in.TrailerLink))
 	}
@@ -273,19 +271,14 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels2(out *
 		out.Float64(float64(in.Rating))
 	}
 	{
-		const prefix string = ",\"imdbrating\":"
+		const prefix string = ",\"imdbRating\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.ImdbRating))
 	}
 	{
-		const prefix string = ",\"totalvotes\":"
+		const prefix string = ",\"totalVotes\":"
 		out.RawString(prefix)
 		out.Int(int(in.TotalVotes))
-	}
-	{
-		const prefix string = ",\"sumvotes\":"
-		out.RawString(prefix)
-		out.Int(int(in.SumVotes))
 	}
 	{
 		const prefix string = ",\"description\":"
@@ -298,7 +291,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels2(out *
 		out.String(string(in.Image))
 	}
 	if in.BackgroundImage != "" {
-		const prefix string = ",\"backgroundimage\":"
+		const prefix string = ",\"backgroundImage\":"
 		out.RawString(prefix)
 		out.String(string(in.BackgroundImage))
 	}
@@ -308,17 +301,17 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels2(out *
 		out.String(string(in.Country))
 	}
 	{
-		const prefix string = ",\"yearfirst\":"
+		const prefix string = ",\"yearFirst\":"
 		out.RawString(prefix)
 		out.Int(int(in.YearFirst))
 	}
 	{
-		const prefix string = ",\"yearlast\":"
+		const prefix string = ",\"yearLast\":"
 		out.RawString(prefix)
 		out.Int(int(in.YearLast))
 	}
 	if in.AgeLimit != 0 {
-		const prefix string = ",\"agelimit\":"
+		const prefix string = ",\"ageLimit\":"
 		out.RawString(prefix)
 		out.Int(int(in.AgeLimit))
 	}
@@ -433,15 +426,15 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels4(in *j
 			continue
 		}
 		switch key {
-		case "ID":
+		case "id":
 			out.ID = uint(in.Uint())
-		case "seriesid":
+		case "seriesId":
 			out.SeriesID = uint(in.Uint())
 		case "name":
 			out.Name = string(in.String())
 		case "number":
 			out.Number = int(in.Int())
-		case "trailerlink":
+		case "trailerLink":
 			out.TrailerLink = string(in.String())
 		case "description":
 			out.Description = string(in.String())
@@ -464,12 +457,12 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels4(out *
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"ID\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.Uint(uint(in.ID))
 	}
 	{
-		const prefix string = ",\"seriesid\":"
+		const prefix string = ",\"seriesId\":"
 		out.RawString(prefix)
 		out.Uint(uint(in.SeriesID))
 	}
@@ -484,7 +477,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels4(out *
 		out.Int(int(in.Number))
 	}
 	{
-		const prefix string = ",\"trailerlink\":"
+		const prefix string = ",\"trailerLink\":"
 		out.RawString(prefix)
 		out.String(string(in.TrailerLink))
 	}
@@ -1402,7 +1395,7 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels15(in *
 			continue
 		}
 		switch key {
-		case "ID":
+		case "id":
 			out.ID = uint(in.Uint())
 		case "name":
 			out.Name = string(in.String())
@@ -1423,7 +1416,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels15(out 
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"ID\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.Uint(uint(in.ID))
 	}
@@ -1548,35 +1541,33 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels17(in *
 			continue
 		}
 		switch key {
-		case "ID":
+		case "id":
 			out.ID = uint(in.Uint())
-		case "maingenre":
+		case "mainGenre":
 			out.MainGenre = string(in.String())
-		case "russianname":
+		case "russianName":
 			out.RussianName = string(in.String())
-		case "englishname":
+		case "englishName":
 			out.EnglishName = string(in.String())
-		case "trailerlink":
+		case "trailerLink":
 			out.TrailerLink = string(in.String())
 		case "rating":
 			out.Rating = float64(in.Float64())
-		case "imdbrating":
+		case "imdbRating":
 			out.ImdbRating = float64(in.Float64())
-		case "totalvotes":
+		case "totalVotes":
 			out.TotalVotes = int(in.Int())
-		case "sumvotes":
-			out.SumVotes = int(in.Int())
 		case "description":
 			out.Description = string(in.String())
 		case "image":
 			out.Image = string(in.String())
-		case "backgroundimage":
+		case "backgroundImage":
 			out.BackgroundImage = string(in.String())
 		case "country":
 			out.Country = string(in.String())
 		case "year":
 			out.Year = int(in.Int())
-		case "agelimit":
+		case "ageLimit":
 			out.AgeLimit = int(in.Int())
 		default:
 			in.SkipRecursive()
@@ -1593,27 +1584,27 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels17(out 
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"ID\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.Uint(uint(in.ID))
 	}
 	{
-		const prefix string = ",\"maingenre\":"
+		const prefix string = ",\"mainGenre\":"
 		out.RawString(prefix)
 		out.String(string(in.MainGenre))
 	}
 	{
-		const prefix string = ",\"russianname\":"
+		const prefix string = ",\"russianName\":"
 		out.RawString(prefix)
 		out.String(string(in.RussianName))
 	}
 	{
-		const prefix string = ",\"englishname\":"
+		const prefix string = ",\"englishName\":"
 		out.RawString(prefix)
 		out.String(string(in.EnglishName))
 	}
 	{
-		const prefix string = ",\"trailerlink\":"
+		const prefix string = ",\"trailerLink\":"
 		out.RawString(prefix)
 		out.String(string(in.TrailerLink))
 	}
@@ -1623,19 +1614,14 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels17(out 
 		out.Float64(float64(in.Rating))
 	}
 	{
-		const prefix string = ",\"imdbrating\":"
+		const prefix string = ",\"imdbRating\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.ImdbRating))
 	}
 	{
-		const prefix string = ",\"totalvotes\":"
+		const prefix string = ",\"totalVotes\":"
 		out.RawString(prefix)
 		out.Int(int(in.TotalVotes))
-	}
-	{
-		const prefix string = ",\"sumvotes\":"
-		out.RawString(prefix)
-		out.Int(int(in.SumVotes))
 	}
 	{
 		const prefix string = ",\"description\":"
@@ -1648,7 +1634,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels17(out 
 		out.String(string(in.Image))
 	}
 	if in.BackgroundImage != "" {
-		const prefix string = ",\"backgroundimage\":"
+		const prefix string = ",\"backgroundImage\":"
 		out.RawString(prefix)
 		out.String(string(in.BackgroundImage))
 	}
@@ -1663,7 +1649,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels17(out 
 		out.Int(int(in.Year))
 	}
 	if in.AgeLimit != 0 {
-		const prefix string = ",\"agelimit\":"
+		const prefix string = ",\"ageLimit\":"
 		out.RawString(prefix)
 		out.Int(int(in.AgeLimit))
 	}
@@ -1780,7 +1766,7 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels19(in *
 		switch key {
 		case "ID":
 			out.ID = uint(in.Uint())
-		case "seasonid":
+		case "seasonId":
 			out.SeasonId = uint(in.Uint())
 		case "name":
 			out.Name = string(in.String())
@@ -1808,7 +1794,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels19(out 
 		out.Uint(uint(in.ID))
 	}
 	{
-		const prefix string = ",\"seasonid\":"
+		const prefix string = ",\"seasonId\":"
 		out.RawString(prefix)
 		out.Uint(uint(in.SeasonId))
 	}
