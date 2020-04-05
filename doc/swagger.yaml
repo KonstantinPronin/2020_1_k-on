@@ -4,22 +4,22 @@ info:
   description: API документация Кинопоиска
   version: 1.0.0
 servers:
-- url: /
+  - url: /
 tags:
-- name: users
-  description: Пользователи
-- name: persons
-  description: Актеры и режиссеры
-- name: films
-  description: Фильмы
-- name: series
-  description: Сериалы
-- name: reviews
-  description: Отзывы
+  - name: users
+    description: Пользователи
+  - name: persons
+    description: Актеры и режиссеры
+  - name: films
+    description: Фильмы
+  - name: series
+    description: Сериалы
+  - name: reviews
+    description: Отзывы
 paths:
   /login:
     post:
-      tags: 
+      tags:
         - users
       summary: Login
       requestBody:
@@ -36,27 +36,27 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
                 properties:
-                  code: 
+                  code:
                     type: integer
                   body:
                     $ref: '#/components/schemas/User'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
         403:
           description: already login
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse'                
+                $ref: '#/components/schemas/ErrResponse'
         500:
           description: Internal error
           content:
@@ -64,8 +64,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
   /logout:
-    post:
-      tags: 
+    delete:
+      tags:
         - users
       summary: Logout
       parameters:
@@ -78,7 +78,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -87,7 +87,7 @@ paths:
                     type: integer
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -102,10 +102,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse' 
+                $ref: '#/components/schemas/ErrResponse'
   /signup:
-    put:
-      tags: 
+    post:
+      tags:
         - users
       summary: Create new user
       requestBody:
@@ -117,24 +117,24 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
                 properties:
-                  code: 
+                  code:
                     type: integer
                   body:
                     $ref: '#/components/schemas/User'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
         403:
           description: already login
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -146,25 +146,25 @@ paths:
                 $ref: '#/components/schemas/ErrResponse'
   /user:
     get:
-      tags: 
+      tags:
         - users
-      summary: Get user 
+      summary: Get user
       parameters:
         - name: session_id
           required: true
           in: cookie
           schema:
             type: number
-            format: uuid      
+            format: uuid
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
                 properties:
-                  code: 
+                  code:
                     type: integer
                   body:
                     $ref: '#/components/schemas/User'
@@ -179,9 +179,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse' 
-    post:
-      tags: 
+                $ref: '#/components/schemas/ErrResponse'
+    put:
+      tags:
         - users
       summary: Change user
       parameters:
@@ -190,7 +190,7 @@ paths:
           in: cookie
           schema:
             type: number
-            format: uuid 
+            format: uuid
       requestBody:
         required: true
         content:
@@ -200,21 +200,21 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
                 properties:
-                  code: 
+                  code:
                     type: integer
                   body:
                     $ref: '#/components/schemas/User'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse' 
+                $ref: '#/components/schemas/ErrResponse'
         401:
           description: No session
           content:
@@ -229,10 +229,10 @@ paths:
                 $ref: '#/components/schemas/ErrResponse'
   /persons/{id}:
     get:
-      tags: 
+      tags:
         - persons
       summary: Get person
-      parameters: 
+      parameters:
         - name: id
           description: Person id
           required: true
@@ -242,7 +242,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -253,7 +253,7 @@ paths:
                     $ref: '#/components/schemas/Person'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -264,8 +264,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
   /persons:
-    put:
-      tags: 
+    post:
+      tags:
         - persons
       summary: Create person
       requestBody:
@@ -277,7 +277,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -288,7 +288,7 @@ paths:
                     $ref: '#/components/schemas/Person'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -298,8 +298,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
-    post:
-      tags: 
+    put:
+      tags:
         - persons
       summary: Update person
       requestBody:
@@ -311,7 +311,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -322,7 +322,7 @@ paths:
                     $ref: '#/components/schemas/Person'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -334,10 +334,10 @@ paths:
                 $ref: '#/components/schemas/ErrResponse'
   /films/{id}/reviews:
     post:
-      tags: 
+      tags:
         - reviews
       summary: Add film review
-      parameters: 
+      parameters:
         - name: id
           description: Film id
           required: true
@@ -349,7 +349,7 @@ paths:
           in: cookie
           schema:
             type: number
-            format: uuid    
+            format: uuid
       requestBody:
         required: true
         content:
@@ -359,7 +359,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -370,7 +370,7 @@ paths:
                     $ref: '#/components/schemas/Review'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -379,7 +379,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse'                
+                $ref: '#/components/schemas/ErrResponse'
         500:
           description: Internal error
           content:
@@ -387,10 +387,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
     get:
-      tags: 
+      tags:
         - reviews
       summary: Get film reviews
-      parameters: 
+      parameters:
         - name: id
           description: Film id
           required: true
@@ -400,7 +400,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -413,7 +413,49 @@ paths:
                       $ref: '#/components/schemas/Review'
         400:
           description: Bad request
-          content: 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /films/{id}/reviews/user:
+    get:
+      tags:
+        - reviews
+      summary: Get review for film from current user
+      parameters:
+        - name: id
+          description: Film id
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Review'
+        400:
+          description: Bad request
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -422,7 +464,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse'                
+                $ref: '#/components/schemas/ErrResponse'
         500:
           description: Internal error
           content:
@@ -431,10 +473,10 @@ paths:
                 $ref: '#/components/schemas/ErrResponse'
   /series/{id}/reviews:
     post:
-      tags: 
+      tags:
         - reviews
       summary: Add series review
-      parameters: 
+      parameters:
         - name: id
           description: Series id
           required: true
@@ -446,7 +488,7 @@ paths:
           in: cookie
           schema:
             type: number
-            format: uuid    
+            format: uuid
       requestBody:
         required: true
         content:
@@ -456,7 +498,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -467,7 +509,7 @@ paths:
                     $ref: '#/components/schemas/Review'
         400:
           description: Bad request
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -476,7 +518,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse'                
+                $ref: '#/components/schemas/ErrResponse'
         500:
           description: Internal error
           content:
@@ -484,10 +526,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
     get:
-      tags: 
+      tags:
         - reviews
       summary: Get series reviews
-      parameters: 
+      parameters:
         - name: id
           description: Series id
           required: true
@@ -497,7 +539,7 @@ paths:
       responses:
         200:
           description: Ok
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -510,7 +552,49 @@ paths:
                       $ref: '#/components/schemas/Review'
         400:
           description: Bad request
-          content: 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /seriess/{id}/reviews/user:
+    get:
+      tags:
+        - reviews
+      summary: Get review for series from current user
+      parameters:
+        - name: id
+          description: Series id
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Review'
+        400:
+          description: Bad request
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
@@ -519,16 +603,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse'                
+                $ref: '#/components/schemas/ErrResponse'
         500:
           description: Internal error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrResponse'                 
+                $ref: '#/components/schemas/ErrResponse'
   /films/{id}:
     get:
-      tags: 
+      tags:
         - films
       summary: searches film
       operationId: searchFilm
@@ -551,15 +635,15 @@ paths:
           description: bad input parameter
         '404':
           description: not found
-          
-          
-  /films:        
+
+
+  /films:
     get:
-      tags: 
+      tags:
         - films
       summary: get arr of films with filter criteria
       operationId: filterFilmList
-      description: Получение n-ой страницы результата фильтрации фильмов 
+      description: Получение n-ой страницы результата фильтрации фильмов
       parameters:
         - in: query
           name: page
@@ -577,7 +661,7 @@ paths:
           description: Поле модели фильма на равенство с которым и будет проверяться фильм
           required: false
           schema:
-            type: string    
+            type: string
       responses:
         '200':
           description: your arr
@@ -591,7 +675,7 @@ paths:
           description: Что-то не так с параметрами
   /films/filter:
     get:
-      tags: 
+      tags:
         - films
       summary: get data for filtering
       operationId: filterFilmData
@@ -613,17 +697,17 @@ paths:
                     example: 1
                   maxyear:
                     type: integer
-                    example: 10  
+                    example: 10
         '500':
           description: Что-то не так с бд
-          
-  /series:        
+
+  /series:
     get:
-      tags: 
+      tags:
         - series
       summary: get arr of series with filter criteria
       operationId: filterSeriesList
-      description: Получение n-ой страницы результата фильтрации сериалов 
+      description: Получение n-ой страницы результата фильтрации сериалов
       parameters:
         - in: query
           name: page
@@ -641,7 +725,7 @@ paths:
           description: Поле модели сериала на равенство с которым и будет проверяться фильм
           required: false
           schema:
-            type: string    
+            type: string
       responses:
         '200':
           description: your arr
@@ -655,7 +739,7 @@ paths:
           description: Что-то не так с параметрами
   /series/filter:
     get:
-      tags: 
+      tags:
         - series
       summary: get data for filtering
       operationId: filterSeriesData
@@ -677,13 +761,13 @@ paths:
                     example: 1
                   maxyear:
                     type: integer
-                    example: 10  
+                    example: 10
         '500':
-          description: Что-то не так с бд    
-          
+          description: Что-то не так с бд
+
   /series/{id}:
     get:
-      tags: 
+      tags:
         - series
       summary: searches series
       operationId: searchSeries
@@ -705,10 +789,10 @@ paths:
         '400':
           description: bad input parameter
         '404':
-          description: not found          
+          description: not found
   /series/{id}/seasons:
     get:
-      tags: 
+      tags:
         - series
       summary: searches series seasons
       operationId: searchSeasons
@@ -732,10 +816,10 @@ paths:
         '400':
           description: bad input parameter
         '404':
-          description: not found          
+          description: not found
   /seasons/{id}/episodes:
     get:
-      tags: 
+      tags:
         - series
       summary: searches film
       operationId: searchEpisodes
@@ -759,7 +843,7 @@ paths:
         '400':
           description: bad input parameter
         '404':
-          description: not found 
+          description: not found
 
 components:
   schemas:
@@ -771,7 +855,7 @@ components:
         body:
           type: string
           example: "error"
-    
+
     User:
       type: object
       properties:
@@ -786,7 +870,7 @@ components:
         image:
           type: string
           format: uri
-          
+
     ListUser:
       type: object
       properties:
@@ -795,24 +879,24 @@ components:
         image:
           type: string
           format: uri
-    
+
     Film:
       type: object
       required:
-      - id
-      - mainGenre      
-      - russianName     
-      - englishName     
-      - trailerLink    
-      - rating          
-      - imdbRating      
-      - totalVotes      
-      - description     
-      - image           
-      - backgroundImage 
-      - country         
-      - year           
-      - ageLimit  
+        - id
+        - mainGenre
+        - russianName
+        - englishName
+        - trailerLink
+        - rating
+        - imdbRating
+        - totalVotes
+        - description
+        - image
+        - backgroundImage
+        - country
+        - year
+        - ageLimit
       properties:
         id:
           type: integer
@@ -823,22 +907,22 @@ components:
           example: Horror
         russianname:
           type: string
-          example: Бригада  
+          example: Бригада
         englishName:
           type: string
-          example: Widget Adapter  
+          example: Widget Adapter
         trailerLink:
           type: string
-          example: /youtube.com  
+          example: /youtube.com
         rating:
           type: number
-          example: 10.0  
+          example: 10.0
         imdbRating:
           type: number
           example: 10.0
         totalVotes:
           type: integer
-          example: 100 
+          example: 100
         description:
           type: string
           example: Widget Adapter
@@ -847,27 +931,27 @@ components:
           example: /static/1.jpg
         backgroundImage:
           type: string
-          example: /static/1.jpg  
+          example: /static/1.jpg
         country:
           type: string
           example: Russia
         year:
           type: integer
-          example: 2020 
+          example: 2020
         ageLimit:
           type: integer
-          example: 18  
-  
+          example: 18
+
     ListFilm :
       type: object
       required:
-      - id
-      - russianName     
-      - image           
-      - country         
-      - year           
-      - rating
-      - ageimit        
+        - id
+        - russianName
+        - image
+        - country
+        - year
+        - rating
+        - ageimit
       properties:
         id:
           type: integer
@@ -875,10 +959,10 @@ components:
           example: 1
         russianname:
           type: string
-          example: Бригада  
+          example: Бригада
         rating:
           type: number
-          example: 10.0  
+          example: 10.0
         image:
           type: string
           example: /static/1.jpg
@@ -887,7 +971,7 @@ components:
           example: Russia
         year:
           type: integer
-          example: 2020 
+          example: 2020
         ageLimit:
           type: integer
           example: 18
@@ -895,21 +979,21 @@ components:
     Series:
       type: object
       required:
-      - id
-      - mainGenre      
-      - russianName     
-      - englishName     
-      - trailerLink    
-      - rating          
-      - imdbRating      
-      - totalVotes      
-      - description     
-      - image           
-      - backgroundImage 
-      - country         
-      - yearFirst
-      - yearLast
-      - ageLimit  
+        - id
+        - mainGenre
+        - russianName
+        - englishName
+        - trailerLink
+        - rating
+        - imdbRating
+        - totalVotes
+        - description
+        - image
+        - backgroundImage
+        - country
+        - yearFirst
+        - yearLast
+        - ageLimit
       properties:
         id:
           type: integer
@@ -920,22 +1004,22 @@ components:
           example: Horror
         russianname:
           type: string
-          example: Бригада  
+          example: Бригада
         englishName:
           type: string
-          example: Widget Adapter  
+          example: Widget Adapter
         trailerLink:
           type: string
-          example: /youtube.com  
+          example: /youtube.com
         rating:
           type: number
-          example: 10.0  
+          example: 10.0
         imdbRating:
           type: number
           example: 10.0
         totalVotes:
           type: integer
-          example: 100 
+          example: 100
         description:
           type: string
           example: Widget Adapter
@@ -944,7 +1028,7 @@ components:
           example: /static/1.jpg
         backgroundImage:
           type: string
-          example: /static/1.jpg  
+          example: /static/1.jpg
         country:
           type: string
           example: Russia
@@ -953,22 +1037,22 @@ components:
           example: 2020
         yearLast:
           type: integer
-          example: 2020  
+          example: 2020
         ageLimit:
           type: integer
           example: 18
-          
+
     ListSeries :
       type: object
       required:
-      - id
-      - russianName     
-      - image           
-      - country         
-      - yearFirst
-      - yearLast
-      - rating
-      - ageimit        
+        - id
+        - russianName
+        - image
+        - country
+        - yearFirst
+        - yearLast
+        - rating
+        - ageimit
       properties:
         id:
           type: integer
@@ -976,10 +1060,10 @@ components:
           example: 1
         russianname:
           type: string
-          example: Бригада  
+          example: Бригада
         rating:
           type: number
-          example: 10.0  
+          example: 10.0
         image:
           type: string
           example: /static/1.jpg
@@ -988,25 +1072,25 @@ components:
           example: Russia
         yearFirst:
           type: integer
-          example: 2020 
+          example: 2020
         yearLast:
           type: integer
-          example: 2020   
+          example: 2020
         ageLimit:
           type: integer
-          example: 18 
+          example: 18
 
     Season :
       type: object
       required:
-      - id
-      - seriesId     
-      - name           
-      - number         
-      - trailerLink
-      - description
-      - year
-      - image        
+        - id
+        - seriesId
+        - name
+        - number
+        - trailerLink
+        - description
+        - year
+        - image
       properties:
         id:
           type: integer
@@ -1014,13 +1098,13 @@ components:
           example: 1
         seriesId:
           type: integer
-          example: 1  
+          example: 1
         name:
           type: string
-          example: Name  
+          example: Name
         number:
           type: integer
-          example: 1    
+          example: 1
         trailerLink:
           type: string
           example: /youtube.com
@@ -1029,19 +1113,19 @@ components:
           example: description
         year:
           type: integer
-          example: 2020 
+          example: 2020
         image:
           type: string
-          example: /static/1.jpg      
+          example: /static/1.jpg
 
     Episode:
       type: object
       required:
-      - id
-      - seasonId     
-      - name           
-      - number         
-      - image        
+        - id
+        - seasonId
+        - name
+        - number
+        - image
       properties:
         id:
           type: integer
@@ -1049,13 +1133,13 @@ components:
           example: 1
         seasonId:
           type: integer
-          example: 1  
+          example: 1
         name:
           type: string
-          example: Name  
+          example: Name
         number:
           type: integer
-          example: 1  
+          example: 1
         trailerLink:
           type: string
           example: /youtube.com
@@ -1064,17 +1148,17 @@ components:
           example: description
         year:
           type: integer
-          example: 2020 
+          example: 2020
         image:
           type: string
-          example: /static/1.jpg      
+          example: /static/1.jpg
 
     Genre:
       type: object
       required:
-      - id
-      - name           
-      - reference         
+        - id
+        - name
+        - reference
       properties:
         id:
           type: integer
@@ -1082,22 +1166,23 @@ components:
           example: 1
         name:
           type: string
-          example: Name  
+          example: Name
         reference:
           type: string
           example: ref
-          
+
     Person:
       type: object
-      required: 
+      required:
         - name
         - occupation
         - birthDate
         - birthPlace
+        - image
       properties:
         name:
           type: string
-        occupation: 
+        occupation:
           type: string
           example: 'actor'
         birthDate:
@@ -1106,6 +1191,9 @@ components:
           example: '2016-07-21'
         birthPlace:
           type: string
+        image:
+          type: string
+          format: uri
         films:
           type: array
           items:
@@ -1114,10 +1202,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ListSeries'
-    
+
     Review:
       type: object
-      required: 
+      required:
         - rating
         - body
       properties:
@@ -1127,5 +1215,3 @@ components:
           type: string
         user:
           $ref: '#/components/schemas/ListUser'
-            
-        

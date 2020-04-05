@@ -23,8 +23,8 @@ func NewPersonHandler(e *echo.Echo, usecase person.UseCase, logger *zap.Logger) 
 	}
 
 	e.GET("/persons/:id", handler.GetById, middleware.ParseErrors)
-	e.PUT("/persons", handler.Add, middleware.ParseErrors)
-	e.POST("/persons", handler.Update, middleware.ParseErrors)
+	e.POST("/persons", handler.Add, middleware.ParseErrors)
+	e.PUT("/persons", handler.Update, middleware.ParseErrors)
 }
 
 func (handler *PersonHandler) GetById(ctx echo.Context) error {
