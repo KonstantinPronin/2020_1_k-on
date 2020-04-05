@@ -6,6 +6,7 @@ type Person struct {
 	Occupation string        `json:"occupation" gorm:"column:occupation"`
 	BirthDate  string        `json:"birthDate" gorm:"column:birth_date"`
 	BirthPlace string        `json:"birthPlace" gorm:"column:birth_place"`
+	Image      string        `json:"image" gorm:"column:image"`
 	Films      ListsFilm     `json:"films" gorm:"-"`
 	Series     ListSeriesArr `json:"series" gorm:"-"`
 }

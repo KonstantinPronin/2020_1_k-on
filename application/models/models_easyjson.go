@@ -803,6 +803,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels8(in *j
 			out.BirthDate = string(in.String())
 		case "birthPlace":
 			out.BirthPlace = string(in.String())
+		case "image":
+			out.Image = string(in.String())
 		case "films":
 			(out.Films).UnmarshalEasyJSON(in)
 		case "series":
@@ -845,6 +847,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels8(out *
 		const prefix string = ",\"birthPlace\":"
 		out.RawString(prefix)
 		out.String(string(in.BirthPlace))
+	}
+	{
+		const prefix string = ",\"image\":"
+		out.RawString(prefix)
+		out.String(string(in.Image))
 	}
 	{
 		const prefix string = ",\"films\":"

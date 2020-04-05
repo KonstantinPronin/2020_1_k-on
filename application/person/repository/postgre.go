@@ -59,6 +59,9 @@ func (rep *PersonDatabase) Update(p *models.Person) (*models.Person, error) {
 	if p.BirthPlace != "" {
 		savedPerson.BirthPlace = p.BirthPlace
 	}
+	if p.Image != "" {
+		savedPerson.Image = p.Image
+	}
 
 	return savedPerson, rep.conn.Table("kinopoisk.persons").Save(savedPerson).Error
 }

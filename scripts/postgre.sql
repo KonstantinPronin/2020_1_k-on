@@ -172,6 +172,9 @@ create table kinopoisk.persons
     birth_place varchar(80)
 );
 
+ALTER TABLE kinopoisk.persons
+    ADD COLUMN image character varying(80);
+
 create table kinopoisk.film_actor
 (
     id        bigserial primary key,
