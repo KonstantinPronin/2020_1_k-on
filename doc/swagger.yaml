@@ -1,0 +1,1131 @@
+openapi: 3.0.0
+info:
+  title: Кинопоиск
+  description: API документация Кинопоиска
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: users
+  description: Пользователи
+- name: persons
+  description: Актеры и режиссеры
+- name: films
+  description: Фильмы
+- name: series
+  description: Сериалы
+- name: reviews
+  description: Отзывы
+paths:
+  /login:
+    post:
+      tags: 
+        - users
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: already login
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'                
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /logout:
+    post:
+      tags: 
+        - users
+      summary: Logout
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse' 
+  /signup:
+    put:
+      tags: 
+        - users
+      summary: Create new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: already login
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /user:
+    get:
+      tags: 
+        - users
+      summary: Get user 
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid      
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/User'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse' 
+    post:
+      tags: 
+        - users
+      summary: Change user
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: 
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse' 
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /persons/{id}:
+    get:
+      tags: 
+        - persons
+      summary: Get person
+      parameters: 
+        - name: id
+          description: Person id
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Person'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /persons:
+    put:
+      tags: 
+        - persons
+      summary: Create person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Person'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    post:
+      tags: 
+        - persons
+      summary: Update person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Person'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /films/{id}/reviews:
+    post:
+      tags: 
+        - reviews
+      summary: Add film review
+      parameters: 
+        - name: id
+          description: Film id
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid    
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Review'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'                
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    get:
+      tags: 
+        - reviews
+      summary: Get film reviews
+      parameters: 
+        - name: id
+          description: Film id
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'                
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /series/{id}/reviews:
+    post:
+      tags: 
+        - reviews
+      summary: Add series review
+      parameters: 
+        - name: id
+          description: Series id
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid    
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Review'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'                
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    get:
+      tags: 
+        - reviews
+      summary: Get series reviews
+      parameters: 
+        - name: id
+          description: Series id
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+        400:
+          description: Bad request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'                
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'                 
+  /films/{id}:
+    get:
+      tags: 
+        - films
+      summary: searches film
+      operationId: searchFilm
+      description: |
+        Получение фильма по id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: your film
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '400':
+          description: bad input parameter
+        '404':
+          description: not found
+          
+          
+  /films:        
+    get:
+      tags: 
+        - films
+      summary: get arr of films with filter criteria
+      operationId: filterFilmList
+      description: Получение n-ой страницы результата фильтрации фильмов 
+      parameters:
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: order
+          description: Поле модели фильма ,по которому упорядочивание будет
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: film field
+          description: Поле модели фильма на равенство с которым и будет проверяться фильм
+          required: false
+          schema:
+            type: string    
+      responses:
+        '200':
+          description: your arr
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListFilm'
+        '500':
+          description: Что-то не так с параметрами
+  /films/filter:
+    get:
+      tags: 
+        - films
+      summary: get data for filtering
+      operationId: filterFilmData
+      description: Получение данных для фильтрации
+      responses:
+        '200':
+          description: get data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  genres:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Genre'
+                  minyear:
+                    type: integer
+                    example: 1
+                  maxyear:
+                    type: integer
+                    example: 10  
+        '500':
+          description: Что-то не так с бд
+          
+  /series:        
+    get:
+      tags: 
+        - series
+      summary: get arr of series with filter criteria
+      operationId: filterSeriesList
+      description: Получение n-ой страницы результата фильтрации сериалов 
+      parameters:
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: order
+          description: Поле модели сериала ,по которому упорядочивание будет
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: series field
+          description: Поле модели сериала на равенство с которым и будет проверяться фильм
+          required: false
+          schema:
+            type: string    
+      responses:
+        '200':
+          description: your arr
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListSeries'
+        '500':
+          description: Что-то не так с параметрами
+  /series/filter:
+    get:
+      tags: 
+        - series
+      summary: get data for filtering
+      operationId: filterSeriesData
+      description: Получение данных для фильтрации
+      responses:
+        '200':
+          description: get data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  genres:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Genre'
+                  minyear:
+                    type: integer
+                    example: 1
+                  maxyear:
+                    type: integer
+                    example: 10  
+        '500':
+          description: Что-то не так с бд    
+          
+  /series/{id}:
+    get:
+      tags: 
+        - series
+      summary: searches series
+      operationId: searchSeries
+      description: |
+        Получение сериала по id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: your stries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Series'
+        '400':
+          description: bad input parameter
+        '404':
+          description: not found          
+  /series/{id}/seasons:
+    get:
+      tags: 
+        - series
+      summary: searches series seasons
+      operationId: searchSeasons
+      description: |
+        Получение сезонов по id сериала
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: your seasons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Season'
+        '400':
+          description: bad input parameter
+        '404':
+          description: not found          
+  /seasons/{id}/episodes:
+    get:
+      tags: 
+        - series
+      summary: searches film
+      operationId: searchEpisodes
+      description: |
+        Получение эпизодов по id сезона
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: your episodes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Episode'
+        '400':
+          description: bad input parameter
+        '404':
+          description: not found 
+
+components:
+  schemas:
+    ErrResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        body:
+          type: string
+          example: "error"
+    
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+        email:
+          type: string
+          format: email
+        image:
+          type: string
+          format: uri
+          
+    ListUser:
+      type: object
+      properties:
+        username:
+          type: string
+        image:
+          type: string
+          format: uri
+    
+    Film:
+      type: object
+      required:
+      - id
+      - mainGenre      
+      - russianName     
+      - englishName     
+      - trailerLink    
+      - rating          
+      - imdbRating      
+      - totalVotes      
+      - description     
+      - image           
+      - backgroundImage 
+      - country         
+      - year           
+      - ageLimit  
+      properties:
+        id:
+          type: integer
+          format: uuid
+          example: 1
+        mainGenre:
+          type: string
+          example: Horror
+        russianname:
+          type: string
+          example: Бригада  
+        englishName:
+          type: string
+          example: Widget Adapter  
+        trailerLink:
+          type: string
+          example: /youtube.com  
+        rating:
+          type: number
+          example: 10.0  
+        imdbRating:
+          type: number
+          example: 10.0
+        totalVotes:
+          type: integer
+          example: 100 
+        description:
+          type: string
+          example: Widget Adapter
+        image:
+          type: string
+          example: /static/1.jpg
+        backgroundImage:
+          type: string
+          example: /static/1.jpg  
+        country:
+          type: string
+          example: Russia
+        year:
+          type: integer
+          example: 2020 
+        ageLimit:
+          type: integer
+          example: 18  
+  
+    ListFilm :
+      type: object
+      required:
+      - id
+      - russianName     
+      - image           
+      - country         
+      - year           
+      - rating
+      - ageimit        
+      properties:
+        id:
+          type: integer
+          format: uuid
+          example: 1
+        russianname:
+          type: string
+          example: Бригада  
+        rating:
+          type: number
+          example: 10.0  
+        image:
+          type: string
+          example: /static/1.jpg
+        country:
+          type: string
+          example: Russia
+        year:
+          type: integer
+          example: 2020 
+        ageLimit:
+          type: integer
+          example: 18
+
+    Series:
+      type: object
+      required:
+      - id
+      - mainGenre      
+      - russianName     
+      - englishName     
+      - trailerLink    
+      - rating          
+      - imdbRating      
+      - totalVotes      
+      - description     
+      - image           
+      - backgroundImage 
+      - country         
+      - yearFirst
+      - yearLast
+      - ageLimit  
+      properties:
+        id:
+          type: integer
+          format: uuid
+          example: 1
+        mainGenre:
+          type: string
+          example: Horror
+        russianname:
+          type: string
+          example: Бригада  
+        englishName:
+          type: string
+          example: Widget Adapter  
+        trailerLink:
+          type: string
+          example: /youtube.com  
+        rating:
+          type: number
+          example: 10.0  
+        imdbRating:
+          type: number
+          example: 10.0
+        totalVotes:
+          type: integer
+          example: 100 
+        description:
+          type: string
+          example: Widget Adapter
+        image:
+          type: string
+          example: /static/1.jpg
+        backgroundImage:
+          type: string
+          example: /static/1.jpg  
+        country:
+          type: string
+          example: Russia
+        yearFirst:
+          type: integer
+          example: 2020
+        yearLast:
+          type: integer
+          example: 2020  
+        ageLimit:
+          type: integer
+          example: 18
+          
+    ListSeries :
+      type: object
+      required:
+      - id
+      - russianName     
+      - image           
+      - country         
+      - yearFirst
+      - yearLast
+      - rating
+      - ageimit        
+      properties:
+        id:
+          type: integer
+          format: uuid
+          example: 1
+        russianname:
+          type: string
+          example: Бригада  
+        rating:
+          type: number
+          example: 10.0  
+        image:
+          type: string
+          example: /static/1.jpg
+        country:
+          type: string
+          example: Russia
+        yearFirst:
+          type: integer
+          example: 2020 
+        yearLast:
+          type: integer
+          example: 2020   
+        ageLimit:
+          type: integer
+          example: 18 
+
+    Season :
+      type: object
+      required:
+      - id
+      - seriesId     
+      - name           
+      - number         
+      - trailerLink
+      - description
+      - year
+      - image        
+      properties:
+        id:
+          type: integer
+          format: uuid
+          example: 1
+        seriesId:
+          type: integer
+          example: 1  
+        name:
+          type: string
+          example: Name  
+        number:
+          type: integer
+          example: 1    
+        trailerLink:
+          type: string
+          example: /youtube.com
+        description:
+          type: string
+          example: description
+        year:
+          type: integer
+          example: 2020 
+        image:
+          type: string
+          example: /static/1.jpg      
+
+    Episode:
+      type: object
+      required:
+      - id
+      - seasonId     
+      - name           
+      - number         
+      - image        
+      properties:
+        id:
+          type: integer
+          format: uuid
+          example: 1
+        seasonId:
+          type: integer
+          example: 1  
+        name:
+          type: string
+          example: Name  
+        number:
+          type: integer
+          example: 1  
+        trailerLink:
+          type: string
+          example: /youtube.com
+        description:
+          type: string
+          example: description
+        year:
+          type: integer
+          example: 2020 
+        image:
+          type: string
+          example: /static/1.jpg      
+
+    Genre:
+      type: object
+      required:
+      - id
+      - name           
+      - reference         
+      properties:
+        id:
+          type: integer
+          format: uuid
+          example: 1
+        name:
+          type: string
+          example: Name  
+        reference:
+          type: string
+          example: ref
+          
+    Person:
+      type: object
+      required: 
+        - name
+        - occupation
+        - birthDate
+        - birthPlace
+      properties:
+        name:
+          type: string
+        occupation: 
+          type: string
+          example: 'actor'
+        birthDate:
+          type: string
+          format: date
+          example: '2016-07-21'
+        birthPlace:
+          type: string
+        films:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListFilm'
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListSeries'
+    
+    Review:
+      type: object
+      required: 
+        - rating
+        - body
+      properties:
+        rating:
+          type: integer
+        body:
+          type: string
+        user:
+          $ref: '#/components/schemas/ListUser'
+            
+        
