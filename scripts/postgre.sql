@@ -58,6 +58,7 @@ create table kinopoisk.films_genres
     constraint films_genres_pkey primary key (film_id, genre_id)
 );
 
+
 create table kinopoisk.series
 (
     id              serial primary key,
@@ -99,55 +100,68 @@ create table kinopoisk.episodes
     image    varchar(80)
 );
 
+create table kinopoisk.series_genres
+(
+    series_id int references kinopoisk.series (id) on update cascade on delete cascade,
+    genre_id  int references kinopoisk.genres (id) on update cascade on delete cascade,
+    constraint series_genres_pkey primary key (series_id, genre_id)
+);
+
 -- reviews tables
 create table kinopoisk.film_reviews
 (
-    id          bigserial primary key,
-    rating      integer,
-    body        text,
-    product_id  bigint references kinopoisk.films(id) on delete cascade,
-    user_id     bigint references kinopoisk.users(id) on delete cascade
+    id         bigserial primary key,
+    rating     integer,
+    body       text,
+    product_id bigint references kinopoisk.films (id) on delete cascade,
+    user_id    bigint references kinopoisk.users (id) on delete cascade
 );
 
 create table kinopoisk.series_reviews
 (
-    id          bigserial primary key,
-    rating      integer,
-    body        text,
-    product_id  bigint references kinopoisk.series(id) on delete cascade,
-    user_id     bigint references kinopoisk.users(id) on delete cascade
+    id         bigserial primary key,
+    rating     integer,
+    body       text,
+    product_id bigint references kinopoisk.series (id) on delete cascade,
+    user_id    bigint references kinopoisk.users (id) on delete cascade
 );
 
 -- triggers for review table
-create or replace function kinopoisk.film_rating() returns trigger as $film_rating$
-	begin
-		update kinopoisk.films
-			set totalvotes = totalvotes + 1,
-				sumvotes = sumvotes + new.rating,
-				rating = sumvotes / (totalvotes + 1)
-			where id = new.product_id;
-		return new;
-	end;
+create or replace function kinopoisk.film_rating() returns trigger as
+$film_rating$
+begin
+    update kinopoisk.films
+    set totalvotes = totalvotes + 1,
+        sumvotes   = sumvotes + new.rating,
+        rating     = sumvotes / (totalvotes + 1)
+    where id = new.product_id;
+    return new;
+end;
 $film_rating$ LANGUAGE plpgsql;
 
 create trigger film_rating
-	after insert on kinopoisk.film_reviews
-	for each row execute procedure kinopoisk.film_rating();
-	
-create or replace function kinopoisk.series_rating() returns trigger as $series_rating$
-	begin
-		update kinopoisk.series
-			set totalvotes = totalvotes + 1,
-				sumvotes = sumvotes + new.rating,
-				rating = sumvotes / (totalvotes + 1)
-			where id = new.product_id;
-		return new;
-	end;
+    after insert
+    on kinopoisk.film_reviews
+    for each row
+execute procedure kinopoisk.film_rating();
+
+create or replace function kinopoisk.series_rating() returns trigger as
+$series_rating$
+begin
+    update kinopoisk.series
+    set totalvotes = totalvotes + 1,
+        sumvotes   = sumvotes + new.rating,
+        rating     = sumvotes / (totalvotes + 1)
+    where id = new.product_id;
+    return new;
+end;
 $series_rating$ LANGUAGE plpgsql;
 
 create trigger series_rating
-	after insert on kinopoisk.series_reviews
-	for each row execute procedure kinopoisk.series_rating();
+    after insert
+    on kinopoisk.series_reviews
+    for each row
+execute procedure kinopoisk.series_rating();
 
 create table kinopoisk.persons
 (
@@ -160,16 +174,16 @@ create table kinopoisk.persons
 
 create table kinopoisk.film_actor
 (
-    id          bigserial primary key,
-    film_id     bigint references kinopoisk.films(id) on delete cascade,
-    person_id   bigint references kinopoisk.persons(id) on delete cascade
+    id        bigserial primary key,
+    film_id   bigint references kinopoisk.films (id) on delete cascade,
+    person_id bigint references kinopoisk.persons (id) on delete cascade
 );
 
 create table kinopoisk.series_actor
 (
-    id          bigserial primary key,
-    series_id   bigint references kinopoisk.series(id) on delete cascade,
-    person_id   bigint references kinopoisk.persons(id) on delete cascade
+    id        bigserial primary key,
+    series_id bigint references kinopoisk.series (id) on delete cascade,
+    person_id bigint references kinopoisk.persons (id) on delete cascade
 );
 
 -- default inserts
@@ -204,6 +218,12 @@ values (1, 3),
        (6, 1),
        (6, 3);
 
+insert into kinopoisk.series_genres
+values (1, 3),
+       (1, 1),
+       (2, 1),
+       (2, 2);
+
 insert into kinopoisk.series
 values (default, 'Комедия', 'Бригада', 'Brigada', '/trailer', 0.12, 10.0, 0, 0, 'brigada description',
         '/static/1.jpg', '/static/1.jpg', 'Россия', 2019, 0, 18),
@@ -223,8 +243,12 @@ values (default, 1, 'ep11', 1, 'img1'),
        (default, 3, 'ep31', 1, 'img3'),
        (default, 4, 'ep41', 1, 'img21');
 
-insert into kinopoisk.persons values(default, 'ivan ivanov', 'actor', '2020-01-01', 'Moscow');
-insert into kinopoisk.persons values(default, 'alex alexov', 'actor', '2020-01-01', 'Moscow');
+insert into kinopoisk.persons
+values (default, 'ivan ivanov', 'actor', '2020-01-01', 'Moscow');
+insert into kinopoisk.persons
+values (default, 'alex alexov', 'actor', '2020-01-01', 'Moscow');
 
-insert into kinopoisk.film_actor values(default, 1, 1);
-insert into kinopoisk.series_actor values(default, 1, 2);
+insert into kinopoisk.film_actor
+values (default, 1, 1);
+insert into kinopoisk.series_actor
+values (default, 1, 2);

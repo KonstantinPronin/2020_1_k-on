@@ -12,6 +12,7 @@ type Usecase interface {
 	CreateFilm(f models.Film) (models.Film, bool)
 	FilterFilmList(fields map[string][]string) (models.Films, bool)
 	FilterFilmData() (interface{}, bool)
+	GetFilmGenres(fid uint) (models.Genres, bool)
 	UploadImageFilm(id uint) models.Film //?? как правильно вести себя с картинками?
 	GetImageFilm(id uint) string         //(model.File)????????????
 }

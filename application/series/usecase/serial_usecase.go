@@ -13,6 +13,14 @@ func NewSeriesUsecase(serialRepo series.Repository) series.Usecase {
 	return &serialUsecase{serialRepo: serialRepo}
 }
 
+func (SU serialUsecase) GetSeriesGenres(fid uint) (models.Genres, bool) {
+	g, ok := SU.serialRepo.GetSeriesGenres(fid)
+	if !ok {
+		return nil, false
+	}
+	return g, ok
+}
+
 func (SU serialUsecase) GetSeriesSeasons(id uint) (models.Seasons, bool) {
 	seasons, ok := SU.serialRepo.GetSeriesSeasons(id)
 	if !ok {

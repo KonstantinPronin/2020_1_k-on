@@ -13,6 +13,14 @@ func NewFilmUsecase(filmRepo film.Repository) film.Usecase {
 	return &filmUsecase{filmRepo: filmRepo}
 }
 
+func (FU filmUsecase) GetFilmGenres(fid uint) (models.Genres, bool) {
+	g, ok := FU.filmRepo.GetFilmGenres(fid)
+	if !ok {
+		return nil, false
+	}
+	return g, ok
+}
+
 func (FU filmUsecase) FilterFilmData() (interface{}, bool) {
 	data, ok := FU.filmRepo.FilterFilmData()
 	if !ok {

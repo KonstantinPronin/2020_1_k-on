@@ -17,6 +17,18 @@ func NewPostgresForSeries(db *gorm.DB) series.Repository {
 	return &PostgresForSerials{DB: db}
 }
 
+func (p PostgresForSerials) GetSeriesGenres(fid uint) (models.Genres, bool) {
+	genres := &models.Genres{}
+	db := p.DB.Table("kinopoisk.genres").Select("genres.id,genres.name,genres.reference").
+		Joins("join kinopoisk.series_genres on series_genres.genre_id=genres.id").Where("series_genres.series_id=?", fid).Find(genres)
+	err := db.Error
+	if err != nil {
+		return nil, false
+	}
+	db.Close()
+	return *genres, true
+}
+
 func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*models.SeriesArr, bool) {
 	series := &models.SeriesArr{}
 	var db *gorm.DB

@@ -34,16 +34,6 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	e.Use(middleware.Middleware)
 	e.Use(middleware.CORS)
 
-	//film handler
-	films := filmRepository.NewPostgresForFilms(db)
-	film := filmUsecase.NewFilmUsecase(films)
-	filmHandler.NewFilmHandler(e, film)
-
-	//series handler
-	series := serialRepository.NewPostgresForSeries(db)
-	seriesUC := serialUsecase.NewSeriesUsecase(series)
-	serialHandler.NewSeriesHandler(e, seriesUC)
-
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
 	users := userRepository.NewUserDatabase(db, logger)
@@ -51,17 +41,27 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	user := userUsecase.NewUser(sessions, users, logger)
 	userHandler.NewUserHandler(e, user, auth, logger)
 
+	//person handler
+	persons := personRepository.NewPersonDatabase(db, logger)
+	person := personUsecase.NewPerson(persons, logger)
+	personHandler.NewPersonHandler(e, person, logger)
+
+	//series handler
+	series := serialRepository.NewPostgresForSeries(db)
+	seriesUC := serialUsecase.NewSeriesUsecase(series)
+	serialHandler.NewSeriesHandler(e, seriesUC, person)
+
+	//film handler
+	films := filmRepository.NewPostgresForFilms(db)
+	film := filmUsecase.NewFilmUsecase(films)
+	filmHandler.NewFilmHandler(e, film, person)
+
 	//review handler
 	filmReviewsRep := reviewRepository.NewFilmReviewDatabase(db, logger)
 	filmReview := reviewUsecase.NewFilmReview(filmReviewsRep, films)
 	seriesReviewsRep := reviewRepository.NewSeriesReviewDatabase(db, logger)
 	seriesReview := reviewUsecase.NewSeriesReview(seriesReviewsRep, series)
 	reviewHandler.NewReviewHandler(e, filmReview, seriesReview, auth, logger)
-
-	//person handler
-	persons := personRepository.NewPersonDatabase(db, logger)
-	person := personUsecase.NewPerson(persons, logger)
-	personHandler.NewPersonHandler(e, person, logger)
 
 	return &Server{
 		port: port,

@@ -21,6 +21,18 @@ func NewPostgresForFilms(db *gorm.DB) film.Repository {
 	return &PostgresForFilms{DB: db}
 }
 
+func (p PostgresForFilms) GetFilmGenres(fid uint) (models.Genres, bool) {
+	genres := &models.Genres{}
+	db := p.DB.Table("kinopoisk.genres").Select("genres.id,genres.name,genres.reference").
+		Joins("join kinopoisk.films_genres on films_genres.genre_id=genres.id").Where("films_genres.film_id=?", fid).Find(genres)
+	err := db.Error
+	if err != nil {
+		return nil, false
+	}
+	db.Close()
+	return *genres, true
+}
+
 func (p PostgresForFilms) FilterFilmData() (map[string]interface{}, bool) {
 	genres := &models.Genres{}
 
@@ -29,10 +41,12 @@ func (p PostgresForFilms) FilterFilmData() (map[string]interface{}, bool) {
 	if err != nil {
 		return nil, false
 	}
+	db.Close()
 	var max, min int
 	row := db.Table("kinopoisk.films").Select("MAX(year),MIN(year)").Row()
 	row.Scan(&max, &min)
 	err = db.Error
+	db.Close()
 	if err != nil {
 		return nil, false
 	}

@@ -3,16 +3,18 @@ package http
 import (
 	"errors"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
 	"github.com/labstack/echo"
 	"strconv"
 )
 
 type SeriesHandler struct {
-	usecase series.Usecase
+	usecase  series.Usecase
+	pusecase person.UseCase
 }
 
-func NewSeriesHandler(e *echo.Echo, usecase series.Usecase) {
+func NewSeriesHandler(e *echo.Echo, usecase series.Usecase, pusecase person.UseCase) {
 	handler := &SeriesHandler{
 		usecase: usecase,
 	}
@@ -63,7 +65,13 @@ func (sh SeriesHandler) GetSeries(ctx echo.Context) error {
 		ctx.Response().Write(resp)
 		return errors.New("Not Found")
 	}
-	resp, _ := models.Generate(200, serial, &ctx).MarshalJSON()
+	a, _ := sh.pusecase.GetActorsForSeries(serial.ID)
+	g, _ := sh.usecase.GetSeriesGenres(serial.ID)
+	r := make(map[string]interface{})
+	r["object"] = serial
+	r["actors"] = a
+	r["genres"] = g
+	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
 	_, err = ctx.Response().Write(resp)
 	return err
 }

@@ -4,18 +4,21 @@ import (
 	"errors"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
 	"strconv"
 )
 
 type FilmHandler struct {
-	usecase film.Usecase
+	fusecase film.Usecase
+	pusecase person.UseCase
 }
 
-func NewFilmHandler(e *echo.Echo, usecase film.Usecase) {
+func NewFilmHandler(e *echo.Echo, fusecase film.Usecase, pusecase person.UseCase) {
 	handler := &FilmHandler{
-		usecase: usecase,
+		fusecase: fusecase,
+		pusecase: pusecase,
 	}
 	e.GET("/films/:id", handler.GetFilm)
 	e.GET("/", handler.GetFilmList)
@@ -25,7 +28,7 @@ func NewFilmHandler(e *echo.Echo, usecase film.Usecase) {
 }
 
 func (fh FilmHandler) FilterFilmData(ctx echo.Context) error {
-	d, ok := fh.usecase.FilterFilmData()
+	d, ok := fh.fusecase.FilterFilmData()
 	if !ok {
 		resp, _ := models.Generate(500, "can't get data", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
@@ -38,7 +41,7 @@ func (fh FilmHandler) FilterFilmData(ctx echo.Context) error {
 
 func (fh FilmHandler) FilterFilmList(ctx echo.Context) error {
 	query := ctx.QueryParams()
-	f, ok := fh.usecase.FilterFilmList(query)
+	f, ok := fh.fusecase.FilterFilmList(query)
 	if !ok {
 		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
@@ -57,19 +60,25 @@ func (fh FilmHandler) GetFilm(ctx echo.Context) error {
 		ctx.Response().Write(resp)
 		return err
 	}
-	f, ok := fh.usecase.GetFilm(uint(id))
+	f, ok := fh.fusecase.GetFilm(uint(id))
 	if !ok {
 		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
 		return errors.New("Not Found")
 	}
-	resp, _ := models.Generate(200, f, &ctx).MarshalJSON()
+	a, _ := fh.pusecase.GetActorsForFilm(f.ID)
+	g, _ := fh.fusecase.GetFilmGenres(f.ID)
+	r := make(map[string]interface{})
+	r["object"] = f
+	r["actors"] = a
+	r["genres"] = g
+	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
 	_, err = ctx.Response().Write(resp)
 	return err
 }
 
 func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
-	f, ok := fh.usecase.GetFilmsList()
+	f, ok := fh.fusecase.GetFilmsList()
 	if !ok {
 		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
@@ -90,7 +99,7 @@ func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
 		ctx.Response().Write(resp)
 		return err
 	}
-	f, ok := fh.usecase.CreateFilm(film)
+	f, ok := fh.fusecase.CreateFilm(film)
 	if !ok {
 		resp, _ := models.Generate(500, "can't create film", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)

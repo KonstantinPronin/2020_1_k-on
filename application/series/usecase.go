@@ -12,4 +12,5 @@ type Usecase interface {
 	GetSeasonEpisodes(id uint) (models.Episodes, bool)
 	FilterSeriesList(fields map[string][]string) (models.SeriesArr, bool)
 	FilterSeriesData() (interface{}, bool)
+	GetSeriesGenres(fid uint) (models.Genres, bool)
 }
