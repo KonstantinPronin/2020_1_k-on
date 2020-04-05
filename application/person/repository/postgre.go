@@ -110,3 +110,51 @@ func (rep *PersonDatabase) GetSeries(id uint) (models.ListSeriesArr, error) {
 
 	return series, nil
 }
+
+func (rep *PersonDatabase) GetActorsForFilm(filmId uint) (models.ListPersonArr, error) {
+	var persons models.ListPersonArr
+
+	rows, err := rep.conn.Table("kinopoisk.film_actor f").
+		Select("p.id, p.name").
+		Joins("inner join kinopoisk.persons p on f.person_id = p.id").
+		Where("f.film_id = ?", filmId).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	per := new(models.ListPerson)
+	for rows.Next() {
+		err := rows.Scan(&per.Id, &per.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		persons = append(persons, *per)
+	}
+
+	return persons, nil
+}
+
+func (rep *PersonDatabase) GetActorsForSeries(seriesId uint) (models.ListPersonArr, error) {
+	var persons models.ListPersonArr
+
+	rows, err := rep.conn.Table("kinopoisk.series_actor s").
+		Select("p.id, p.name").
+		Joins("inner join kinopoisk.persons p on s.person_id = p.id").
+		Where("s.series_id = ?", seriesId).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	per := new(models.ListPerson)
+	for rows.Next() {
+		err := rows.Scan(&per.Id, &per.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		persons = append(persons, *per)
+	}
+
+	return persons, nil
+}
