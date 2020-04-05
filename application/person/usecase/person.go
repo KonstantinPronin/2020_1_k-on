@@ -62,3 +62,11 @@ func (usecase *Person) checkDate(date string) bool {
 
 	return false
 }
+
+func (usecase *Person) GetActorsForFilm(filmId uint) (models.ListPersonArr, error) {
+	return usecase.persons.GetActorsForFilm(filmId)
+}
+
+func (usecase *Person) GetActorsForSeries(seriesId uint) (models.ListPersonArr, error) {
+	return usecase.persons.GetActorsForSeries(seriesId)
+}
