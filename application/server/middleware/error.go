@@ -43,7 +43,7 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 			case *errors.DbInternalError:
 				return WriteErrResponse(ctx, http.StatusInternalServerError, err.Error())
 			default:
-				return WriteErrResponse(ctx, http.StatusInternalServerError, "")
+				return WriteErrResponse(ctx, http.StatusInternalServerError, err.Error())
 			}
 		}
 		return nil

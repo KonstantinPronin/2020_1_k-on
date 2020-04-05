@@ -29,6 +29,8 @@ func NewReviewHandler(e *echo.Echo, review review.UseCase, series review.UseCase
 	e.POST("/series/:id/reviews", handler.AddSeriesReview, auth.GetSession, middleware.ParseErrors)
 	e.GET("/films/:id/reviews", handler.GetByFilm, middleware.ParseErrors)
 	e.GET("/series/:id/reviews", handler.GetBySeries, middleware.ParseErrors)
+	e.GET("/films/:id/reviews/user", handler.GetByFilmAndUser, auth.GetSession, middleware.ParseErrors)
+	e.GET("/series/:id/reviews/user", handler.GetBySeriesAndUser, auth.GetSession, middleware.ParseErrors)
 }
 
 func (r *ReviewHandler) AddFilmReview(ctx echo.Context) error {
@@ -95,6 +97,36 @@ func (r *ReviewHandler) GetBySeries(ctx echo.Context) error {
 	}
 
 	return middleware.WriteOkResponse(ctx, reviews)
+}
+
+func (r *ReviewHandler) GetByFilmAndUser(ctx echo.Context) error {
+	productId, err := r.getProductId(ctx)
+	if err != nil {
+		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
+	}
+	userId := ctx.Get(session.UserIdKey).(uint)
+
+	rev, err := r.film.GetReview(productId, userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, rev)
+}
+
+func (r *ReviewHandler) GetBySeriesAndUser(ctx echo.Context) error {
+	productId, err := r.getProductId(ctx)
+	if err != nil {
+		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
+	}
+	userId := ctx.Get(session.UserIdKey).(uint)
+
+	rev, err := r.series.GetReview(productId, userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, rev)
 }
 
 func (r *ReviewHandler) parseRequestBody(ctx echo.Context) (*models.Review, error) {

@@ -40,3 +40,11 @@ func (r *SeriesReview) GetByProductId(id uint) ([]models.Review, error) {
 
 	return r.reviews.GetByProductId(id)
 }
+
+func (r *SeriesReview) GetReview(productId uint, userId uint) (*models.Review, error) {
+	if productId == 0 || userId == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
+	return r.reviews.GetReview(productId, userId)
+}

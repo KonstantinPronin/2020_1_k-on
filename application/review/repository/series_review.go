@@ -48,3 +48,14 @@ func (r *SeriesReviewDatabase) GetByProductId(id uint) ([]models.Review, error) 
 
 	return reviews, nil
 }
+
+func (r *SeriesReviewDatabase) GetReview(productId uint, userId uint) (*models.Review, error) {
+	rev := new(models.Review)
+	err := r.conn.Table("kinopoisk.series_reviews").
+		Where("product_id = ? and user_id = ?", productId, userId).Find(rev).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return rev, nil
+}

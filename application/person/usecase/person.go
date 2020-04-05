@@ -64,9 +64,17 @@ func (usecase *Person) checkDate(date string) bool {
 }
 
 func (usecase *Person) GetActorsForFilm(filmId uint) (models.ListPersonArr, error) {
+	if filmId == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
 	return usecase.persons.GetActorsForFilm(filmId)
 }
 
 func (usecase *Person) GetActorsForSeries(seriesId uint) (models.ListPersonArr, error) {
+	if seriesId == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
 	return usecase.persons.GetActorsForSeries(seriesId)
 }
