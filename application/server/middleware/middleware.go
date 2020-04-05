@@ -55,11 +55,14 @@ func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 func CORS(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		ctx.Response().Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
-		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		ctx.Response().Header().Set("Access-Control-Allow-Origin", ctx.Request().Header.Get("Origin"))
-		ctx.Response().Header().Set("Access-Control-Allow-Credentials", "true")
 		ctx.Response().Header().Set("Content-Type", "application/json; charset=utf8")
+		if ctx.Request().Method == "OPTIONS" {
+			ctx.Response().Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
+			ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			ctx.Response().Header().Set("Access-Control-Allow-Origin", ctx.Request().Header.Get("Origin"))
+			ctx.Response().Header().Set("Access-Control-Allow-Credentials", "true")
+			return ctx.NoContent(200)
+		}
 		return next(ctx)
 	}
 }

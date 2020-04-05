@@ -21,6 +21,7 @@ import (
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
+	middleware2 "github.com/labstack/echo/middleware"
 	"go.uber.org/zap"
 )
 
@@ -32,8 +33,13 @@ type Server struct {
 func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger *zap.Logger) *Server {
 	//middleware
 	e.Use(middleware.Middleware)
-	e.Use(middleware.CORS)
-
+	//e.Use(middleware.CORS)
+	e.Use(middleware2.CORSWithConfig(middleware2.CORSConfig{
+		AllowOrigins:     []string{"64.225.100.179:3000", "http://64.225.100.179:3000", "htp://64.225.100.179"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowCredentials: true,
+	}))
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
 	users := userRepository.NewUserDatabase(db, logger)
