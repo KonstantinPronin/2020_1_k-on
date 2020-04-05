@@ -29,7 +29,7 @@ func (p PostgresForFilms) GetFilmGenres(fid uint) (models.Genres, bool) {
 	if err != nil {
 		return nil, false
 	}
-	db.Close()
+	//db.Close()
 	return *genres, true
 }
 
@@ -46,7 +46,7 @@ func (p PostgresForFilms) FilterFilmData() (map[string]interface{}, bool) {
 	row := db.Table("kinopoisk.films").Select("MAX(year),MIN(year)").Row()
 	row.Scan(&max, &min)
 	err = db.Error
-	db.Close()
+	//db.Close()
 	if err != nil {
 		return nil, false
 	}
