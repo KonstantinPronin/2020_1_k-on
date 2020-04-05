@@ -25,7 +25,7 @@ func (p PostgresForSerials) GetSeriesGenres(fid uint) (models.Genres, bool) {
 	if err != nil {
 		return nil, false
 	}
-	db.Close()
+	//db.Close()
 	return *genres, true
 }
 
