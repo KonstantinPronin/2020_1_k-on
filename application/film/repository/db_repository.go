@@ -41,7 +41,7 @@ func (p PostgresForFilms) FilterFilmData() (map[string]interface{}, bool) {
 	if err != nil {
 		return nil, false
 	}
-	db.Close()
+	//db.Close()
 	var max, min int
 	row := db.Table("kinopoisk.films").Select("MAX(year),MIN(year)").Row()
 	row.Scan(&max, &min)
