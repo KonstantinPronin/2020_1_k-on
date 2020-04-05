@@ -35,8 +35,6 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	e.Use(middleware.Middleware)
 	//e.Use(middleware.CORS)
 	e.Use(middleware2.CORSWithConfig(middleware2.CORSConfig{
-		//AllowOrigins:     []string{"64.225.100.179:3000", "http://64.225.100.179:3000", "htp://64.225.100.179"},
-		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		AllowCredentials: true,

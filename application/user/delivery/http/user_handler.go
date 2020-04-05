@@ -117,11 +117,11 @@ func (uh *UserHandler) Update(ctx echo.Context) error {
 
 func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {
 	cookie := &http.Cookie{
-		Name:     session.CookieName,
-		Value:    sessionId,
-		Path:     "/",
-		Expires:  time.Now().Add(session.CookieDuration),
-		SameSite: http.SameSiteStrictMode,
+		Name:    session.CookieName,
+		Value:   sessionId,
+		Path:    "/",
+		Expires: time.Now().Add(session.CookieDuration),
+		//SameSite: http.SameSiteStrictMode,
 		HttpOnly: true,
 	}
 	ctx.SetCookie(cookie)
