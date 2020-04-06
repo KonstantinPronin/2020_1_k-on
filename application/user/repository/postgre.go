@@ -33,6 +33,9 @@ func (udb *UserDatabase) Update(id uint, upUser *models.User) error {
 	if upUser.Email != "" {
 		usr.Email = upUser.Email
 	}
+	if upUser.Image != "" {
+		usr.Image = upUser.Image
+	}
 	return udb.conn.Table("kinopoisk.users").Save(usr).Error
 }
 
