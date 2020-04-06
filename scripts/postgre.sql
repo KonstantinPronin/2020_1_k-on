@@ -133,7 +133,7 @@ begin
     update kinopoisk.films
     set totalvotes = totalvotes + 1,
         sumvotes   = sumvotes + new.rating,
-        rating     = (sumvotes+new.rating) / (totalvotes + 1)
+        rating     = (sumvotes + new.rating) / (totalvotes + 1)
     where id = new.product_id;
     return new;
 end;
@@ -151,7 +151,7 @@ begin
     update kinopoisk.series
     set totalvotes = totalvotes + 1,
         sumvotes   = sumvotes + new.rating,
-        rating     = (sumvotes+new.rating) / (totalvotes + 1)
+        rating     = (sumvotes + new.rating) / (totalvotes + 1)
     where id = new.product_id;
     return new;
 end;
@@ -191,33 +191,32 @@ create table kinopoisk.series_actor
 
 -- default inserts
 insert into kinopoisk.films
-values (default, 'adventures', 'Стражи галактики', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/1.jpg', '/static/1.jpg', 'Россия', 2010, 12),
-       (default, 'horrors', 'Очень страшное кино', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/2.jpg', '/static/2.jpg', 'Россия', 2015, 12),
-       (default, 'war', 'Т-34', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/3.jpg', '/static/3.jpg', 'Россия', 2017, 12),
-       (default, 'historical', 'Принц Персии', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/4.jpg', '/static/4.jpg', 'Россия', 2019, 12),
-       (default, 'animated', 'Твое имя', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/5.jpg', '/static/5.jpg', 'Россия', 2017, 12),
-       (default, 'detectives', 'Убийство в восточном экспрессе', 'Brigada', '/trailer', 0.0, 0.0, 0, 0,
-        'brigada description', '/static/6.jpg', '/static/6.jpg', 'Россия', 2017, 12),
-       (default, 'biographical', 'Господин Никто', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/7.jpg', '/static/7.jpg', 'Россия', 2017, 12),
-       (default, 'documentary', 'Он вам не Димон', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/8.jpg', '/static/8.jpg', 'Россия', 2017, 12),
-       (default, 'criminal', 'Джокер', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/9.jpg', '/static/9.jpg', 'Россия', 2017, 12),
-       (default, 'action', 'Бригада', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/10.jpg', '/static/10.jpg', 'Россия', 2017, 12),
-       (default, 'drama', 'Титаник', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/11.jpg', '/static/11.jpg', 'Россия', 2017, 12),
-       (default, 'melodrama', 'Три метра над уровнем неба', 'Brigada', '/trailer', 0.0, 0.0, 0, 0,
-        'brigada description',
-        '/static/12.jpg', '/static/12.jpg', 'Россия', 2017, 12),
-       (default, 'comedy', 'Третий лишний', 'TED', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/13.jpg', '/static/13.jpg', 'Россия', 2017, 12);
+values (default, 'adventures', 'Стражи галактики', 'Brigada', 'nlysXqG-gbQ', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/1.jpg', '/static/img/1.jpg', 'Россия', 2010, 12),
+       (default, 'horrors', 'Очень страшное кино', 'Brigada', 'nIW4y4w502M', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/2.jpg', '/static/img/2.jpg', 'Россия', 2015, 12),
+       (default, 'war', 'Т-34', 'Brigada', 'DrtRCIQVHnA', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/3.jpg', '/static/img/3.jpg', 'Россия', 2017, 12),
+       (default, 'historical', 'Принц Персии', 'Brigada', 'uOCYsMJHmKk', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/4.jpg', '/static/img/4.jpg', 'Россия', 2019, 12),
+       (default, 'animated', 'Твое имя', 'Brigada', 'tT7b5wR0IOM', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/5.jpg', '/static/img/5.jpg', 'Россия', 2017, 12),
+       (default, 'detectives', 'Убийство в восточном экспрессе', 'Brigada', 'pTK0hUqzolU', 0.0, 0.0, 0, 0,
+        'brigada description', '/static/img/6.jpg', '/static/img/6.jpg', 'Россия', 2017, 12),
+       (default, 'biographical', 'Господин Никто', 'Brigada', 'aAWGDN2S-sE', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/7.jpg', '/static/img/7.jpg', 'Россия', 2017, 12),
+       (default, 'documentary', 'Он вам не Димон', 'Brigada', 'qrwlk7_GF9g', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/8.jpg', '/static/img/8.jpg', 'Россия', 2017, 12),
+       (default, 'criminal', 'Джокер', 'Brigada', 'jGfiPs9zuhE', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/9.jpg', '/static/img/9.jpg', 'Россия', 2017, 12),
+       (default, 'action', 'Бригада', 'Brigada', 'l3F5Tu1AZUU', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/10.jpg', '/static/img/10.jpg', 'Россия', 2017, 12),
+       (default, 'drama', 'Титаник', 'Brigada', 'ZQ6klONCq4s', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/11.jpg', '/static/img/11.jpg', 'Россия', 2017, 12),
+       (default, 'melodrama', 'Три метра над уровнем неба', 'Brigada', 'elLW9pxj4kM', 0.0, 0.0, 0, 0,
+        'brigada description', '/static/img/12.jpg', '/static/img/12.jpg', 'Россия', 2017, 12),
+       (default, 'comedy', 'Третий лишний', 'TED', 'tJIcP7YGhw0', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/13.jpg', '/static/img/13.jpg', 'Россия', 2017, 12);
 
 insert into kinopoisk.genres
 values (default, 'Приключения', 'adventures'),
@@ -265,32 +264,32 @@ values (1, 1),
        (13, 13);
 
 insert into kinopoisk.series
-values (default, 'Adventures', 'Время приключений', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/1.jpg', '/static/1.jpg', 'Россия', 2010, 2011, 12),
-       (default, 'Horrors', 'Американская история ужасов', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/2.jpg', '/static/2.jpg', 'Россия', 2015, 2016, 12),
-       (default, 'War', 'Братья по оружию', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/3.jpg', '/static/3.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Historical', 'Чернобыль', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/4.jpg', '/static/4.jpg', 'Россия', 2019, 2020, 12),
-       (default, 'Animated', 'Наруто', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/5.jpg', '/static/5.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Detectives', 'Шерлок', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/6.jpg', '/static/6.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Biographical', 'Высоцкий.Четыре часа настоящей жизни', 'Brigada', '/trailer', 0.0, 0.0, 0, 0,
-        'brigada description', '/static/7.jpg', '/static/7.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Documentary', 'Как устроена наша планета', 'Brigada', '/trailer', 0.0, 0.0, 0, 0,
-        'brigada description', '/static/8.jpg', '/static/8.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Criminal', 'Острые козырьки', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/9.jpg', '/static/9.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Action', 'Флеш', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/10.jpg', '/static/10.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Drama', 'Сверхъестественное', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/11.jpg', '/static/11.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Melodrama', 'Однажды в сказке', 'Brigada', '/trailer', 0.0, 0.0, 0, 0,
-        'brigada description', '/static/12.jpg', '/static/12.jpg', 'Россия', 2017, 2018, 12),
-       (default, 'Comedy', 'Теория большого взрыва', 'Brigada', '/trailer', 0.0, 0.0, 0, 0, 'brigada description',
-        '/static/13.jpg', '/static/13.jpg', 'Россия', 2017, 2018, 12);
+values (default, 'Adventures', 'Время приключений', 'Brigada', '594sVuwYTKQ', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/1.jpg', '/static/img/1.jpg', 'Россия', 2010, 2011, 12),
+       (default, 'Horrors', 'Американская история ужасов', 'Brigada', '6Vw-xG8nLyE', 0.0, 0.0, 0, 0,
+        'brigada description', '/static/img/2.jpg', '/static/img/2.jpg', 'Россия', 2015, 2016, 12),
+       (default, 'War', 'Братья по оружию', 'Brigada', 'panok5dLHM4', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/3.jpg', '/static/img/3.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Historical', 'Чернобыль', 'Brigada', 'qtY2sel76qo', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/4.jpg', '/static/img/4.jpg', 'Россия', 2019, 2020, 12),
+       (default, 'Animated', 'Наруто', 'Brigada', 'xTOJ5_RKdl8', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/5.jpg', '/static/img/5.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Detectives', 'Шерлок', 'Brigada', 'eMM7sX4-6gc', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/6.jpg', '/static/img/6.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Biographical', 'Высоцкий.Четыре часа настоящей жизни', 'Brigada', 'wTbqwQbLmOA', 0.0, 0.0, 0, 0,
+        'brigada description', '/static/img/7.jpg', '/static/img/7.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Documentary', 'Как устроена наша планета', 'Brigada', 'SgApoHS6eJE', 0.0, 0.0, 0, 0,
+        'brigada description', '/static/img/8.jpg', '/static/img/8.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Criminal', 'Острые козырьки', 'Brigada', '0InieEzg5kY', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/9.jpg', '/static/img/9.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Action', 'Флеш', 'Brigada', 'rNfU1myyZYo', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/10.jpg', '/static/img/10.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Drama', 'Сверхъестественное', 'Brigada', 'la_XCx06Ric', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/11.jpg', '/static/img/11.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Melodrama', 'Однажды в сказке', 'Brigada', 'JV4v-Lu3NUI', 0.0, 0.0, 0, 0,
+        'brigada description', '/static/img/12.jpg', '/static/img/12.jpg', 'Россия', 2017, 2018, 12),
+       (default, 'Comedy', 'Теория большого взрыва', 'Brigada', '48p90POPC5I', 0.0, 0.0, 0, 0, 'brigada description',
+        '/static/img/13.jpg', '/static/img/13.jpg', 'Россия', 2017, 2018, 12);
 
 insert into kinopoisk.seasons
 values (default, 1, 'season1', 1, 'link1', 'desc1', 2010, 'img1'),

@@ -3,6 +3,7 @@ package repository
 import (
 	_ "context"
 	_ "errors"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/jinzhu/gorm"
@@ -30,24 +31,23 @@ func (p PostgresForFilms) GetFilmGenres(fid uint) (models.Genres, bool) {
 	if err != nil {
 		return nil, false
 	}
-	//db.Close()
 	return *genres, true
 }
 
 func (p PostgresForFilms) FilterFilmData() (map[string]interface{}, bool) {
 	genres := &models.Genres{}
 
-	db := p.DB.Table("kinopoisk.genres").Order("genres.name").Find(genres)
+	db := p.DB.Table("kinopoisk.genres").Order("name").Find(genres)
 	err := db.Error
 	if err != nil {
 		return nil, false
 	}
-	//db.Close()
 	var max, min int
-	row := db.Table("kinopoisk.films").Select("MAX(year),MIN(year)").Row()
+	row := p.DB.Table("kinopoisk.films").Select("MAX(films.year),MIN(films.year)").Row()
 	row.Scan(&max, &min)
 	err = db.Error
 	//db.Close()
+	fmt.Print(min, "gggg", max)
 	if err != nil {
 		return nil, false
 	}

@@ -79,7 +79,7 @@ func (p PostgresForSerials) FilterSeriesData() (map[string]interface{}, bool) {
 		return nil, false
 	}
 	var max, min int
-	row := db.Table("kinopoisk.series").Select("MAX(yearlast),MIN(yearfirst)").Row()
+	row := p.DB.Table("kinopoisk.series").Select("MAX(yearlast),MIN(yearfirst)").Row()
 	row.Scan(&max, &min)
 	err = db.Error
 	if err != nil {
