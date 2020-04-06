@@ -311,5 +311,113 @@ values (default, 'alex alexov', 'actor', '2020-01-01', 'Moscow');
 
 insert into kinopoisk.film_actor
 values (default, 1, 1);
+insert into kinopoisk.film_actor
+values (default, 2, 1);
+insert into kinopoisk.film_actor
+values (default, 3, 1);
+insert into kinopoisk.film_actor
+values (default, 4, 1);
+insert into kinopoisk.film_actor
+values (default, 5, 1);
+insert into kinopoisk.film_actor
+values (default, 6, 1);
+insert into kinopoisk.film_actor
+values (default, 7, 1);
+insert into kinopoisk.film_actor
+values (default, 8, 1);
+insert into kinopoisk.film_actor
+values (default, 9, 1);
+insert into kinopoisk.film_actor
+values (default, 10, 1);
+insert into kinopoisk.film_actor
+values (default, 11, 1);
+insert into kinopoisk.film_actor
+values (default, 12, 1);
+insert into kinopoisk.film_actor
+values (default, 13, 1);
+
+insert into kinopoisk.film_actor
+values (default, 1, 2);
+insert into kinopoisk.film_actor
+values (default, 2, 2);
+insert into kinopoisk.film_actor
+values (default, 3, 2);
+insert into kinopoisk.film_actor
+values (default, 4, 2);
+insert into kinopoisk.film_actor
+values (default, 5, 2);
+insert into kinopoisk.film_actor
+values (default, 6, 2);
+insert into kinopoisk.film_actor
+values (default, 7, 2);
+insert into kinopoisk.film_actor
+values (default, 8, 2);
+insert into kinopoisk.film_actor
+values (default, 9, 2);
+insert into kinopoisk.film_actor
+values (default, 10, 2);
+insert into kinopoisk.film_actor
+values (default, 11, 2);
+insert into kinopoisk.film_actor
+values (default, 12, 2);
+insert into kinopoisk.film_actor
+values (default, 13, 2);
+
+
 insert into kinopoisk.series_actor
 values (default, 1, 2);
+insert into kinopoisk.series_actor
+values (default, 2, 2);
+insert into kinopoisk.series_actor
+values (default, 3, 2);
+insert into kinopoisk.series_actor
+values (default, 4, 2);
+insert into kinopoisk.series_actor
+values (default, 5, 2);
+insert into kinopoisk.series_actor
+values (default, 6, 2);
+insert into kinopoisk.series_actor
+values (default, 7, 2);
+insert into kinopoisk.series_actor
+values (default, 8, 2);
+insert into kinopoisk.series_actor
+values (default, 9, 2);
+insert into kinopoisk.series_actor
+values (default, 10, 2);
+insert into kinopoisk.series_actor
+values (default, 11, 2);
+insert into kinopoisk.series_actor
+values (default, 12, 2);
+insert into kinopoisk.series_actor
+values (default, 13, 2);
+
+insert into kinopoisk.series_actor
+values (default, 1, 3);
+insert into kinopoisk.series_actor
+values (default, 2, 3);
+insert into kinopoisk.series_actor
+values (default, 3, 3);
+insert into kinopoisk.series_actor
+values (default, 4, 3);
+insert into kinopoisk.series_actor
+values (default, 5, 3);
+insert into kinopoisk.series_actor
+values (default, 6, 3);
+insert into kinopoisk.series_actor
+values (default, 7, 3);
+insert into kinopoisk.series_actor
+values (default, 8, 3);
+insert into kinopoisk.series_actor
+values (default, 9, 3);
+insert into kinopoisk.series_actor
+values (default, 10, 3);
+insert into kinopoisk.series_actor
+values (default, 11, 3);
+insert into kinopoisk.series_actor
+values (default, 12, 3);
+insert into kinopoisk.series_actor
+values (default, 13, 3);
+
+update kinopoisk.persons set image = '/static/img/person1.jpg' where id = 1;
+update kinopoisk.persons set image = '/static/img/person2.jpg' where id = 2;
+update kinopoisk.persons set image = '/static/img/person3.jpg' where id = 3;

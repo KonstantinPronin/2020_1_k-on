@@ -70,7 +70,7 @@ func (rep *PersonDatabase) GetFilms(id uint) (models.ListsFilm, error) {
 	var films models.ListsFilm
 
 	rows, err := rep.conn.Table("kinopoisk.film_actor fa").
-		Select("f.id, f.russianname, f.image, f.country, f.year, f.agelimit, f.rating").
+		Select("f.id, f.maingenre, f.russianname, f.image, f.country, f.year, f.agelimit, f.rating").
 		Joins("inner join kinopoisk.films f on fa.film_id = f.id").
 		Where("fa.person_id = ?", id).Rows()
 	if err != nil {
@@ -79,7 +79,7 @@ func (rep *PersonDatabase) GetFilms(id uint) (models.ListsFilm, error) {
 
 	film := new(models.ListFilm)
 	for rows.Next() {
-		err := rows.Scan(&film.ID, &film.RussianName, &film.Image, &film.Country, &film.Year, &film.AgeLimit, &film.Rating)
+		err := rows.Scan(&film.ID, &film.MainGenre, &film.RussianName, &film.Image, &film.Country, &film.Year, &film.AgeLimit, &film.Rating)
 		if err != nil {
 			return nil, err
 		}
