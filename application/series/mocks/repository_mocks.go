@@ -77,3 +77,48 @@ func (mr *MockRepositoryMockRecorder) GetSeasonEpisodes(id interface{}) *gomock.
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeasonEpisodes", reflect.TypeOf((*MockRepository)(nil).GetSeasonEpisodes), id)
 }
+
+// FilterSeriesList mocks base method
+func (m *MockRepository) FilterSeriesList(arg0 map[string][]string) (*models.SeriesArr, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FilterSeriesList", arg0)
+	ret0, _ := ret[0].(*models.SeriesArr)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// FilterSeriesList indicates an expected call of FilterSeriesList
+func (mr *MockRepositoryMockRecorder) FilterSeriesList(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FilterSeriesList", reflect.TypeOf((*MockRepository)(nil).FilterSeriesList), arg0)
+}
+
+// FilterSeriesData mocks base method
+func (m *MockRepository) FilterSeriesData() (map[string]interface{}, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FilterSeriesData")
+	ret0, _ := ret[0].(map[string]interface{})
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// FilterSeriesData indicates an expected call of FilterSeriesData
+func (mr *MockRepositoryMockRecorder) FilterSeriesData() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FilterSeriesData", reflect.TypeOf((*MockRepository)(nil).FilterSeriesData))
+}
+
+// GetSeriesGenres mocks base method
+func (m *MockRepository) GetSeriesGenres(fid uint) (models.Genres, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSeriesGenres", fid)
+	ret0, _ := ret[0].(models.Genres)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetSeriesGenres indicates an expected call of GetSeriesGenres
+func (mr *MockRepositoryMockRecorder) GetSeriesGenres(fid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeriesGenres", reflect.TypeOf((*MockRepository)(nil).GetSeriesGenres), fid)
+}

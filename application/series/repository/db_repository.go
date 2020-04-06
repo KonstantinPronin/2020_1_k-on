@@ -20,7 +20,8 @@ func NewPostgresForSeries(db *gorm.DB) series.Repository {
 func (p PostgresForSerials) GetSeriesGenres(fid uint) (models.Genres, bool) {
 	genres := &models.Genres{}
 	db := p.DB.Table("kinopoisk.genres").Select("genres.id,genres.name,genres.reference").
-		Joins("join kinopoisk.series_genres on series_genres.genre_id=genres.id").Where("series_genres.series_id=?", fid).Find(genres)
+		Joins("join kinopoisk.series_genres on series_genres.genre_id=genres.id").
+		Where("series_genres.series_id=?", fid).Order("genres.name").Find(genres)
 	err := db.Error
 	if err != nil {
 		return nil, false
@@ -35,6 +36,12 @@ func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*model
 	var offset int
 	var err error = nil
 	query := make(map[string]interface{})
+	for key, val := range fields {
+		if val[0] == "ALL" {
+			delete(query, key)
+		}
+	}
+
 	order, ok := fields["order"]
 	if ok {
 		delete(fields, "order")
@@ -66,7 +73,7 @@ func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*model
 func (p PostgresForSerials) FilterSeriesData() (map[string]interface{}, bool) {
 	genres := &models.Genres{}
 
-	db := p.DB.Table("kinopoisk.genres").Find(genres)
+	db := p.DB.Table("kinopoisk.genres").Order("genres.name").Find(genres)
 	err := db.Error
 	if err != nil {
 		return nil, false
