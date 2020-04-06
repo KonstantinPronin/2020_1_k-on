@@ -133,7 +133,7 @@ begin
     update kinopoisk.films
     set totalvotes = totalvotes + 1,
         sumvotes   = sumvotes + new.rating,
-        rating     = sumvotes / (totalvotes + 1)
+        rating     = (sumvotes+new.rating) / (totalvotes + 1)
     where id = new.product_id;
     return new;
 end;
@@ -151,7 +151,7 @@ begin
     update kinopoisk.series
     set totalvotes = totalvotes + 1,
         sumvotes   = sumvotes + new.rating,
-        rating     = sumvotes / (totalvotes + 1)
+        rating     = (sumvotes+new.rating) / (totalvotes + 1)
     where id = new.product_id;
     return new;
 end;
