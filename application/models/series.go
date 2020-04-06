@@ -29,13 +29,13 @@ func (s *Series) TableName() string {
 }
 
 type ListSeries struct {
-	ID          uint    `json:"ID" gorm:"primary_key"`
-	RussianName string  `json:"russianname" gorm:"column:russianname"`
+	ID          uint    `json:"id" gorm:"primary_key"`
+	RussianName string  `json:"russianName" gorm:"column:russianname"`
 	Image       string  `json:"image,omitempty"`
 	Country     string  `json:"country"`
-	YearFirst   int     `json:"yearfirst" gorm:"column:yearfirst"` //начало
-	YearLast    int     `json:"yearlast" gorm:"column:yearlast"`   //0-  "не закончился"
-	AgeLimit    int     `json:"agelimit,omitempty" gorm:"column:agelimit"`
+	YearFirst   int     `json:"yearFirst" gorm:"column:yearfirst"` //начало
+	YearLast    int     `json:"yearLast" gorm:"column:yearlast"`   //0-  "не закончился"
+	AgeLimit    int     `json:"ageLimit,omitempty" gorm:"column:agelimit"`
 	Rating      float64 `json:"rating"`
 }
 

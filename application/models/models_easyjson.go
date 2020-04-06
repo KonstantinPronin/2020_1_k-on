@@ -1113,19 +1113,19 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels12(in *
 			continue
 		}
 		switch key {
-		case "ID":
+		case "id":
 			out.ID = uint(in.Uint())
-		case "russianname":
+		case "russianName":
 			out.RussianName = string(in.String())
 		case "image":
 			out.Image = string(in.String())
 		case "country":
 			out.Country = string(in.String())
-		case "yearfirst":
+		case "yearFirst":
 			out.YearFirst = int(in.Int())
-		case "yearlast":
+		case "yearLast":
 			out.YearLast = int(in.Int())
-		case "agelimit":
+		case "ageLimit":
 			out.AgeLimit = int(in.Int())
 		case "rating":
 			out.Rating = float64(in.Float64())
@@ -1144,12 +1144,12 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels12(out 
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"ID\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.Uint(uint(in.ID))
 	}
 	{
-		const prefix string = ",\"russianname\":"
+		const prefix string = ",\"russianName\":"
 		out.RawString(prefix)
 		out.String(string(in.RussianName))
 	}
@@ -1164,17 +1164,17 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels12(out 
 		out.String(string(in.Country))
 	}
 	{
-		const prefix string = ",\"yearfirst\":"
+		const prefix string = ",\"yearFirst\":"
 		out.RawString(prefix)
 		out.Int(int(in.YearFirst))
 	}
 	{
-		const prefix string = ",\"yearlast\":"
+		const prefix string = ",\"yearLast\":"
 		out.RawString(prefix)
 		out.Int(int(in.YearLast))
 	}
 	if in.AgeLimit != 0 {
-		const prefix string = ",\"agelimit\":"
+		const prefix string = ",\"ageLimit\":"
 		out.RawString(prefix)
 		out.Int(int(in.AgeLimit))
 	}
@@ -1367,9 +1367,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels15(in *
 			continue
 		}
 		switch key {
-		case "ID":
+		case "id":
 			out.ID = uint(in.Uint())
-		case "russianname":
+		case "russianName":
 			out.RussianName = string(in.String())
 		case "image":
 			out.Image = string(in.String())
@@ -1377,7 +1377,7 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels15(in *
 			out.Country = string(in.String())
 		case "year":
 			out.Year = int(in.Int())
-		case "agelimit":
+		case "ageLimit":
 			out.AgeLimit = int(in.Int())
 		case "rating":
 			out.Rating = float64(in.Float64())
@@ -1396,12 +1396,12 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels15(out 
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"ID\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
 		out.Uint(uint(in.ID))
 	}
 	{
-		const prefix string = ",\"russianname\":"
+		const prefix string = ",\"russianName\":"
 		out.RawString(prefix)
 		out.String(string(in.RussianName))
 	}
@@ -1421,7 +1421,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels15(out 
 		out.Int(int(in.Year))
 	}
 	if in.AgeLimit != 0 {
-		const prefix string = ",\"agelimit\":"
+		const prefix string = ",\"ageLimit\":"
 		out.RawString(prefix)
 		out.Int(int(in.AgeLimit))
 	}
