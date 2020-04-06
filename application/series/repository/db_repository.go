@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-var SeriesPerPage = 10
+var SeriesPerPage = 13
 
 type PostgresForSerials struct {
 	DB *gorm.DB

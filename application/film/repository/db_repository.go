@@ -12,7 +12,7 @@ import (
 
 //Интерфейсы запросов к бд
 
-var FilmPerPage = 10
+var FilmPerPage = 13
 
 type PostgresForFilms struct {
 	DB *gorm.DB
