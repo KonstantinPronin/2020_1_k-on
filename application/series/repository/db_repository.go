@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
 	"github.com/jinzhu/gorm"
@@ -38,10 +39,15 @@ func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*model
 	query := make(map[string]interface{})
 	for key, val := range fields {
 		if val[0] == "ALL" {
-			delete(query, key)
+			delete(fields, key)
+		}
+		if key == "year" {
+			fields["yearfirst"] = val
+			delete(fields, key)
 		}
 	}
 
+	fmt.Print(fields)
 	order, ok := fields["order"]
 	if ok {
 		delete(fields, "order")

@@ -248,21 +248,6 @@ values (1, 1),
        (12, 12),
        (13, 13);
 
-insert into kinopoisk.series_genres
-values (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 4),
-       (5, 5),
-       (6, 6),
-       (7, 7),
-       (8, 8),
-       (9, 9),
-       (10, 10),
-       (11, 11),
-       (12, 12),
-       (13, 13);
-
 insert into kinopoisk.series
 values (default, 'Adventures', 'Время приключений', 'Brigada', '594sVuwYTKQ', 0.0, 0.0, 0, 0, 'brigada description',
         '/static/img/1.jpg', '/static/img/01.jpg', 'Россия', 2010, 2011, 12),
@@ -290,6 +275,21 @@ values (default, 'Adventures', 'Время приключений', 'Brigada', '
         'brigada description', '/static/img/120.jpg', '/static/img/12.jpg', 'Россия', 2017, 2018, 12),
        (default, 'Comedy', 'Теория большого взрыва', 'Brigada', '48p90POPC5I', 0.0, 0.0, 0, 0, 'brigada description',
         '/static/img/13.jpg', '/static/img/130.jpg', 'Россия', 2017, 2018, 12);
+
+insert into kinopoisk.series_genres
+values (1, 1),
+       (2, 2),
+       (3, 3),
+       (4, 4),
+       (5, 5),
+       (6, 6),
+       (7, 7),
+       (8, 8),
+       (9, 9),
+       (10, 10),
+       (11, 11),
+       (12, 12),
+       (13, 13);
 
 insert into kinopoisk.seasons
 values (default, 1, 'season1', 1, 'link1', 'desc1', 2010, 'img1'),
