@@ -45,6 +45,12 @@ func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*model
 	order, ok := fields["order"]
 	if ok {
 		delete(fields, "order")
+		if order[0] == "year" {
+			order[0] = "yearfirst"
+		}
+		if order[0] == "-year" {
+			order[0] = "-yearfirst"
+		}
 	}
 	page, pok := fields["page"]
 	if pok {
