@@ -60,12 +60,13 @@ func (FU filmUsecase) CreateFilm(f models.Film) (models.Film, bool) {
 	return f, ok
 }
 
-func (FU filmUsecase) UploadImageFilm(id uint) models.Film {
-	f, _ := FU.filmRepo.GetById(id)
-	return *f
-}
-
-func (FU filmUsecase) GetImageFilm(id uint) string {
-	f, _ := FU.filmRepo.GetById(id)
-	return f.Image
-}
+//
+//func (FU filmUsecase) UploadImageFilm(id uint) models.Film {
+//	f, _ := FU.filmRepo.GetById(id)
+//	return *f
+//}
+//
+//func (FU filmUsecase) GetImageFilm(id uint) string {
+//	f, _ := FU.filmRepo.GetById(id)
+//	return f.Image
+//}

@@ -150,3 +150,26 @@ func TestFilmUsecase_FilterFilmData2(t *testing.T) {
 	_, ok := usecase.FilterFilmData()
 	require.False(t, ok)
 }
+
+func TestFilmUsecase_GetFilmGenres(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	films := mockfilm.NewMockRepository(ctrl)
+	usecase := NewFilmUsecase(films)
+	films.EXPECT().GetFilmGenres(fid).Return(nil, true)
+
+	f, ok := usecase.GetFilmGenres(fid)
+	if !ok {
+		t.Error(f)
+	}
+	require.True(t, ok)
+}
+
+func TestFilmUsecase_GetFilmGenres2(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	films := mockfilm.NewMockRepository(ctrl)
+	usecase := NewFilmUsecase(films)
+	films.EXPECT().GetFilmGenres(fid).Return(nil, false)
+
+	_, ok := usecase.GetFilmGenres(fid)
+	require.False(t, ok)
+}

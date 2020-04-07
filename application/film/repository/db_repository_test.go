@@ -408,3 +408,100 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 	require.Equal(t, item["filters"], resp["filters"])
 	require.True(t, ok)
 }
+
+func TestPostgresForFilms_GetFilmGenres(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT genres.id,genres.name,genres.reference FROM (.*)" `).
+		WillReturnRows(rows2)
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	item, ok := repo.GetFilmGenres(fid)
+	if !ok {
+		t.Error(ok)
+		t.Error(rows2)
+		t.Error(expect2)
+		t.Error(item)
+		return
+	}
+	require.Equal(t, item, models.Genres{testGenre})
+	require.True(t, ok)
+}
+
+func TestPostgresForFilms_GetFilmGenres2(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT genres.id,genres.name,genres.reference FROM (.*)" `).
+		WillReturnError(errors.New(""))
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	item, ok := repo.GetFilmGenres(fid)
+	require.NotEqual(t, item, models.Genres{testGenre})
+	require.False(t, ok)
+}
+
+func TestPostgresForFilms_FilterFilmData2(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnError(errors.New(""))
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.Year+1, expect.Year)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnRows(rows)
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	_, ok := repo.FilterFilmData()
+	require.False(t, ok)
+}
+
+func TestPostgresForFilms_FilterFilmData3(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnRows(rows2)
+
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.Year+1, expect.Year)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnError(errors.New(""))
+
+	repo := &PostgresForFilms{
+		DB: DB,
+	}
+	_, ok := repo.FilterFilmData()
+
+	require.False(t, ok)
+}

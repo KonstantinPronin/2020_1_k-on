@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
 	"github.com/jinzhu/gorm"
@@ -27,7 +26,6 @@ func (p PostgresForSerials) GetSeriesGenres(fid uint) (models.Genres, bool) {
 	if err != nil {
 		return nil, false
 	}
-	//db.Close()
 	return *genres, true
 }
 
@@ -46,8 +44,6 @@ func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*model
 			delete(fields, key)
 		}
 	}
-
-	fmt.Print(fields)
 	order, ok := fields["order"]
 	if ok {
 		delete(fields, "order")
@@ -92,8 +88,7 @@ func (p PostgresForSerials) FilterSeriesData() (map[string]interface{}, bool) {
 	}
 	var max, min int
 	row := p.DB.Table("kinopoisk.series").Select("MAX(yearlast),MIN(yearfirst)").Row()
-	row.Scan(&max, &min)
-	err = db.Error
+	err = row.Scan(&max, &min)
 	if err != nil {
 		return nil, false
 	}

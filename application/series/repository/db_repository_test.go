@@ -10,6 +10,14 @@ import (
 	"testing"
 )
 
+var name = "name"
+var reference = "reference"
+var testGenre = models.Genre{
+	ID:        fid,
+	Name:      name,
+	Reference: reference,
+}
+
 var image = "image"
 
 var mg = "mg"
@@ -213,5 +221,217 @@ func TestPostgresForSerials_GetSeasonEpisodes2(t *testing.T) {
 	repo := PostgresForSerials{DB: DB}
 	item, ok := repo.GetSeasonEpisodes(testEpisode.SeasonId)
 	require.NotEqual(t, item, models.Episodes{expect})
+	require.False(t, ok)
+}
+
+func TestPostgresForSerials_GetSeriesGenres(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT genres.id,genres.name,genres.reference FROM (.*)" `).
+		WillReturnRows(rows2)
+	repo := &PostgresForSerials{
+		DB: DB,
+	}
+	item, ok := repo.GetSeriesGenres(fid)
+	if !ok {
+		t.Error(ok)
+		t.Error(rows2)
+		t.Error(expect2)
+		t.Error(item)
+		return
+	}
+	require.Equal(t, item, models.Genres{testGenre})
+	require.True(t, ok)
+}
+
+func TestPostgresForSerials_GetSeriesGenres2(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT genres.id,genres.name,genres.reference FROM (.*)" `).
+		WillReturnError(errors.New(""))
+	repo := &PostgresForSerials{
+		DB: DB,
+	}
+	_, ok := repo.GetSeriesGenres(fid)
+	require.False(t, ok)
+}
+
+func TestPostgresForSerials_FilterSeriesData(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnRows(rows2)
+
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := testSeries
+	rows = rows.AddRow(expect.YearFirst+1, expect.YearFirst)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnRows(rows)
+
+	repo := &PostgresForSerials{
+		DB: DB,
+	}
+	item, ok := repo.FilterSeriesData()
+	if !ok {
+		t.Error(ok)
+		t.Error(rows)
+		t.Error(expect)
+		t.Error(item)
+		return
+	}
+	resp := make(map[string]interface{})
+	filters := make(map[string]interface{})
+	resp["genres"] = &models.Genres{expect2}
+	filters["minyear"] = expect.YearFirst
+	filters["maxyear"] = expect.YearFirst + 1
+	resp["filters"] = filters
+
+	require.Equal(t, item["genres"], resp["genres"])
+	require.Equal(t, item["filters"], resp["filters"])
+	require.True(t, ok)
+}
+
+func TestPostgresForSerials_FilterSeriesData2(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnError(errors.New(""))
+
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := testSeries
+	rows = rows.AddRow(expect.YearFirst+1, expect.YearFirst)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnRows(rows)
+
+	repo := &PostgresForSerials{
+		DB: DB,
+	}
+	_, ok := repo.FilterSeriesData()
+	require.False(t, ok)
+}
+
+func TestPostgresForSerials_FilterSeriesData3(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"id", "name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnRows(rows2)
+
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := testSeries
+	rows = rows.AddRow(expect.YearFirst+1, expect.YearFirst)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnError(errors.New(""))
+
+	repo := &PostgresForSerials{
+		DB: DB,
+	}
+	_, ok := repo.FilterSeriesData()
+	require.False(t, ok)
+}
+
+func TestPostgresForSerials_FilterSeriesList(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+
+	rows := sqlmock.
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "yearfirst", "yearlast", "agelimit"})
+	expect := models.Series(testSeries)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.YearFirst, expect.YearLast, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID+1, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.YearFirst, expect.YearLast, expect.AgeLimit)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"series" WHERE (.*)`).
+		WillReturnRows(rows)
+
+	repo := &PostgresForSerials{
+		DB: DB,
+	}
+	query := make(map[string][]string)
+	query["year"] = []string{"2012"}
+	query["order"] = []string{"year"}
+	query["page"] = []string{"1"}
+	item, ok := repo.FilterSeriesList(query)
+	if !ok {
+		t.Error(ok)
+		t.Error(rows)
+		t.Error(expect)
+		t.Error(item)
+		return
+	}
+	expect2 := expect
+	expect2.ID += 1
+	require.Equal(t, *item, models.SeriesArr{expect, expect2})
+	require.True(t, ok)
+}
+
+func TestPostgresForSerials_FilterSeriesList2(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+
+	rows := sqlmock.
+		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
+			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
+			"country", "yearfirst", "yearlast", "agelimit"})
+	expect := models.Series(testSeries)
+	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.YearFirst, expect.YearLast, expect.AgeLimit)
+	rows = rows.AddRow(expect.ID+1, expect.MainGenre, expect.RussianName, expect.EnglishName,
+		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
+		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.YearFirst, expect.YearLast, expect.AgeLimit)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"series" WHERE (.*)`).
+		WillReturnError(errors.New(""))
+
+	repo := &PostgresForSerials{
+		DB: DB,
+	}
+	query := make(map[string][]string)
+	query["year"] = []string{"2012"}
+	query["page"] = []string{"1"}
+	item, ok := repo.FilterSeriesList(query)
+	expect2 := expect
+	expect2.ID += 1
+	require.NotEqual(t, *item, models.SeriesArr{expect, expect2})
 	require.False(t, ok)
 }

@@ -138,3 +138,72 @@ func TestSerialUsecase_GetSeasonEpisodes2(t *testing.T) {
 	require.Equal(t, models.Episodes{}, episodes)
 	require.False(t, ok)
 }
+
+func TestSerialUsecase_GetSeriesGenres(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	series := mockseries.NewMockRepository(ctrl)
+	usecase := NewSeriesUsecase(series)
+	series.EXPECT().GetSeriesGenres(fid).Return(nil, true)
+
+	s, ok := usecase.GetSeriesGenres(fid)
+	if !ok {
+		t.Error(s)
+	}
+	require.True(t, ok)
+}
+
+func TestSerialUsecase_GetSeriesGenres2(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	series := mockseries.NewMockRepository(ctrl)
+	usecase := NewSeriesUsecase(series)
+	series.EXPECT().GetSeriesGenres(fid).Return(nil, false)
+
+	_, ok := usecase.GetSeriesGenres(fid)
+	require.False(t, ok)
+}
+
+func TestSerialUsecase_FilterSeriesData(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	series := mockseries.NewMockRepository(ctrl)
+	usecase := NewSeriesUsecase(series)
+	series.EXPECT().FilterSeriesData().Return(nil, true)
+
+	s, ok := usecase.FilterSeriesData()
+	if !ok {
+		t.Error(s)
+	}
+	require.True(t, ok)
+}
+
+func TestSerialUsecase_FilterSeriesData2(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	series := mockseries.NewMockRepository(ctrl)
+	usecase := NewSeriesUsecase(series)
+	series.EXPECT().FilterSeriesData().Return(nil, false)
+
+	_, ok := usecase.FilterSeriesData()
+	require.False(t, ok)
+}
+
+func TestSerialUsecase_FilterSeriesList(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	series := mockseries.NewMockRepository(ctrl)
+	usecase := NewSeriesUsecase(series)
+	series.EXPECT().FilterSeriesList(nil).Return(&models.SeriesArr{}, true)
+
+	s, ok := usecase.FilterSeriesList(nil)
+	if !ok {
+		t.Error(s)
+	}
+	require.True(t, ok)
+}
+
+func TestSerialUsecase_FilterSeriesList2(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	series := mockseries.NewMockRepository(ctrl)
+	usecase := NewSeriesUsecase(series)
+	series.EXPECT().FilterSeriesList(nil).Return(&models.SeriesArr{}, false)
+
+	_, ok := usecase.FilterSeriesList(nil)
+	require.False(t, ok)
+}
