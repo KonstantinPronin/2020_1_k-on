@@ -37,8 +37,7 @@ func (FU filmUsecase) FilterFilmList(fields map[string][]string) (models.Films, 
 	return *films, true
 }
 
-func (FU filmUsecase) GetFilmsList() (models.Films, bool) {
-	begin, end := uint(10), uint(0)
+func (FU filmUsecase) GetFilmsList(begin, end uint) (models.Films, bool) {
 	films, ok := FU.filmRepo.GetFilmsArr(begin, end)
 	if !ok {
 		return models.Films{}, false

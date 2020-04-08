@@ -7,7 +7,7 @@ import (
 //Человеко читаемые методы, которые и будут вызываться в хендлерах в деливери
 
 type Usecase interface {
-	GetFilmsList() (models.Films, bool)
+	GetFilmsList(begin, end uint) (models.Films, bool)
 	GetFilm(id uint) (models.Film, bool)
 	CreateFilm(f models.Film) (models.Film, bool)
 	FilterFilmList(fields map[string][]string) (models.Films, bool)

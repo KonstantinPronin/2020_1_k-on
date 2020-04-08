@@ -77,19 +77,6 @@ func (fh FilmHandler) GetFilm(ctx echo.Context) error {
 	return err
 }
 
-func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
-	f, ok := fh.fusecase.GetFilmsList()
-	if !ok {
-		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("can't get films")
-	}
-	var fl models.ListsFilm
-	resp, _ := models.Generate(200, fl.Convert(f), &ctx).MarshalJSON()
-	_, err := ctx.Response().Write(resp)
-	return err
-}
-
 func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
 	film := models.Film{}
 	defer ctx.Request().Body.Close()
@@ -107,5 +94,24 @@ func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
 	}
 	resp, _ := models.Generate(200, f, &ctx).MarshalJSON()
 	ctx.Response().Write(resp)
+	return err
+}
+
+func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
+	f, ok := fh.fusecase.GetFilmsList(13, 0)
+	if !ok {
+		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
+		ctx.Response().Write(resp)
+		return errors.New("can't get films")
+	}
+	var fl models.ListsFilm
+	r := make(map[string]interface{})
+	r["recommendations"] = f[0:5]
+	coll := make([]models.Collection, 2)
+	coll[0] = models.Collection{"Сейчас смотрят", fl.Convert(f)}
+	coll[1] = models.Collection{"Новое", fl.Convert(f)}
+	r["collections"] = coll
+	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
+	_, err := ctx.Response().Write(resp)
 	return err
 }
