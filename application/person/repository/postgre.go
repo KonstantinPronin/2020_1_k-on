@@ -88,6 +88,7 @@ func (rep *PersonDatabase) GetFilms(id uint) (models.ListsFilm, error) {
 			return nil, err
 		}
 
+		film.Type = "films"
 		films = append(films, *film)
 	}
 
@@ -111,7 +112,7 @@ func (rep *PersonDatabase) GetSeries(id uint) (models.ListSeriesArr, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		s.Type = "series"
 		series = append(series, *s)
 	}
 
