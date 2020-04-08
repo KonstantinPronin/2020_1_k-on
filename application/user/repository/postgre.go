@@ -72,10 +72,12 @@ func (udb *UserDatabase) Contains(login string) (bool, error) {
 	_, err := udb.GetByName(login)
 
 	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
+		switch err.(type) {
+		case *errors.NotFoundError:
 			return false, nil
+		default:
+			return false, err
 		}
-		return false, err
 	}
 
 	return true, nil
