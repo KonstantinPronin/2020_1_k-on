@@ -27,8 +27,10 @@ func (f *Film) TableName() string {
 
 type ListFilm struct {
 	ID          uint    `json:"id" gorm:"primary_key"`
+	Type        string  `json:"type"`
 	MainGenre   string  `json:"mainGenre" gorm:"column:maingenre"`
 	RussianName string  `json:"russianName" gorm:"column:russianname"`
+	Description string  `json:"description"`
 	Image       string  `json:"image,omitempty"`
 	Country     string  `json:"country"`
 	Year        int     `json:"year"`
@@ -41,8 +43,10 @@ type ListsFilm []ListFilm
 
 func FormatFilm(film Film) (list ListFilm) {
 	list.ID = film.ID
+	list.Type = "films"
 	list.MainGenre = film.MainGenre
 	list.RussianName = film.RussianName
+	list.Description = film.Description
 	list.Image = film.Image
 	list.Country = film.Country
 	list.Year = film.Year

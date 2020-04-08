@@ -1115,10 +1115,14 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels12(in *
 		switch key {
 		case "id":
 			out.ID = uint(in.Uint())
+		case "type":
+			out.Type = string(in.String())
 		case "mainGenre":
 			out.MainGenre = string(in.String())
 		case "russianName":
 			out.RussianName = string(in.String())
+		case "description":
+			out.Description = string(in.String())
 		case "image":
 			out.Image = string(in.String())
 		case "country":
@@ -1151,6 +1155,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels12(out 
 		out.Uint(uint(in.ID))
 	}
 	{
+		const prefix string = ",\"type\":"
+		out.RawString(prefix)
+		out.String(string(in.Type))
+	}
+	{
 		const prefix string = ",\"mainGenre\":"
 		out.RawString(prefix)
 		out.String(string(in.MainGenre))
@@ -1159,6 +1168,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels12(out 
 		const prefix string = ",\"russianName\":"
 		out.RawString(prefix)
 		out.String(string(in.RussianName))
+	}
+	{
+		const prefix string = ",\"description\":"
+		out.RawString(prefix)
+		out.String(string(in.Description))
 	}
 	if in.Image != "" {
 		const prefix string = ",\"image\":"
@@ -1376,10 +1390,14 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels15(in *
 		switch key {
 		case "id":
 			out.ID = uint(in.Uint())
+		case "type":
+			out.Type = string(in.String())
 		case "mainGenre":
 			out.MainGenre = string(in.String())
 		case "russianName":
 			out.RussianName = string(in.String())
+		case "description":
+			out.Description = string(in.String())
 		case "image":
 			out.Image = string(in.String())
 		case "country":
@@ -1410,6 +1428,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels15(out 
 		out.Uint(uint(in.ID))
 	}
 	{
+		const prefix string = ",\"type\":"
+		out.RawString(prefix)
+		out.String(string(in.Type))
+	}
+	{
 		const prefix string = ",\"mainGenre\":"
 		out.RawString(prefix)
 		out.String(string(in.MainGenre))
@@ -1418,6 +1441,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels15(out 
 		const prefix string = ",\"russianName\":"
 		out.RawString(prefix)
 		out.String(string(in.RussianName))
+	}
+	{
+		const prefix string = ",\"description\":"
+		out.RawString(prefix)
+		out.String(string(in.Description))
 	}
 	if in.Image != "" {
 		const prefix string = ",\"image\":"

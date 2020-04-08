@@ -30,8 +30,10 @@ func (s *Series) TableName() string {
 
 type ListSeries struct {
 	ID          uint    `json:"id" gorm:"primary_key"`
+	Type        string  `json:"type"`
 	MainGenre   string  `json:"mainGenre" gorm:"column:maingenre"` //русское
 	RussianName string  `json:"russianName" gorm:"column:russianname"`
+	Description string  `json:"description"`
 	Image       string  `json:"image,omitempty"`
 	Country     string  `json:"country"`
 	YearFirst   int     `json:"yearFirst" gorm:"column:yearfirst"` //начало
@@ -45,8 +47,10 @@ type ListSeriesArr []ListSeries
 
 func FormatSeries(Series Series) (list ListSeries) {
 	list.ID = Series.ID
+	list.Type = "series"
 	list.MainGenre = Series.MainGenre
 	list.RussianName = Series.RussianName
+	list.Description = Series.Description
 	list.Image = Series.Image
 	list.Country = Series.Country
 	list.YearFirst = Series.YearFirst

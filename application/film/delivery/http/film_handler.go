@@ -106,7 +106,11 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 	}
 	var fl models.ListsFilm
 	r := make(map[string]interface{})
-	r["recommendations"] = f[0:5]
+	rec := fl.Convert(f[0:5])
+	for ind, _ := range rec {
+		rec[ind].Image = f[ind].BackgroundImage
+	}
+	r["recommendations"] = rec
 	coll := make([]models.Collection, 2)
 	coll[0] = models.Collection{"Сейчас смотрят", fl.Convert(f)}
 	coll[1] = models.Collection{"Новое", fl.Convert(f)}
