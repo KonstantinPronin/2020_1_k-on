@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/person"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
@@ -23,6 +24,9 @@ func (rep *PersonDatabase) GetById(id uint) (*models.Person, error) {
 	per := new(models.Person)
 	err := rep.conn.Table("kinopoisk.persons").Where("id = ?", id).First(per).Error
 	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, errors.NewNotFoundError(err.Error())
+		}
 		return nil, err
 	}
 

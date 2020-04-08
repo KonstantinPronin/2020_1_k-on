@@ -80,10 +80,14 @@ func (uc *User) Update(usr *models.User) error {
 		return errors.NewInvalidArgument("User does not exist")
 	}
 
+	usr.Password = uc.hashPassword(usr.Password)
 	return uc.users.Update(usr.Id, usr)
 }
 
 func (uc *User) hashPassword(password string) string {
+	if password == "" {
+		return password
+	}
 	hash := sha256.Sum256([]byte(password))
 	return hex.EncodeToString(hash[:])
 }
