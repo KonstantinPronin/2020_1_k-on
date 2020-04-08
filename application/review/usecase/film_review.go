@@ -35,7 +35,7 @@ func (r *FilmReview) Add(review *models.Review) error {
 func (r *FilmReview) GetByProductId(id uint) ([]models.Review, error) {
 	f, _ := r.films.GetById(id)
 	if f.ID != id {
-		return nil, errors.NewInvalidArgument("wrong film id")
+		return nil, errors.NewInvalidArgument("wrong product id")
 	}
 
 	return r.reviews.GetByProductId(id)

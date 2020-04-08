@@ -61,3 +61,18 @@ func (mr *MockRepositoryMockRecorder) GetByProductId(id interface{}) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByProductId", reflect.TypeOf((*MockRepository)(nil).GetByProductId), id)
 }
+
+// GetReview mocks base method
+func (m *MockRepository) GetReview(productId, userId uint) (*models.Review, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetReview", productId, userId)
+	ret0, _ := ret[0].(*models.Review)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetReview indicates an expected call of GetReview
+func (mr *MockRepositoryMockRecorder) GetReview(productId, userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReview", reflect.TypeOf((*MockRepository)(nil).GetReview), productId, userId)
+}

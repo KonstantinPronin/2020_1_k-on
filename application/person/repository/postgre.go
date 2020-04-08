@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/person"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
@@ -12,7 +13,7 @@ type PersonDatabase struct {
 	logger *zap.Logger
 }
 
-func NewPersonDatabase(conn *gorm.DB, logger *zap.Logger) p.Repository {
+func NewPersonDatabase(conn *gorm.DB, logger *zap.Logger) person.Repository {
 	return &PersonDatabase{
 		conn:   conn,
 		logger: logger,
@@ -23,6 +24,9 @@ func (rep *PersonDatabase) GetById(id uint) (*models.Person, error) {
 	per := new(models.Person)
 	err := rep.conn.Table("kinopoisk.persons").Where("id = ?", id).First(per).Error
 	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, errors.NewNotFoundError(err.Error())
+		}
 		return nil, err
 	}
 
@@ -94,7 +98,7 @@ func (rep *PersonDatabase) GetSeries(id uint) (models.ListSeriesArr, error) {
 	var series models.ListSeriesArr
 
 	rows, err := rep.conn.Table("kinopoisk.series_actor sa").
-		Select("s.id, s.russianname, s.image, s.country, s.yearfirst, s.yearlast, s.agelimit, s.rating").
+		Select("s.id, s.maingenre, s.russianname, s.image, s.country, s.yearfirst, s.yearlast, s.agelimit, s.rating").
 		Joins("inner join kinopoisk.series s on sa.series_id = s.id").
 		Where("sa.person_id = ?", id).Rows()
 	if err != nil {
@@ -103,7 +107,7 @@ func (rep *PersonDatabase) GetSeries(id uint) (models.ListSeriesArr, error) {
 
 	s := new(models.ListSeries)
 	for rows.Next() {
-		err := rows.Scan(&s.ID, &s.RussianName, &s.Image, &s.Country, &s.YearFirst, &s.YearLast, &s.AgeLimit, &s.Rating)
+		err := rows.Scan(&s.ID, &s.MainGenre, &s.RussianName, &s.Image, &s.Country, &s.YearFirst, &s.YearLast, &s.AgeLimit, &s.Rating)
 		if err != nil {
 			return nil, err
 		}

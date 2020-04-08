@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
@@ -22,7 +23,15 @@ func (udb *UserDatabase) Add(user *models.User) (err error) {
 
 func (udb *UserDatabase) Update(id uint, upUser *models.User) error {
 	usr := new(models.User)
-	udb.conn.Table("kinopoisk.users").Where("id = ?", id).First(usr)
+	err := udb.conn.Table("kinopoisk.users").Where("id = ?", id).First(usr).Error
+
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return errors.NewNotFoundError(err.Error())
+		}
+		return err
+	}
+
 	upUser.Id = id
 	if upUser.Username != "" {
 		usr.Username = upUser.Username
@@ -42,12 +51,20 @@ func (udb *UserDatabase) Update(id uint, upUser *models.User) error {
 func (udb *UserDatabase) GetById(id uint) (usr *models.User, err error) {
 	usr = new(models.User)
 	err = udb.conn.Table("kinopoisk.users").Where("id = ?", id).First(usr).Error
+
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.NewNotFoundError(err.Error())
+	}
 	return usr, err
 }
 
 func (udb *UserDatabase) GetByName(login string) (usr *models.User, err error) {
 	usr = new(models.User)
 	err = udb.conn.Table("kinopoisk.users").Where("username = ?", login).First(usr).Error
+
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.NewNotFoundError(err.Error())
+	}
 	return usr, err
 }
 
