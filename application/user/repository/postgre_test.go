@@ -10,6 +10,7 @@ import (
 )
 
 var testUser = models.User{
+	Id:       1,
 	Username: "test",
 	Password: "test",
 	Email:    "test@example.com",
@@ -41,8 +42,8 @@ func TestUserDatabase_Add(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectQuery(`INSERT INTO (.*)"users"`).WithArgs(
-		testUser.Username, testUser.Password, testUser.Email, "").WillReturnRows(
-		sqlmock.NewRows([]string{"id"}).AddRow(0))
+		testUser.Id, testUser.Username, testUser.Password, testUser.Email, testUser.Image).WillReturnRows(
+		sqlmock.NewRows([]string{"id"}).AddRow(testUser.Id))
 	mock.ExpectCommit()
 
 	if err := ud.Add(&testUser); err != nil {
@@ -63,19 +64,18 @@ func TestUserDatabase_Update(t *testing.T) {
 		}
 	}()
 	ud := NewUserDatabase(db, zap.NewExample())
-	id := uint(0)
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"users" WHERE (.*)"users"."id" (.*) LIMIT 1`).WithArgs(
-		id).WillReturnRows(sqlmock.NewRows(
+		testUser.Id).WillReturnRows(sqlmock.NewRows(
 		[]string{"id", "username", "password", "email", "image"}).AddRow(
-		id, "old", testUser.Password, testUser.Email, testUser.Image))
+		testUser.Id, "old", testUser.Password, testUser.Email, testUser.Image))
 	mock.ExpectBegin()
-	mock.ExpectExec(`UPDATE (.*)"users" SET `).WithArgs(
-		testUser.Email, testUser.Password, testUser.Username).WillReturnResult(
+	mock.ExpectExec(`UPDATE (.*)"users" SET (.*) WHERE (.*)"users"`).WithArgs(
+		testUser.Username, testUser.Password, testUser.Email, testUser.Image, testUser.Id).WillReturnResult(
 		sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
-	if err := ud.Update(id, &testUser); err != nil {
+	if err := ud.Update(testUser.Id, &testUser); err != nil {
 		t.Fatalf("unexpected error %s", err)
 	}
 
@@ -93,14 +93,13 @@ func TestUserDatabase_GetById(t *testing.T) {
 		}
 	}()
 	ud := NewUserDatabase(db, zap.NewExample())
-	id := uint(0)
 
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"users" WHERE (.*)"users"."id" (.*) LIMIT 1`).WithArgs(
-		id).WillReturnRows(sqlmock.NewRows(
+		testUser.Id).WillReturnRows(sqlmock.NewRows(
 		[]string{"id", "username", "password", "email", "image"}).AddRow(
-		id, testUser.Username, testUser.Password, testUser.Email, testUser.Image))
+		testUser.Id, testUser.Username, testUser.Password, testUser.Email, testUser.Image))
 
-	if usr, err := ud.GetById(id); err != nil {
+	if usr, err := ud.GetById(testUser.Id); err != nil {
 		t.Fatalf("unexpected error %s", err)
 	} else {
 		assert.Equal(t, testUser, *usr)
@@ -124,7 +123,7 @@ func TestUserDatabase_GetByName(t *testing.T) {
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"users" WHERE \(username = (.*)\) ORDER BY "kinopoisk"."users"."id" ASC LIMIT 1`).WithArgs(
 		testUser.Username).WillReturnRows(sqlmock.NewRows(
 		[]string{"id", "username", "password", "email", "image"}).AddRow(
-		0, testUser.Username, testUser.Password, testUser.Email, testUser.Image))
+		testUser.Id, testUser.Username, testUser.Password, testUser.Email, testUser.Image))
 
 	if usr, err := ud.GetByName(testUser.Username); err != nil {
 		t.Fatalf("unexpected error %s", err)

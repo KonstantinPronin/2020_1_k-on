@@ -60,3 +60,22 @@ func TestFilmReview_GetByProductId(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, res, []models.Review{testReview})
 }
+
+func TestFilmReview_GetReview(t *testing.T) {
+	_, r, uc := beforeFilmTest(t)
+
+	r.EXPECT().GetReview(testReview.ProductId, testReview.UserId).Return(&testReview, nil)
+
+	res, err := uc.GetReview(testReview.ProductId, testReview.UserId)
+
+	assert.Nil(t, err)
+	assert.Equal(t, testReview, *res)
+}
+
+func TestFilmReview_GetReview_WrongId(t *testing.T) {
+	_, _, uc := beforeFilmTest(t)
+
+	_, err := uc.GetReview(0, testReview.UserId)
+
+	assert.NotNil(t, err)
+}

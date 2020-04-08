@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/person/mocks"
+	mock_p "github.com/go-park-mail-ru/2020_1_k-on/application/person/mocks"
 	usecase2 "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
 	mockseries "github.com/go-park-mail-ru/2020_1_k-on/application/series/mocks"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series/usecase"

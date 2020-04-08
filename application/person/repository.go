@@ -1,4 +1,4 @@
-package p
+package person
 
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"

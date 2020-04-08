@@ -9,11 +9,11 @@ import (
 )
 
 type Person struct {
-	persons p.Repository
+	persons person.Repository
 	logger  *zap.Logger
 }
 
-func NewPerson(p p.Repository, logger *zap.Logger) p.UseCase {
+func NewPerson(p person.Repository, logger *zap.Logger) person.UseCase {
 	return &Person{
 		persons: p,
 		logger:  logger,

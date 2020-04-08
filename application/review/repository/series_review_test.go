@@ -58,3 +58,31 @@ func TestSeriesReviewDatabase_GetByProductId(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
+
+func TestSeriesReviewDatabase_GetReview(t *testing.T) {
+	db, mock := initMockDb(t)
+	defer func() {
+		mock.ExpectClose()
+		if err := db.Close(); err != nil {
+			t.Fatalf("error '%s' while closing resource", err)
+		}
+	}()
+	reviews := NewSeriesReviewDatabase(db, zap.NewExample())
+
+	mock.ExpectQuery(`SELECT (.*) FROM (.*)series_reviews(.*) WHERE (.*)product_id = (.*) and user_id = (.*)`).
+		WithArgs(testReview.ProductId, testReview.UserId).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "rating", "body", "user_id", "product_id", "username", "image"}).
+			AddRow(testReview.Id, testReview.Rating, testReview.Body,
+				testReview.UserId, testReview.ProductId, testReview.Usr.Username, testReview.Usr.Image))
+
+	rev, err := reviews.GetReview(testReview.ProductId, testReview.UserId)
+
+	testReview.Usr.Username = ""
+	assert.Nil(t, err)
+	assert.Equal(t, testReview, *rev)
+	testReview.Usr.Username = "test"
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}

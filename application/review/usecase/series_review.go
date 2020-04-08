@@ -21,12 +21,12 @@ func NewSeriesReview(r review.Repository, s series.Repository) review.UseCase {
 
 func (r *SeriesReview) Add(review *models.Review) error {
 	if review.ProductId == 0 || review.UserId == 0 {
-		return errors.NewInvalidArgument("empty film id or user id")
+		return errors.NewInvalidArgument("empty series id or user id")
 	}
 
 	s, _ := r.series.GetSeriesByID(review.ProductId)
 	if s.ID != review.ProductId {
-		return errors.NewInvalidArgument("wrong film id")
+		return errors.NewInvalidArgument("wrong series id")
 	}
 
 	return r.reviews.Add(review)
@@ -35,7 +35,7 @@ func (r *SeriesReview) Add(review *models.Review) error {
 func (r *SeriesReview) GetByProductId(id uint) ([]models.Review, error) {
 	s, _ := r.series.GetSeriesByID(id)
 	if s.ID != id {
-		return nil, errors.NewInvalidArgument("wrong film id")
+		return nil, errors.NewInvalidArgument("wrong series id")
 	}
 
 	return r.reviews.GetByProductId(id)

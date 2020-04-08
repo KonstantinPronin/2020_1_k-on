@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
-	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"

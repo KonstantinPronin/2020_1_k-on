@@ -59,6 +59,7 @@ func TestReviewHandler_AddFilmReview(t *testing.T) {
 
 	ctx.EXPECT().Request().Return(request)
 	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().Add(gomock.Any()).Return(nil)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
@@ -76,6 +77,7 @@ func TestReviewHandler_AddFilmReview_BadRequest(t *testing.T) {
 	}
 
 	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Param(param).Return(id)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
 
@@ -97,6 +99,7 @@ func TestReviewHandler_AddSeriesReview(t *testing.T) {
 
 	ctx.EXPECT().Request().Return(request)
 	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().Add(gomock.Any()).Return(nil)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
@@ -114,6 +117,7 @@ func TestReviewHandler_AddSeriesReview_BadRequest(t *testing.T) {
 	}
 
 	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Param(param).Return(id)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
 
@@ -164,5 +168,55 @@ func TestReviewHandler_GetBySeries_WrongParameter(t *testing.T) {
 	w.EXPECT().Write(gomock.Any())
 
 	err := handler.GetBySeries(ctx)
+	assert.NotNil(t, err)
+}
+
+func TestReviewHandler_GetByFilmAndUser(t *testing.T) {
+	handler, usecase, ctx, w := beforeTest(t)
+
+	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Param(param).Return(id)
+	usecase.EXPECT().GetReview(testReview.ProductId, testReview.UserId).Return(&testReview, nil)
+	w.EXPECT().WriteHeader(ok)
+	w.EXPECT().Write(gomock.Any())
+
+	err := handler.GetByFilmAndUser(ctx)
+	assert.Nil(t, err)
+}
+
+func TestReviewHandler_GetByFilmAndUser_WrongParameter(t *testing.T) {
+	handler, _, ctx, w := beforeTest(t)
+
+	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Param(param).Return(wrongId)
+	w.EXPECT().WriteHeader(http.StatusBadRequest)
+	w.EXPECT().Write(gomock.Any())
+
+	err := handler.GetByFilmAndUser(ctx)
+	assert.NotNil(t, err)
+}
+
+func TestReviewHandler_GetBySeriesAndUser(t *testing.T) {
+	handler, usecase, ctx, w := beforeTest(t)
+
+	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Param(param).Return(id)
+	usecase.EXPECT().GetReview(testReview.ProductId, testReview.UserId).Return(&testReview, nil)
+	w.EXPECT().WriteHeader(ok)
+	w.EXPECT().Write(gomock.Any())
+
+	err := handler.GetBySeriesAndUser(ctx)
+	assert.Nil(t, err)
+}
+
+func TestReviewHandler_GetBySeriesAndUser_WrongParameter(t *testing.T) {
+	handler, _, ctx, w := beforeTest(t)
+
+	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Param(param).Return(wrongId)
+	w.EXPECT().WriteHeader(http.StatusBadRequest)
+	w.EXPECT().Write(gomock.Any())
+
+	err := handler.GetByFilmAndUser(ctx)
 	assert.NotNil(t, err)
 }

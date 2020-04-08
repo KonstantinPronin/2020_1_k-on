@@ -13,7 +13,7 @@ func WriteOkResponse(ctx echo.Context, body interface{}) error {
 		Status: http.StatusOK,
 		Body:   body,
 	}
-	if _, err := easyjson.MarshalToWriter(resp, ctx.Response()); err != nil {
+	if _, err := easyjson.MarshalToWriter(resp, ctx.Response().Writer); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return nil

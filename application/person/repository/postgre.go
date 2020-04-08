@@ -12,7 +12,7 @@ type PersonDatabase struct {
 	logger *zap.Logger
 }
 
-func NewPersonDatabase(conn *gorm.DB, logger *zap.Logger) p.Repository {
+func NewPersonDatabase(conn *gorm.DB, logger *zap.Logger) person.Repository {
 	return &PersonDatabase{
 		conn:   conn,
 		logger: logger,
@@ -94,7 +94,7 @@ func (rep *PersonDatabase) GetSeries(id uint) (models.ListSeriesArr, error) {
 	var series models.ListSeriesArr
 
 	rows, err := rep.conn.Table("kinopoisk.series_actor sa").
-		Select("s.id, s.russianname, s.image, s.country, s.yearfirst, s.yearlast, s.agelimit, s.rating").
+		Select("s.id, s.maingenre, s.russianname, s.image, s.country, s.yearfirst, s.yearlast, s.agelimit, s.rating").
 		Joins("inner join kinopoisk.series s on sa.series_id = s.id").
 		Where("sa.person_id = ?", id).Rows()
 	if err != nil {
@@ -103,7 +103,7 @@ func (rep *PersonDatabase) GetSeries(id uint) (models.ListSeriesArr, error) {
 
 	s := new(models.ListSeries)
 	for rows.Next() {
-		err := rows.Scan(&s.ID, &s.RussianName, &s.Image, &s.Country, &s.YearFirst, &s.YearLast, &s.AgeLimit, &s.Rating)
+		err := rows.Scan(&s.ID, &s.MainGenre, &s.RussianName, &s.Image, &s.Country, &s.YearFirst, &s.YearLast, &s.AgeLimit, &s.Rating)
 		if err != nil {
 			return nil, err
 		}
