@@ -39,7 +39,10 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderXCSRFToken},
 		AllowCredentials: true,
 	}))
-	e.Use(middleware2.CSRF())
+	e.Use(middleware2.CSRFWithConfig(middleware2.CSRFConfig{
+		CookieSecure:   false,
+		CookieHTTPOnly: false,
+	}))
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
 	users := userRepository.NewUserDatabase(db, logger)
