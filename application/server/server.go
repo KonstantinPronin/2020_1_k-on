@@ -39,6 +39,7 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		AllowCredentials: true,
 	}))
+	e.Use(middleware2.CSRF())
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
 	users := userRepository.NewUserDatabase(db, logger)
