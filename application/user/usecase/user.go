@@ -1,11 +1,10 @@
 package usecase
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/crypto"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -26,14 +25,16 @@ func (uc *User) Login(login string, password string) (sessionId string, err erro
 		return "", errors.NewInvalidArgument("Empty login or password")
 	}
 
-	password = uc.hashPassword(password)
-
 	usr, err := uc.users.GetByName(login)
 	if err != nil {
 		return "", err
 	}
 
-	if usr.Password != password {
+	ok, err := crypto.CheckPassword(password, usr.Password)
+	if err != nil {
+		return "", err
+	}
+	if !ok {
 		return "", errors.NewInvalidArgument("Wrong password")
 	}
 
@@ -61,8 +62,13 @@ func (uc *User) Add(usr *models.User) (*models.User, error) {
 		return nil, errors.NewInvalidArgument("User already exists")
 	}
 
-	usr.Password = uc.hashPassword(usr.Password)
-	err := uc.users.Add(usr)
+	hash, err := crypto.HashPassword(usr.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	usr.Password = hash
+	err = uc.users.Add(usr)
 	if err != nil {
 		return nil, err
 	}
@@ -80,14 +86,11 @@ func (uc *User) Update(usr *models.User) error {
 		return errors.NewInvalidArgument("User does not exist")
 	}
 
-	usr.Password = uc.hashPassword(usr.Password)
-	return uc.users.Update(usr.Id, usr)
-}
-
-func (uc *User) hashPassword(password string) string {
-	if password == "" {
-		return password
+	hash, err := crypto.HashPassword(usr.Password)
+	if err != nil {
+		return err
 	}
-	hash := sha256.Sum256([]byte(password))
-	return hex.EncodeToString(hash[:])
+	usr.Password = hash
+
+	return uc.users.Update(usr.Id, usr)
 }
