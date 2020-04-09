@@ -42,6 +42,7 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	e.Use(middleware2.CSRFWithConfig(middleware2.CSRFConfig{
 		CookieSecure:   false,
 		CookieHTTPOnly: false,
+		CookieDomain:   "",
 	}))
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
