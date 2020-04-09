@@ -89,14 +89,14 @@ func TestFilmHandler_GetFilm(t *testing.T) {
 
 func TestFilmHandler_GetFilmList(t *testing.T) {
 	c, fh, films, _ := setupEcho(t, "/", http.MethodGet)
-	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&models.Films{testFilm}, true)
+	films.EXPECT().GetFilmsArr(uint(13), uint(0)).Return(&models.Films{testFilm, testFilm, testFilm, testFilm, testFilm}, true)
 	err := fh.GetFilmList(c)
 	require.Equal(t, err, nil)
 }
 
 func TestFilmHandler_GetFilmList2(t *testing.T) {
 	c, fh, films, _ := setupEcho(t, "/", http.MethodGet)
-	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&models.Films{}, false)
+	films.EXPECT().GetFilmsArr(uint(13), uint(0)).Return(&models.Films{}, false)
 	err := fh.GetFilmList(c)
 	require.NotEqual(t, err, nil)
 }

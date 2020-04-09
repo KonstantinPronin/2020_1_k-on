@@ -76,7 +76,7 @@ func TestFilmUsecase_GetFilmsList(t *testing.T) {
 	usecase := NewFilmUsecase(films)
 	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&tfilms, true)
 
-	f, ok := usecase.GetFilmsList()
+	f, ok := usecase.GetFilmsList(10, 0)
 	require.Equal(t, tfilms, f)
 	require.True(t, ok)
 }
@@ -85,8 +85,8 @@ func TestFilmUsecase_GetFilmsList2(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	films := mockfilm.NewMockRepository(ctrl)
 	usecase := NewFilmUsecase(films)
-	films.EXPECT().GetFilmsArr(uint(10), uint(0)).Return(&models.Films{}, false)
-	f, ok := usecase.GetFilmsList()
+	films.EXPECT().GetFilmsArr(uint(1), uint(0)).Return(&models.Films{}, false)
+	f, ok := usecase.GetFilmsList(1, 0)
 	require.Equal(t, models.Films{}, f)
 	require.False(t, ok)
 }
