@@ -8,4 +8,5 @@ type Repository interface {
 	GetById(id uint) (user *models.User, err error)
 	GetByName(login string) (user *models.User, err error)
 	Contains(login string) (bool, error)
+	SetImage(id uint, image string) error
 }

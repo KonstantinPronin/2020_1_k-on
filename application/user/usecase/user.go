@@ -68,6 +68,7 @@ func (uc *User) Add(usr *models.User) (*models.User, error) {
 	}
 
 	usr.Password = hash
+	usr.Image = ""
 	err = uc.users.Add(usr)
 	if err != nil {
 		return nil, err
@@ -91,6 +92,11 @@ func (uc *User) Update(usr *models.User) error {
 		return err
 	}
 	usr.Password = hash
+	usr.Image = ""
 
 	return uc.users.Update(usr.Id, usr)
+}
+
+func (uc *User) SetImage(id uint, image string) error {
+	return uc.users.SetImage(id, image)
 }

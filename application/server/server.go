@@ -4,6 +4,9 @@ import (
 	filmHandler "github.com/go-park-mail-ru/2020_1_k-on/application/film/delivery/http"
 	filmRepository "github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	filmUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	imageHandler "github.com/go-park-mail-ru/2020_1_k-on/application/image/delivery/http"
+	imageRepository "github.com/go-park-mail-ru/2020_1_k-on/application/image/repository"
+	imageUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/image/usecase"
 	personHandler "github.com/go-park-mail-ru/2020_1_k-on/application/person/delivery/http"
 	personRepository "github.com/go-park-mail-ru/2020_1_k-on/application/person/repository"
 	personUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
@@ -39,11 +42,11 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderXCSRFToken},
 		AllowCredentials: true,
 	}))
-	e.Use(middleware2.CSRFWithConfig(middleware2.CSRFConfig{
-		CookieSecure:   false,
-		CookieHTTPOnly: false,
-		CookieDomain:   "/",
-	}))
+	//e.Use(middleware2.CSRFWithConfig(middleware2.CSRFConfig{
+	//	CookieSecure:   false,
+	//	CookieHTTPOnly: false,
+	//	CookieDomain:   "/",
+	//}))
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
 	users := userRepository.NewUserDatabase(db, logger)
@@ -72,6 +75,11 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	seriesReviewsRep := reviewRepository.NewSeriesReviewDatabase(db, logger)
 	seriesReview := reviewUsecase.NewSeriesReview(seriesReviewsRep, series)
 	reviewHandler.NewReviewHandler(e, filmReview, seriesReview, auth, logger)
+
+	//image handler
+	images := imageRepository.NewImageRepository()
+	image := imageUsecase.NewImage(images, logger)
+	imageHandler.NewUserHandler(e, image, user, auth, logger)
 
 	return &Server{
 		port: port,
