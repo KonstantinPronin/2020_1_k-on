@@ -227,6 +227,92 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
+  /user/image:
+    post:
+      tags:
+        - users
+      summary: Upload avatar
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: string
+                    format: uuid
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /image/{filename}:
+    get:
+      tags:
+        - users
+      summary: Get image
+      parameters:
+        - name: filename
+          description: Unique file name
+          required: true
+          in: path
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Ok
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        404:
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
   /persons/{id}:
     get:
       tags:

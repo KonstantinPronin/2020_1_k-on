@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"net/http"
+	"os"
 	"path/filepath"
 )
 
@@ -24,7 +25,7 @@ func NewUserHandler(e *echo.Echo, image image.UseCase, user user.UseCase, auth m
 		logger: logger,
 	}
 
-	e.GET("/:path", handler.Get, middleware.ParseErrors)
+	e.GET("image/:path", handler.Get, middleware.ParseErrors)
 	e.POST("/user/image", handler.AddUserImage, auth.GetSession, middleware.ParseErrors)
 }
 
@@ -57,5 +58,8 @@ func (handler *ImageHandler) AddUserImage(ctx echo.Context) error {
 func (handler *ImageHandler) Get(ctx echo.Context) error {
 	path := ctx.Param("path")
 	path = filepath.Join(image.Dir, path)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return middleware.WriteErrResponse(ctx, http.StatusNotFound, err.Error())
+	}
 	return ctx.File(path)
 }
