@@ -421,3 +421,18 @@ values (default, 13, 3);
 update kinopoisk.persons set image = '/static/img/person1.jpg' where id = 1;
 update kinopoisk.persons set image = '/static/img/person2.jpg' where id = 2;
 update kinopoisk.persons set image = '/static/img/person3.jpg' where id = 3;
+
+insert into kinopoisk.persons
+values (default, 'Александр Паль', 'actor', '1988-12-16', 'Челябинск', '/static/img/person4.jpg');
+insert into kinopoisk.persons
+values (default, 'Том Харди', 'actor', '1977-09-15', 'Лондон', '/static/img/person5.jpg');
+insert into kinopoisk.persons
+values (default, 'Любовь Аксенова', 'actor', '1990-03-15', 'Москва', '/static/img/person6.jpg');
+insert into kinopoisk.persons
+values (default, 'Александра Бортич', 'actor', '1994-09-24', 'Светлогорск', '/static/img/person7.jpg');
+insert into kinopoisk.persons
+values (default, 'Ана де Армас', 'actor', '1988-04-30', 'Санта-Крус-дель-Норте', '/static/img/person8.jpg');
+insert into kinopoisk.persons
+values (default, 'Александра Даддарио', 'actor', '1986-03-16', 'Нью-Йорк', '/static/img/person9.jpg');
+insert into kinopoisk.persons
+values (default, 'Ева Грин', 'actor', '1980-07-06', 'Париж', '/static/img/person10.jpg');
