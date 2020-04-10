@@ -1,12 +1,11 @@
 package usecase
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	sessionmock "github.com/go-park-mail-ru/2020_1_k-on/application/session/mocks"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
 	usermock "github.com/go-park-mail-ru/2020_1_k-on/application/user/mocks"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/crypto"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -32,8 +31,11 @@ func beforeTest(t *testing.T) (*sessionmock.MockRepository, *usermock.MockReposi
 func TestUser_Login_Success(t *testing.T) {
 	sessions, users, us := beforeTest(t)
 	storedUser := testUser
-	hash := sha256.Sum256([]byte(storedUser.Password))
-	storedUser.Password = hex.EncodeToString(hash[:])
+	hash, err := crypto.HashPassword(testUser.Password)
+	if err != nil {
+		t.Error(err)
+	}
+	storedUser.Password = hash
 
 	users.EXPECT().GetByName(gomock.Eq(testUser.Username)).Return(&storedUser, nil)
 	sessions.EXPECT().Add(gomock.Any(), testUser.Id).Return(nil)
