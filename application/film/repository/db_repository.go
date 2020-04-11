@@ -67,12 +67,13 @@ func (p PostgresForFilms) FilterFilmsList(fields map[string][]string) (*models.F
 
 	for key, val := range fields {
 		if val[0] == "ALL" {
-			delete(query, key)
+			delete(fields, key)
 		}
 	}
 
 	order, ok := fields["order"]
 	if ok {
+		order[0] = order[0] + " DESC"
 		delete(fields, "order")
 	}
 	page, pok := fields["page"]

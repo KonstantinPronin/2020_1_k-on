@@ -82,3 +82,18 @@ func (udb *UserDatabase) Contains(login string) (bool, error) {
 
 	return true, nil
 }
+
+func (udb *UserDatabase) SetImage(id uint, image string) error {
+	usr := new(models.User)
+	err := udb.conn.Table("kinopoisk.users").Where("id = ?", id).First(usr).Error
+
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return errors.NewNotFoundError(err.Error())
+		}
+		return err
+	}
+
+	usr.Image = image
+	return udb.conn.Table("kinopoisk.users").Save(usr).Error
+}

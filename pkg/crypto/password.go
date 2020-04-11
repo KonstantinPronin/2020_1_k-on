@@ -1,7 +1,6 @@
 package crypto
 
 import (
-	"bytes"
 	"crypto/rand"
 	"encoding/hex"
 	"golang.org/x/crypto/argon2"
@@ -34,5 +33,7 @@ func CheckPassword(password, storedHash string) (bool, error) {
 	hash := argon2.IDKey([]byte(password), salt, 1, 64*1024, 4, 32)
 	hash = append(salt, hash...)
 
-	return bytes.Equal(hash, storedBytes), nil
+	password = hex.EncodeToString(hash[:])
+
+	return password == storedHash, nil
 }

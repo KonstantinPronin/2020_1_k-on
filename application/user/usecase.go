@@ -10,4 +10,5 @@ type UseCase interface {
 	Add(usr *models.User) (*models.User, error)
 	Get(id uint) (*models.User, error)
 	Update(user *models.User) error
+	SetImage(id uint, image string) error
 }
