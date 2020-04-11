@@ -40,23 +40,27 @@ func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*model
 			delete(fields, key)
 		} else {
 			if val[0] == "year" {
-				fields["yearfirst"] = val
+				query["yearfirst"] = val
+				delete(fields, key)
+			}
+			if key == "year" {
+				query["yearfirst"] = val[0]
 				delete(fields, key)
 			}
 		}
 	}
+
 	order, ok := fields["order"]
 	if ok {
 		delete(fields, "order")
 		if order[0] == "year" {
-			order[0] = "yearfirst"
+			order[0] = "-yearfirst"
 		}
 		if order[0] == "-year" {
 			order[0] = "-yearfirst"
 		} else {
 			order[0] = order[0] + " DESC"
 		}
-
 	}
 	page, pok := fields["page"]
 	if pok {
