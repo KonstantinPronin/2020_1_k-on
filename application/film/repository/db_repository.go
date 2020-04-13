@@ -3,6 +3,7 @@ package repository
 import (
 	_ "context"
 	_ "errors"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/jinzhu/gorm"
@@ -23,8 +24,8 @@ func NewPostgresForFilms(db *gorm.DB) film.Repository {
 
 func (p PostgresForFilms) GetFilmGenres(fid uint) (models.Genres, bool) {
 	genres := &models.Genres{}
-	db := p.DB.Table("kinopoisk.genres").Select("genres.id,genres.name,genres.reference").
-		Joins("join kinopoisk.films_genres on films_genres.genre_id=genres.id").
+	db := p.DB.Table("kinopoisk.genres").Select("genres.name,genres.reference").
+		Joins("join kinopoisk.films_genres on films_genres.genre_ref=genres.reference").
 		Where("films_genres.film_id=?", fid).Order("genres.name").Find(genres)
 	err := db.Error
 	if err != nil {
@@ -63,11 +64,19 @@ func (p PostgresForFilms) FilterFilmsList(fields map[string][]string) (*models.F
 	var offset int
 	var err error
 	err = nil
-	query := make(map[string]interface{})
+	db = p.DB.Table("kinopoisk.films").
+		Joins("join kinopoisk.films_genres on kinopoisk.films_genres.film_id=kinopoisk.films.id")
 
 	for key, val := range fields {
 		if val[0] == "ALL" {
 			delete(fields, key)
+		} else {
+			if key == "year" {
+				db = db.Where("year = ?", val[0])
+			}
+			if key == "genre" {
+				db = db.Where("films_genres.genre_ref = ? ", val[0])
+			}
 		}
 	}
 
@@ -75,26 +84,24 @@ func (p PostgresForFilms) FilterFilmsList(fields map[string][]string) (*models.F
 	if ok {
 		order[0] = order[0] + " DESC"
 		delete(fields, "order")
+	} else {
+		order = []string{"-rating"}
 	}
-	page, pok := fields["page"]
-	if pok {
+
+	page, pageOk := fields["page"]
+	if pageOk {
 		delete(fields, "page")
 		offset, err = strconv.Atoi(page[0])
 		offset = (offset - 1) * FilmPerPage
 	}
-	if !pok || (err != nil) {
+	if !pageOk || (err != nil) {
 		return &models.Films{}, false
 	}
-	for key, val := range fields {
-		query[key] = val[0]
-	}
-	if ok {
-		db = p.DB.Table("kinopoisk.films").Where(query).Order(order[0]).Offset(offset).Limit(FilmPerPage).Find(films)
-	} else {
-		db = p.DB.Table("kinopoisk.films").Where(query).Offset(offset).Limit(FilmPerPage).Find(films)
-	}
+	db = db.Group("kinopoisk.films.id").Order(order[0]).Offset(offset).Limit(FilmPerPage).Find(films)
+
 	err = db.Error
 	if err != nil {
+		fmt.Print(err, "\n")
 		return &models.Films{}, false
 	}
 	return films, true

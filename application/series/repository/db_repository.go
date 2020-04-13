@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
 	"github.com/jinzhu/gorm"
@@ -33,54 +34,46 @@ func (p PostgresForSerials) FilterSeriesList(fields map[string][]string) (*model
 	series := &models.SeriesArr{}
 	var db *gorm.DB
 	var offset int
-	var err error = nil
-	query := make(map[string]interface{})
+	var err error
+	err = nil
+	db = p.DB.Table("kinopoisk.series").
+		Joins("join kinopoisk.series_genres on kinopoisk.series_genres.series_id=kinopoisk.series.id")
+
 	for key, val := range fields {
 		if val[0] == "ALL" {
 			delete(fields, key)
 		} else {
-			if val[0] == "year" {
-				query["yearfirst"] = val
-				delete(fields, key)
-			}
 			if key == "year" {
-				query["yearfirst"] = val[0]
-				delete(fields, key)
+				db = db.Where("yearfirst <= ? AND yearlast >= ?", val[0], val[0])
+			}
+			if key == "genre" {
+				db = db.Where("series_genres.genre_ref = ? ", val[0])
 			}
 		}
 	}
 
 	order, ok := fields["order"]
 	if ok {
+		order[0] = order[0] + " DESC"
 		delete(fields, "order")
-		if order[0] == "year" {
-			order[0] = "-yearfirst"
-		}
-		if order[0] == "-year" {
-			order[0] = "-yearfirst"
-		} else {
-			order[0] = order[0] + " DESC"
-		}
+	} else {
+		order = []string{"-rating"}
 	}
-	page, pok := fields["page"]
-	if pok {
+
+	page, pageOk := fields["page"]
+	if pageOk {
 		delete(fields, "page")
 		offset, err = strconv.Atoi(page[0])
 		offset = (offset - 1) * SeriesPerPage
 	}
-	if !pok || (err != nil) {
+	if !pageOk || (err != nil) {
 		return &models.SeriesArr{}, false
 	}
-	for key, val := range fields {
-		query[key] = val[0]
-	}
-	if ok {
-		db = p.DB.Table("kinopoisk.series").Where(query).Order(order[0]).Offset(offset).Limit(SeriesPerPage).Find(series)
-	} else {
-		db = p.DB.Table("kinopoisk.series").Where(query).Offset(offset).Limit(SeriesPerPage).Find(series)
-	}
+	db = db.Group("kinopoisk.series.id").Order(order[0]).Offset(offset).Limit(SeriesPerPage).Find(series)
+
 	err = db.Error
 	if err != nil {
+		fmt.Print(err, "\n")
 		return &models.SeriesArr{}, false
 	}
 	return series, true
