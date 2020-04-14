@@ -49,11 +49,22 @@ func (p PostgresForFilms) FilterFilmData() (map[string]interface{}, bool) {
 		return nil, false
 	}
 	resp := make(map[string]interface{})
-	filters := make(map[string]interface{})
-	filters["minyear"] = min
-	filters["maxyear"] = max
-	resp["genres"] = genres
-	resp["filters"] = filters
+	g := models.Genres{}
+	g = append(g, models.Genre{
+		Name:      "Все жанры",
+		Reference: "%",
+	})
+	g = append(g, *genres...)
+	resp["genres"] = g
+	resp["order"] = models.Genres{
+		models.Genre{"По рейтингу", "rating"},
+		models.Genre{"По рейтингу IMDb", "imdbrating"},
+	}
+	resp["year"] = models.Genres{
+		models.Genre{"Все годы", "%"},
+		models.Genre{"maxyear", strconv.Itoa(max)},
+		models.Genre{"minyear", strconv.Itoa(min)},
+	}
 
 	return resp, true
 }

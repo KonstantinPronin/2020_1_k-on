@@ -399,11 +399,10 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 		return
 	}
 	resp := make(map[string]interface{})
-	filters := make(map[string]interface{})
-	resp["genres"] = &models.Genres{expect2}
-	filters["minyear"] = expect.Year
-	filters["maxyear"] = expect.Year + 1
-	resp["filters"] = filters
+	resp["genres"] = models.Genres{models.Genre{"Все жанры", "%"}, expect2}
+	resp["year"] = models.Genres{
+		models.Genre{"Все годы", "%"},
+	}
 
 	require.Equal(t, item["genres"], resp["genres"])
 	require.Equal(t, item["filters"], resp["filters"])
