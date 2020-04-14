@@ -42,9 +42,17 @@ func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
 		)
 		err = next(ctx)
 		if err != nil {
+			var status int
+			switch err.(type) {
+			case *echo.HTTPError:
+				status = err.(*echo.HTTPError).Code
+			default:
+				status = ctx.Response().Status
+			}
+
 			//log response
 			zapLogger.Debug(ctx.Request().URL.String(),
-				zap.Int("Status", ctx.Response().Status),
+				zap.Int("Status", status),
 				zap.Int64("size", ctx.Response().Size),
 			)
 			return err
