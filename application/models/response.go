@@ -8,7 +8,7 @@ type Response struct {
 }
 
 func Generate(status int, body interface{}, ctx *echo.Context) Response {
-	(*ctx).Response().Status = status
+	(*ctx).Response().Writer.WriteHeader(status)
 	return Response{
 		Status: status,
 		Body:   body,
