@@ -100,7 +100,7 @@ func (p PostgresForSerials) FilterSeriesData() (map[string]interface{}, bool) {
 		Reference: "%",
 	})
 	g = append(g, *genres...)
-	resp["genres"] = g
+	resp["genre"] = g
 	resp["order"] = models.Genres{
 		models.Genre{"По рейтингу", "rating"},
 		models.Genre{"По рейтингу IMDb", "imdbrating"},
