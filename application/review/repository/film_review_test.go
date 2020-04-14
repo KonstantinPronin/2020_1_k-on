@@ -97,7 +97,8 @@ func TestFilmReviewDatabase_GetReview(t *testing.T) {
 	}()
 	reviews := NewFilmReviewDatabase(db, zap.NewExample())
 
-	mock.ExpectQuery(`SELECT (.*) FROM (.*)film_reviews(.*) WHERE (.*)product_id = (.*) and user_id = (.*)`).
+	mock.ExpectQuery(`SELECT (.*)id, (.*)rating, (.*)body, (.*)user_id, (.*)product_id, (.*)username, (.*)image `+
+		`FROM (.*)film_reviews (.*) inner join (.*)users (.*) on (.*)id = (.*)user_id WHERE (.*)product_id = (.*) and (.*)user_id = (.*)`).
 		WithArgs(testReview.ProductId, testReview.UserId).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "rating", "body", "user_id", "product_id", "username", "image"}).
 			AddRow(testReview.Id, testReview.Rating, testReview.Body,
@@ -105,10 +106,8 @@ func TestFilmReviewDatabase_GetReview(t *testing.T) {
 
 	rev, err := reviews.GetReview(testReview.ProductId, testReview.UserId)
 
-	testReview.Usr.Username = ""
 	assert.Nil(t, err)
 	assert.Equal(t, testReview, *rev)
-	testReview.Usr.Username = "test"
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)

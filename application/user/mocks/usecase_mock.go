@@ -105,3 +105,17 @@ func (mr *MockUseCaseMockRecorder) Update(user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUseCase)(nil).Update), user)
 }
+
+// SetImage mocks base method
+func (m *MockUseCase) SetImage(id uint, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetImage", id, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetImage indicates an expected call of SetImage
+func (mr *MockUseCaseMockRecorder) SetImage(id, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetImage", reflect.TypeOf((*MockUseCase)(nil).SetImage), id, image)
+}

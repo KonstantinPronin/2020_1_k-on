@@ -105,3 +105,17 @@ func (mr *MockRepositoryMockRecorder) Contains(login interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Contains", reflect.TypeOf((*MockRepository)(nil).Contains), login)
 }
+
+// SetImage mocks base method
+func (m *MockRepository) SetImage(id uint, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetImage", id, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetImage indicates an expected call of SetImage
+func (mr *MockRepositoryMockRecorder) SetImage(id, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetImage", reflect.TypeOf((*MockRepository)(nil).SetImage), id, image)
+}
