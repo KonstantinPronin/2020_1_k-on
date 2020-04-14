@@ -13,7 +13,6 @@ import (
 var name = "name"
 var reference = "reference"
 var testGenre = models.Genre{
-	ID:        fid,
 	Name:      name,
 	Reference: reference,
 }
@@ -311,7 +310,7 @@ func TestPostgresForFilms_FilterFilmsList(t *testing.T) {
 	rows = rows.AddRow(expect.ID+1, expect.MainGenre, expect.RussianName, expect.EnglishName,
 		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
 		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
-	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)`).
+	mock.ExpectQuery(`SELECT (.*)(\*) FROM (.*)"films" (.*)`).
 		WillReturnRows(rows)
 
 	repo := &PostgresForFilms{
@@ -351,14 +350,16 @@ func TestPostgresForFilms_FilterFilmsList2(t *testing.T) {
 	rows = rows.AddRow(expect.ID+1, expect.MainGenre, expect.RussianName, expect.EnglishName,
 		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
 		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
-	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)`).
+	mock.ExpectQuery(`SELECT (.*)(\*) FROM (.*)"films" (.*)`).
 		WillReturnError(errors.New(""))
 
 	repo := &PostgresForFilms{
 		DB: DB,
 	}
 	query := make(map[string][]string)
-	query["year"] = []string{"2012"}
+	query["year"] = []string{"ALL"}
+	query["order"] = []string{"rating"}
+	query["genre"] = []string{"1"}
 	query["page"] = []string{"1"}
 	item, ok := repo.FilterFilmsList(query)
 	expect2 := expect
@@ -373,9 +374,9 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 
 	// good query
 	rows2 := sqlmock.
-		NewRows([]string{"id", "name", "reference"})
+		NewRows([]string{"name", "reference"})
 	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
 		WillReturnRows(rows2)
 
@@ -398,11 +399,10 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 		return
 	}
 	resp := make(map[string]interface{})
-	filters := make(map[string]interface{})
-	resp["genres"] = &models.Genres{expect2}
-	filters["minyear"] = expect.Year
-	filters["maxyear"] = expect.Year + 1
-	resp["filters"] = filters
+	resp["genres"] = models.Genres{models.Genre{"Все жанры", "%"}, expect2}
+	resp["year"] = models.Genres{
+		models.Genre{"Все годы", "%"},
+	}
 
 	require.Equal(t, item["genres"], resp["genres"])
 	require.Equal(t, item["filters"], resp["filters"])
@@ -415,10 +415,10 @@ func TestPostgresForFilms_GetFilmGenres(t *testing.T) {
 
 	// good query
 	rows2 := sqlmock.
-		NewRows([]string{"id", "name", "reference"})
+		NewRows([]string{"name", "reference"})
 	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
-	mock.ExpectQuery(`SELECT genres.id,genres.name,genres.reference FROM (.*)" `).
+	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT genres.name,genres.reference FROM (.*)" `).
 		WillReturnRows(rows2)
 	repo := &PostgresForFilms{
 		DB: DB,
@@ -441,10 +441,10 @@ func TestPostgresForFilms_GetFilmGenres2(t *testing.T) {
 
 	// good query
 	rows2 := sqlmock.
-		NewRows([]string{"id", "name", "reference"})
+		NewRows([]string{"name", "reference"})
 	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
-	mock.ExpectQuery(`SELECT genres.id,genres.name,genres.reference FROM (.*)" `).
+	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT genres.name,genres.reference FROM (.*)" `).
 		WillReturnError(errors.New(""))
 	repo := &PostgresForFilms{
 		DB: DB,
@@ -460,9 +460,9 @@ func TestPostgresForFilms_FilterFilmData2(t *testing.T) {
 
 	// good query
 	rows2 := sqlmock.
-		NewRows([]string{"id", "name", "reference"})
+		NewRows([]string{"name", "reference"})
 	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
 		WillReturnError(errors.New(""))
 	rows := sqlmock.
@@ -485,9 +485,9 @@ func TestPostgresForFilms_FilterFilmData3(t *testing.T) {
 
 	// good query
 	rows2 := sqlmock.
-		NewRows([]string{"id", "name", "reference"})
+		NewRows([]string{"name", "reference"})
 	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.ID, expect2.Name, expect2.Reference)
+	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
 		WillReturnRows(rows2)
 

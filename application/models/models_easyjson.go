@@ -1507,7 +1507,7 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels16(in *
 		in.Delim('[')
 		if *out == nil {
 			if !in.IsDelim(']') {
-				*out = make(Genres, 0, 1)
+				*out = make(Genres, 0, 2)
 			} else {
 				*out = Genres{}
 			}
@@ -1583,8 +1583,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels17(in *
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = uint(in.Uint())
 		case "name":
 			out.Name = string(in.String())
 		case "reference":
@@ -1604,13 +1602,8 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels17(out 
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"id\":"
-		out.RawString(prefix[1:])
-		out.Uint(uint(in.ID))
-	}
-	{
 		const prefix string = ",\"name\":"
-		out.RawString(prefix)
+		out.RawString(prefix[1:])
 		out.String(string(in.Name))
 	}
 	{

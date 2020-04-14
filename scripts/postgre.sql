@@ -25,6 +25,13 @@ create table kinopoisk.users
     image    varchar(80)
 );
 
+create table kinopoisk.genres
+(
+--     id        serial primary key,
+    name      varchar(80)        not null, --русское
+    reference varchar(80) unique not null  --англ
+);
+
 create table kinopoisk.films
 (
     id              serial primary key,
@@ -44,18 +51,11 @@ create table kinopoisk.films
     agelimit        varchar(80)
 );
 
-create table kinopoisk.genres
-(
-    id        serial primary key,
-    name      varchar(80) not null, --русское
-    reference varchar(80) not null  --англ
-);
-
 create table kinopoisk.films_genres
 (
-    film_id  int references kinopoisk.films (id) on update cascade on delete cascade,
-    genre_id int references kinopoisk.genres (id) on update cascade on delete cascade,
-    constraint films_genres_pkey primary key (film_id, genre_id)
+    film_id   int references kinopoisk.films (id) on update cascade on delete cascade,
+    genre_ref varchar(80) references kinopoisk.genres (reference) on update cascade on delete cascade,
+    constraint films_genres_pkey primary key (film_id, genre_ref)
 );
 
 
@@ -103,8 +103,8 @@ create table kinopoisk.episodes
 create table kinopoisk.series_genres
 (
     series_id int references kinopoisk.series (id) on update cascade on delete cascade,
-    genre_id  int references kinopoisk.genres (id) on update cascade on delete cascade,
-    constraint series_genres_pkey primary key (series_id, genre_id)
+    genre_ref varchar(80) references kinopoisk.genres (reference) on update cascade on delete cascade,
+    constraint series_genres_pkey primary key (series_id, genre_ref)
 );
 
 -- reviews tables
@@ -219,34 +219,35 @@ values (default, 'adventures', 'Стражи галактики', 'Guardians of 
         '/static/img/A13.jpg', '/static/img/A130.jpg', 'Россия', 2017, 18);
 
 insert into kinopoisk.genres
-values (default, 'Приключения', 'adventures'),
-       (default, 'Ужасы', 'horros'),
-       (default, 'Военные', 'war'),
-       (default, 'Исторические', 'historical'),
-       (default, 'Анимация', 'animated'),
-       (default, 'Детективы', 'detectives'),
-       (default, 'Биографические', 'biographical'),
-       (default, 'Документальные', 'documentary'),
-       (default, 'Криминал', 'criminal'),
-       (default, 'Боевики', 'action'),
-       (default, 'Драмы', 'drama'),
-       (default, 'Мелодрамы', 'melodrama'),
-       (default, 'Комедии', 'comedy');
+values ('Приключения', 'adventures'),
+       ('Ужасы', 'horros'),
+       ('Военные', 'war'),
+       ('Исторические', 'historical'),
+       ('Анимация', 'animated'),
+       ('Детективы', 'detectives'),
+       ('Биографические', 'biographical'),
+       ('Документальные', 'documentary'),
+       ('Криминал', 'criminal'),
+       ('Боевики', 'action'),
+       ('Драмы', 'drama'),
+       ('Мелодрамы', 'melodrama'),
+       ('Комедии', 'comedy');
 
 insert into kinopoisk.films_genres
-values (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 4),
-       (5, 5),
-       (6, 6),
-       (7, 7),
-       (8, 8),
-       (9, 9),
-       (10, 10),
-       (11, 11),
-       (12, 12),
-       (13, 13);
+values (1, 'animated'),
+       (1, 'adventures'),
+       (2, 'horros'),
+       (3, 'war'),
+       (4, 'historical'),
+       (5, 'animated'),
+       (6, 'detectives'),
+       (7, 'biographical'),
+       (8, 'documentary'),
+       (9, 'criminal'),
+       (10, 'action'),
+       (11, 'drama'),
+       (12, 'melodrama'),
+       (13, 'comedy');
 
 insert into kinopoisk.series
 values (default, 'adventures', 'Время приключений', 'Adventure Time', '594sVuwYTKQ', 0.0, 0.0, 0, 0,
@@ -277,19 +278,20 @@ values (default, 'adventures', 'Время приключений', 'Adventure T
         'Description', '/static/img/13.jpg', '/static/img/130.jpg', 'Россия', 2017, 2018, 18);
 
 insert into kinopoisk.series_genres
-values (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 4),
-       (5, 5),
-       (6, 6),
-       (7, 7),
-       (8, 8),
-       (9, 9),
-       (10, 10),
-       (11, 11),
-       (12, 12),
-       (13, 13);
+values (1, 'animated'),
+       (1, 'adventures'),
+       (2, 'horros'),
+       (3, 'war'),
+       (4, 'historical'),
+       (5, 'animated'),
+       (6, 'detectives'),
+       (7, 'biographical'),
+       (8, 'documentary'),
+       (9, 'criminal'),
+       (10, 'action'),
+       (11, 'drama'),
+       (12, 'melodrama'),
+       (13, 'comedy');
 
 insert into kinopoisk.seasons
 values (default, 1, 'season1', 1, 'link1', 'desc1', 2010, 'img1'),
@@ -418,9 +420,15 @@ values (default, 12, 3);
 insert into kinopoisk.series_actor
 values (default, 13, 3);
 
-update kinopoisk.persons set image = '/static/img/person1.jpg' where id = 1;
-update kinopoisk.persons set image = '/static/img/person2.jpg' where id = 2;
-update kinopoisk.persons set image = '/static/img/person3.jpg' where id = 3;
+update kinopoisk.persons
+set image = '/static/img/person1.jpg'
+where id = 1;
+update kinopoisk.persons
+set image = '/static/img/person2.jpg'
+where id = 2;
+update kinopoisk.persons
+set image = '/static/img/person3.jpg'
+where id = 3;
 
 insert into kinopoisk.persons
 values (default, 'Александр Паль', 'actor', '1988-12-16', 'Челябинск', '/static/img/person4.jpg');
