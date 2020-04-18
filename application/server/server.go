@@ -37,8 +37,9 @@ type Server struct {
 func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger *zap.Logger) *Server {
 	//middleware
 	sanitizer := bluemonday.UGCPolicy()
+	ioLog := middleware.NewLogger(logger)
 
-	e.Use(middleware.Logger)
+	e.Use(ioLog.Log)
 	//e.Use(middleware.CORS)
 	e.Use(middleware2.CORSWithConfig(middleware2.CORSConfig{
 		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},

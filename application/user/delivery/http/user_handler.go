@@ -5,6 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/crypto"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
 	"github.com/microcosm-cc/bluemonday"
@@ -27,7 +28,7 @@ func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth, logger 
 	e.DELETE("/logout", handler.Logout, auth.GetSession, middleware.ParseErrors)
 	e.POST("/signup", handler.SignUp, auth.AlreadyLoginErr, middleware.ParseErrors)
 	e.GET("/user", handler.Profile, auth.GetSession, middleware.ParseErrors)
-	e.PUT("/user", handler.Update, auth.GetSession, middleware.ParseErrors)
+	e.PUT("/user", handler.Update, auth.GetSession, middleware.ParseErrors, middleware.CSRF)
 }
 
 func (uh *UserHandler) Login(ctx echo.Context) error {
@@ -38,12 +39,13 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 	}
 	uh.sanitize(usr)
 
-	sessionId, err := uh.useCase.Login(usr.Username, usr.Password)
+	sessionId, token, err := uh.useCase.Login(usr.Username, usr.Password)
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, err.Error())
 	}
 
 	uh.setCookie(ctx, sessionId)
+	ctx.Response().Header().Set(crypto.CSRFHeader, token)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
@@ -79,12 +81,13 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 		return err
 	}
 
-	sessionId, err := uh.useCase.Login(usr.Username, password)
+	sessionId, token, err := uh.useCase.Login(usr.Username, password)
 	if err != nil {
 		return err
 	}
 
 	uh.setCookie(ctx, sessionId)
+	ctx.Response().Header().Set(crypto.CSRFHeader, token)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)

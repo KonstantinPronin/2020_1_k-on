@@ -29,8 +29,8 @@ func NewReviewHandler(e *echo.Echo, review review.UseCase, series review.UseCase
 		sanitizer: sanitizer,
 	}
 
-	e.POST("/films/:id/reviews", handler.AddFilmReview, auth.GetSession, middleware.ParseErrors)
-	e.POST("/series/:id/reviews", handler.AddSeriesReview, auth.GetSession, middleware.ParseErrors)
+	e.POST("/films/:id/reviews", handler.AddFilmReview, auth.GetSession, middleware.ParseErrors, middleware.CSRF)
+	e.POST("/series/:id/reviews", handler.AddSeriesReview, auth.GetSession, middleware.ParseErrors, middleware.CSRF)
 	e.GET("/films/:id/reviews", handler.GetByFilm, middleware.ParseErrors)
 	e.GET("/series/:id/reviews", handler.GetBySeries, middleware.ParseErrors)
 	e.GET("/films/:id/reviews/user", handler.GetByFilmAndUser, auth.GetSession, middleware.ParseErrors)

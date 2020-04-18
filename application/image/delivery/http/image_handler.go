@@ -26,7 +26,7 @@ func NewUserHandler(e *echo.Echo, image image.UseCase, user user.UseCase, auth m
 	}
 
 	e.GET("image/:path", handler.Get, middleware.ParseErrors)
-	e.POST("/user/image", handler.AddUserImage, auth.GetSession, middleware.ParseErrors)
+	e.POST("/user/image", handler.AddUserImage, auth.GetSession, middleware.ParseErrors, middleware.CSRF)
 }
 
 func (handler *ImageHandler) AddUserImage(ctx echo.Context) error {
