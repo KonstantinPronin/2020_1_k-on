@@ -53,15 +53,20 @@ func (r *SeriesReviewDatabase) GetByProductId(id uint) ([]models.Review, error) 
 func (r *SeriesReviewDatabase) GetReview(productId uint, userId uint) (*models.Review, error) {
 	rev := new(models.Review)
 
-	err := r.conn.Table("kinopoisk.series_reviews rev").
+	rows, err := r.conn.Table("kinopoisk.series_reviews rev").
 		Select("rev.id, rev.rating, rev.body, rev.user_id, rev.product_id, usr.username, usr.image").
 		Joins("inner join kinopoisk.users usr on usr.id = rev.user_id").
-		Where("rev.product_id = ? and rev.user_id = ?", productId, userId).Row().
-		Scan(&rev.Id, &rev.Rating, &rev.Body, &rev.UserId, &rev.ProductId, &rev.Usr.Username, &rev.Usr.Image)
+		Where("rev.product_id = ? and rev.user_id = ?", productId, userId).Rows()
 	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return nil, errors.NewNotFoundError(err.Error())
-		}
+		return nil, err
+	}
+
+	if rows.Next() {
+		err = rows.Scan(&rev.Id, &rev.Rating, &rev.Body, &rev.UserId, &rev.ProductId, &rev.Usr.Username, &rev.Usr.Image)
+	} else {
+		return nil, errors.NewNotFoundError("no user reviews")
+	}
+	if err != nil {
 		return nil, err
 	}
 

@@ -40,7 +40,7 @@ func TestUser_Login_Success(t *testing.T) {
 	users.EXPECT().GetByName(gomock.Eq(testUser.Username)).Return(&storedUser, nil)
 	sessions.EXPECT().Add(gomock.Any(), testUser.Id).Return(nil)
 
-	id, err := us.Login(testUser.Username, testUser.Password)
+	id, _, err := us.Login(testUser.Username, testUser.Password)
 
 	assert.True(t, len(id) > 0)
 	assert.Nil(t, err)
@@ -49,7 +49,7 @@ func TestUser_Login_Success(t *testing.T) {
 func TestUser_Login_EmptyLogin(t *testing.T) {
 	_, _, us := beforeTest(t)
 
-	id, err := us.Login("", testUser.Password)
+	id, _, err := us.Login("", testUser.Password)
 
 	assert.True(t, len(id) == 0)
 	assert.NotNil(t, err)
@@ -61,7 +61,7 @@ func TestUser_Login_UserNotFound(t *testing.T) {
 
 	users.EXPECT().GetByName(gomock.Eq(testUser.Username)).Return(nil, expectedErr)
 
-	id, err := us.Login(testUser.Username, testUser.Password)
+	id, _, err := us.Login(testUser.Username, testUser.Password)
 
 	assert.True(t, len(id) == 0)
 	assert.Equal(t, expectedErr, err)
@@ -73,7 +73,7 @@ func TestUser_Login_WrongPassword(t *testing.T) {
 	users.EXPECT().GetByName(gomock.Eq(testUser.Username)).Return(&testUser, nil)
 	sessions.EXPECT().Add(gomock.Any(), testUser.Id).Return(nil)
 
-	id, err := us.Login(testUser.Username, "wrong")
+	id, _, err := us.Login(testUser.Username, "wrong")
 
 	assert.True(t, len(id) == 0)
 	assert.NotNil(t, err)

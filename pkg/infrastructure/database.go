@@ -1,13 +1,24 @@
 package infrastructure
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/spf13/viper"
 )
 
-const dsn = `host=localhost port=5432 user=postgres password=postgres dbname=k_on sslmode=disable`
+func InitDatabase(path string) (db *gorm.DB, err error) {
+	viper.SetConfigFile(path)
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, err
+	}
 
-func InitDatabase() (db *gorm.DB, err error) {
+	var dsn string
+
+	for key, val := range viper.AllSettings() {
+		dsn = fmt.Sprintf(`%s%s=%s `, dsn, key, val)
+	}
+
 	db, err = gorm.Open("postgres", dsn)
 	if err != nil {
 		return nil, err

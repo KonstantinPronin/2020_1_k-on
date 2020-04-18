@@ -7,26 +7,30 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/microcosm-cc/bluemonday"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 )
 
 type ReviewHandler struct {
-	film   review.UseCase
-	series review.UseCase
-	logger *zap.Logger
+	film      review.UseCase
+	series    review.UseCase
+	logger    *zap.Logger
+	sanitizer *bluemonday.Policy
 }
 
-func NewReviewHandler(e *echo.Echo, review review.UseCase, series review.UseCase, auth middleware.Auth, logger *zap.Logger) {
+func NewReviewHandler(e *echo.Echo, review review.UseCase, series review.UseCase,
+	auth middleware.Auth, logger *zap.Logger, sanitizer *bluemonday.Policy) {
 	handler := ReviewHandler{
-		film:   review,
-		series: series,
-		logger: logger,
+		film:      review,
+		series:    series,
+		logger:    logger,
+		sanitizer: sanitizer,
 	}
 
-	e.POST("/films/:id/reviews", handler.AddFilmReview, auth.GetSession, middleware.ParseErrors)
-	e.POST("/series/:id/reviews", handler.AddSeriesReview, auth.GetSession, middleware.ParseErrors)
+	e.POST("/films/:id/reviews", handler.AddFilmReview, auth.GetSession, middleware.ParseErrors, middleware.CSRF)
+	e.POST("/series/:id/reviews", handler.AddSeriesReview, auth.GetSession, middleware.ParseErrors, middleware.CSRF)
 	e.GET("/films/:id/reviews", handler.GetByFilm, middleware.ParseErrors)
 	e.GET("/series/:id/reviews", handler.GetBySeries, middleware.ParseErrors)
 	e.GET("/films/:id/reviews/user", handler.GetByFilmAndUser, auth.GetSession, middleware.ParseErrors)
@@ -136,7 +140,9 @@ func (r *ReviewHandler) parseRequestBody(ctx echo.Context) (*models.Review, erro
 		return nil, err
 	}
 
+	rev.Body = r.sanitizer.Sanitize(rev.Body)
 	rev.UserId = ctx.Get(session.UserIdKey).(uint)
+
 	return rev, nil
 }
 

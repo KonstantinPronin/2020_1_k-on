@@ -38,8 +38,10 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 			switch err.(type) {
 			case *echo.HTTPError:
 				return err
-			case *errors.InvalidArgumentError, *errors.NotFoundError:
+			case *errors.InvalidArgumentError:
 				return WriteErrResponse(ctx, http.StatusBadRequest, err.Error())
+			case *errors.NotFoundError:
+				return WriteErrResponse(ctx, http.StatusNotFound, err.Error())
 			case *errors.DbInternalError:
 				return WriteErrResponse(ctx, http.StatusInternalServerError, err.Error())
 			default:

@@ -4,7 +4,6 @@ go 1.13
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/golang/mock v1.4.3
@@ -13,6 +12,8 @@ require (
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mailru/easyjson v0.7.1
+	github.com/microcosm-cc/bluemonday v1.0.2
+	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.4.0
 	go.uber.org/zap v1.14.1
 	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71

@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"net/http"
@@ -45,7 +46,7 @@ func beforeTest(t *testing.T) (*UserHandler, *mocks2.MockContext, *mocks.MockUse
 	response := echo.NewResponse(w, echo.New())
 
 	ctx.EXPECT().Response().Return(response).AnyTimes()
-	return &UserHandler{useCase: uc, logger: zap.NewExample()}, ctx, uc, w
+	return &UserHandler{useCase: uc, logger: zap.NewExample(), sanitizer: bluemonday.UGCPolicy()}, ctx, uc, w
 }
 
 func TestUserHandler_Login(t *testing.T) {
@@ -61,11 +62,12 @@ func TestUserHandler_Login(t *testing.T) {
 	}
 
 	ctx.EXPECT().Request().Return(request)
-	uc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, nil)
+	uc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, "", nil)
 	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
 		assert.Equal(t, sessionId, arg.Value)
 	})
 	w.EXPECT().WriteHeader(ok)
+	w.EXPECT().Header().Return(http.Header{})
 	w.EXPECT().Write(gomock.Any())
 
 	err = uh.Login(ctx)
@@ -112,13 +114,14 @@ func TestUserHandler_SignUp(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	uc.EXPECT().Add(&testUser).Return(&testUser, nil)
-	uc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, nil)
+	uc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, "", nil)
 	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
 		assert.Equal(t, sessionId, arg.Value)
 	})
 	w.EXPECT().WriteHeader(ok)
+	w.EXPECT().Header().Return(http.Header{})
 	w.EXPECT().Write(gomock.Any())
 
 	err = uh.SignUp(ctx)

@@ -9,6 +9,7 @@ import (
 	usecase2 "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
@@ -71,7 +72,7 @@ func setupEcho(t *testing.T, url, method string) (echo.Context, FilmHandler, *mo
 	usecase := usecase.NewFilmUsecase(films)
 	person := mock_p.NewMockRepository(ctrl)
 	pusecase := usecase2.NewPerson(person, nil)
-	fh := FilmHandler{fusecase: usecase, pusecase: pusecase}
+	fh := FilmHandler{fusecase: usecase, pusecase: pusecase, sanitizer: bluemonday.UGCPolicy()}
 	return c, fh, films, person
 
 }
