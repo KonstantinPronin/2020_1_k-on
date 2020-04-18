@@ -10,7 +10,7 @@ import (
 const port = ":8080"
 
 func main() {
-	logger, err := infrastructure.InitLog()
+	logger, err := infrastructure.InitLog("conf/log.json")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -31,7 +31,7 @@ func main() {
 	}()
 
 	e := echo.New()
-	db, err := infrastructure.InitDatabase()
+	db, err := infrastructure.InitDatabase("conf/db.json")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
