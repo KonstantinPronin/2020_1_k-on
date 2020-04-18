@@ -7,18 +7,21 @@ import (
 	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/microcosm-cc/bluemonday"
 	"strconv"
 )
 
 type FilmHandler struct {
-	fusecase film.Usecase
-	pusecase person.UseCase
+	fusecase  film.Usecase
+	pusecase  person.UseCase
+	sanitizer *bluemonday.Policy
 }
 
-func NewFilmHandler(e *echo.Echo, fusecase film.Usecase, pusecase person.UseCase) {
+func NewFilmHandler(e *echo.Echo, fusecase film.Usecase, pusecase person.UseCase, sanitizer *bluemonday.Policy) {
 	handler := &FilmHandler{
-		fusecase: fusecase,
-		pusecase: pusecase,
+		fusecase:  fusecase,
+		pusecase:  pusecase,
+		sanitizer: sanitizer,
 	}
 	e.GET("/films/:id", handler.GetFilm)
 	e.GET("/", handler.GetFilmList)
@@ -86,6 +89,8 @@ func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
 		ctx.Response().Write(resp)
 		return err
 	}
+
+	fh.sanitize(&film)
 	f, ok := fh.fusecase.CreateFilm(film)
 	if !ok {
 		resp, _ := models.Generate(500, "can't create film", &ctx).MarshalJSON()
@@ -118,4 +123,15 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
 	_, err := ctx.Response().Write(resp)
 	return err
+}
+
+func (fh FilmHandler) sanitize(f *models.Film) {
+	f.MainGenre = fh.sanitizer.Sanitize(f.MainGenre)
+	f.RussianName = fh.sanitizer.Sanitize(f.RussianName)
+	f.EnglishName = fh.sanitizer.Sanitize(f.EnglishName)
+	f.TrailerLink = fh.sanitizer.Sanitize(f.TrailerLink)
+	f.Description = fh.sanitizer.Sanitize(f.Description)
+	f.Image = fh.sanitizer.Sanitize(f.Image)
+	f.BackgroundImage = fh.sanitizer.Sanitize(f.BackgroundImage)
+	f.Country = fh.sanitizer.Sanitize(f.Country)
 }

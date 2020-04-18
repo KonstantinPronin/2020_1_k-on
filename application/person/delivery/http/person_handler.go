@@ -6,20 +6,23 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/microcosm-cc/bluemonday"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 )
 
 type PersonHandler struct {
-	usecase person.UseCase
-	logger  *zap.Logger
+	usecase   person.UseCase
+	logger    *zap.Logger
+	sanitizer *bluemonday.Policy
 }
 
-func NewPersonHandler(e *echo.Echo, usecase person.UseCase, logger *zap.Logger) {
+func NewPersonHandler(e *echo.Echo, usecase person.UseCase, logger *zap.Logger, sanitizer *bluemonday.Policy) {
 	handler := PersonHandler{
-		usecase: usecase,
-		logger:  logger,
+		usecase:   usecase,
+		logger:    logger,
+		sanitizer: sanitizer,
 	}
 
 	e.GET("/persons/:id", handler.GetById, middleware.ParseErrors)
@@ -49,6 +52,7 @@ func (handler *PersonHandler) Add(ctx echo.Context) error {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
 
+	handler.sanitize(p)
 	p, err := handler.usecase.Add(p)
 	if err != nil {
 		return err
@@ -64,10 +68,19 @@ func (handler *PersonHandler) Update(ctx echo.Context) error {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
 
+	handler.sanitize(p)
 	p, err := handler.usecase.Update(p)
 	if err != nil {
 		return err
 	}
 
 	return middleware.WriteOkResponse(ctx, p)
+}
+
+func (handler *PersonHandler) sanitize(p *models.Person) {
+	p.Name = handler.sanitizer.Sanitize(p.Name)
+	p.Image = handler.sanitizer.Sanitize(p.Image)
+	p.BirthPlace = handler.sanitizer.Sanitize(p.BirthPlace)
+	p.BirthDate = handler.sanitizer.Sanitize(p.BirthDate)
+	p.Occupation = handler.sanitizer.Sanitize(p.Occupation)
 }

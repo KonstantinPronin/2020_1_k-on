@@ -8,6 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"net/http"
@@ -38,7 +39,7 @@ func beforeTest(t *testing.T) (*PersonHandler, *mocks.MockUseCase, *server.MockC
 	w := server.NewMockResponseWriter(ctrl)
 	ctx := server.NewMockContext(ctrl)
 	usecase := mocks.NewMockUseCase(ctrl)
-	handler := PersonHandler{usecase: usecase, logger: zap.NewExample()}
+	handler := PersonHandler{usecase: usecase, logger: zap.NewExample(), sanitizer: bluemonday.UGCPolicy()}
 
 	response := echo.NewResponse(w, echo.New())
 	ctx.EXPECT().Response().Return(response).AnyTimes()

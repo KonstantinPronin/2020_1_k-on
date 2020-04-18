@@ -25,6 +25,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	middleware2 "github.com/labstack/echo/middleware"
+	"github.com/microcosm-cc/bluemonday"
 	"go.uber.org/zap"
 )
 
@@ -35,29 +36,27 @@ type Server struct {
 
 func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger *zap.Logger) *Server {
 	//middleware
-	e.Use(middleware.Middleware)
+	sanitizer := bluemonday.UGCPolicy()
+
+	e.Use(middleware.Logger)
 	//e.Use(middleware.CORS)
 	e.Use(middleware2.CORSWithConfig(middleware2.CORSConfig{
 		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderXCSRFToken},
 		AllowCredentials: true,
 	}))
-	//e.Use(middleware2.CSRFWithConfig(middleware2.CSRFConfig{
-	//	CookieSecure:   false,
-	//	CookieHTTPOnly: false,
-	//	CookieDomain:   "/",
-	//}))
+
 	//user handler
 	sessions := session.NewSessionDatabase(rd, logger)
 	users := userRepository.NewUserDatabase(db, logger)
 	auth := middleware.NewAuth(sessions)
 	user := userUsecase.NewUser(sessions, users, logger)
-	userHandler.NewUserHandler(e, user, auth, logger)
+	userHandler.NewUserHandler(e, user, auth, logger, sanitizer)
 
 	//person handler
 	persons := personRepository.NewPersonDatabase(db, logger)
 	person := personUsecase.NewPerson(persons, logger)
-	personHandler.NewPersonHandler(e, person, logger)
+	personHandler.NewPersonHandler(e, person, logger, sanitizer)
 
 	//series handler
 	series := serialRepository.NewPostgresForSeries(db)
@@ -67,14 +66,14 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	//film handler
 	films := filmRepository.NewPostgresForFilms(db)
 	film := filmUsecase.NewFilmUsecase(films)
-	filmHandler.NewFilmHandler(e, film, person)
+	filmHandler.NewFilmHandler(e, film, person, sanitizer)
 
 	//review handler
 	filmReviewsRep := reviewRepository.NewFilmReviewDatabase(db, logger)
 	filmReview := reviewUsecase.NewFilmReview(filmReviewsRep, films)
 	seriesReviewsRep := reviewRepository.NewSeriesReviewDatabase(db, logger)
 	seriesReview := reviewUsecase.NewSeriesReview(seriesReviewsRep, series)
-	reviewHandler.NewReviewHandler(e, filmReview, seriesReview, auth, logger)
+	reviewHandler.NewReviewHandler(e, filmReview, seriesReview, auth, logger, sanitizer)
 
 	//image handler
 	images := imageRepository.NewImageRepository()

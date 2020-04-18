@@ -23,7 +23,7 @@ var logConf = []byte(`{
     }
     }`)
 
-func Middleware(next echo.HandlerFunc) echo.HandlerFunc {
+func Logger(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		//log request example
 		var cfg zap.Config

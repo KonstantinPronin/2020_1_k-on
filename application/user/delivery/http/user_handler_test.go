@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"net/http"
@@ -45,7 +46,7 @@ func beforeTest(t *testing.T) (*UserHandler, *mocks2.MockContext, *mocks.MockUse
 	response := echo.NewResponse(w, echo.New())
 
 	ctx.EXPECT().Response().Return(response).AnyTimes()
-	return &UserHandler{useCase: uc, logger: zap.NewExample()}, ctx, uc, w
+	return &UserHandler{useCase: uc, logger: zap.NewExample(), sanitizer: bluemonday.UGCPolicy()}, ctx, uc, w
 }
 
 func TestUserHandler_Login(t *testing.T) {

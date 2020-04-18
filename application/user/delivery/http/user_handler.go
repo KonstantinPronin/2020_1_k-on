@@ -7,18 +7,20 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/microcosm-cc/bluemonday"
 	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
 
 type UserHandler struct {
-	useCase user.UseCase
-	logger  *zap.Logger
+	useCase   user.UseCase
+	logger    *zap.Logger
+	sanitizer *bluemonday.Policy
 }
 
-func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth, logger *zap.Logger) {
-	handler := UserHandler{useCase: us, logger: logger}
+func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth, logger *zap.Logger, sanitizer *bluemonday.Policy) {
+	handler := UserHandler{useCase: us, logger: logger, sanitizer: sanitizer}
 
 	//e.Use(middleware.ParseErrors)
 	e.POST("/login", handler.Login, auth.AlreadyLoginErr, middleware.ParseErrors)
@@ -34,6 +36,7 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 		uh.logger.Error("request parser error")
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
+	uh.sanitize(usr)
 
 	sessionId, err := uh.useCase.Login(usr.Username, usr.Password)
 	if err != nil {
@@ -68,6 +71,7 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 		uh.logger.Error("request parser error")
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "request parser error")
 	}
+	uh.sanitize(usr)
 
 	password := usr.Password
 	usr, err := uh.useCase.Add(usr)
@@ -104,6 +108,7 @@ func (uh *UserHandler) Update(ctx echo.Context) error {
 		uh.logger.Error("request parser error")
 		return echo.NewHTTPError(http.StatusBadRequest, "request parser error")
 	}
+	uh.sanitize(usr)
 
 	usr.Id = uid.(uint)
 	err := uh.useCase.Update(usr)
@@ -125,4 +130,11 @@ func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {
 		HttpOnly: true,
 	}
 	ctx.SetCookie(cookie)
+}
+
+func (uh *UserHandler) sanitize(usr *models.User) {
+	usr.Username = uh.sanitizer.Sanitize(usr.Username)
+	usr.Password = uh.sanitizer.Sanitize(usr.Password)
+	usr.Email = uh.sanitizer.Sanitize(usr.Email)
+	usr.Image = uh.sanitizer.Sanitize(usr.Image)
 }
