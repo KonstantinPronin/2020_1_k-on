@@ -33,36 +33,6 @@ func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
 	return m.recorder
 }
 
-// Login mocks base method
-func (m *MockUseCase) Login(login, password string) (string, string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Login", login, password)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(string)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// Login indicates an expected call of Login
-func (mr *MockUseCaseMockRecorder) Login(login, password interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockUseCase)(nil).Login), login, password)
-}
-
-// Logout mocks base method
-func (m *MockUseCase) Logout(sessionId string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Logout", sessionId)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Logout indicates an expected call of Logout
-func (mr *MockUseCaseMockRecorder) Logout(sessionId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Logout", reflect.TypeOf((*MockUseCase)(nil).Logout), sessionId)
-}
-
 // Add mocks base method
 func (m *MockUseCase) Add(usr *models.User) (*models.User, error) {
 	m.ctrl.T.Helper()

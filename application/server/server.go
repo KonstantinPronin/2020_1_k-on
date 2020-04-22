@@ -7,6 +7,7 @@ import (
 	imageHandler "github.com/go-park-mail-ru/2020_1_k-on/application/image/delivery/http"
 	imageRepository "github.com/go-park-mail-ru/2020_1_k-on/application/image/repository"
 	imageUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/image/usecase"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/client"
 	personHandler "github.com/go-park-mail-ru/2020_1_k-on/application/person/delivery/http"
 	personRepository "github.com/go-park-mail-ru/2020_1_k-on/application/person/repository"
 	personUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
@@ -17,24 +18,31 @@ import (
 	serialRepository "github.com/go-park-mail-ru/2020_1_k-on/application/series/repository"
 	serialUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/series/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
-	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
 	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
 	userRepository "github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
 	userUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/conf"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	middleware2 "github.com/labstack/echo/middleware"
 	"github.com/microcosm-cc/bluemonday"
 	"go.uber.org/zap"
+	"log"
 )
 
 type Server struct {
-	port string
-	e    *echo.Echo
+	rpcAuth *client.AuthClient
+	port    string
+	e       *echo.Echo
 }
 
-func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger *zap.Logger) *Server {
+func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Logger) *Server {
+	//microservices
+	rpcAuth, err := client.NewAuthClient(srvConf.Host, srvConf.Port1, logger)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	//middleware
 	sanitizer := bluemonday.UGCPolicy()
 	ioLog := middleware.NewLogger(logger)
@@ -48,11 +56,10 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	}))
 
 	//user handler
-	sessions := session.NewSessionDatabase(rd, logger)
 	users := userRepository.NewUserDatabase(db, logger)
-	auth := middleware.NewAuth(sessions)
-	user := userUsecase.NewUser(sessions, users, logger)
-	userHandler.NewUserHandler(e, user, auth, logger, sanitizer)
+	auth := middleware.NewAuth(rpcAuth)
+	user := userUsecase.NewUser(users, logger)
+	userHandler.NewUserHandler(e, rpcAuth, user, auth, logger, sanitizer)
 
 	//person handler
 	persons := personRepository.NewPersonDatabase(db, logger)
@@ -82,11 +89,13 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	imageHandler.NewUserHandler(e, image, user, auth, logger)
 
 	return &Server{
-		port: port,
-		e:    e,
+		rpcAuth: rpcAuth,
+		port:    srvConf.Port0,
+		e:       e,
 	}
 }
 
 func (s Server) ListenAndServe() error {
+	defer s.rpcAuth.Close()
 	return s.e.Start(s.port)
 }

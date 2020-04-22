@@ -5,8 +5,6 @@ import (
 )
 
 type UseCase interface {
-	Login(login string, password string) (sessionId string, csrfToken string, err error)
-	Logout(sessionId string) error
 	Add(usr *models.User) (*models.User, error)
 	Get(id uint) (*models.User, error)
 	Update(user *models.User) error
