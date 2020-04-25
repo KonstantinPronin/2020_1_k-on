@@ -35,3 +35,15 @@ func NewNotFoundError(error string) *NotFoundError {
 func (nf *NotFoundError) Error() string {
 	return nf.error
 }
+
+type ForbiddenError struct {
+	error string
+}
+
+func NewForbiddenError(error string) *ForbiddenError {
+	return &ForbiddenError{error: error}
+}
+
+func (f *ForbiddenError) Error() string {
+	return f.error
+}

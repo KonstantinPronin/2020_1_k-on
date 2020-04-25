@@ -10,6 +10,9 @@ import (
 	personHandler "github.com/go-park-mail-ru/2020_1_k-on/application/person/delivery/http"
 	personRepository "github.com/go-park-mail-ru/2020_1_k-on/application/person/repository"
 	personUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
+	playlistHandler "github.com/go-park-mail-ru/2020_1_k-on/application/playlist/delivery/http"
+	playlistRepository "github.com/go-park-mail-ru/2020_1_k-on/application/playlist/repository"
+	playlistUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/playlist/usecase"
 	reviewHandler "github.com/go-park-mail-ru/2020_1_k-on/application/review/delivery/http"
 	reviewRepository "github.com/go-park-mail-ru/2020_1_k-on/application/review/repository"
 	reviewUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/review/usecase"
@@ -80,6 +83,11 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	images := imageRepository.NewImageRepository()
 	image := imageUsecase.NewImage(images, logger)
 	imageHandler.NewUserHandler(e, image, user, auth, logger)
+
+	//playlist handler
+	playlists := playlistRepository.NewPlaylistDatabase(db, logger)
+	playlist := playlistUsecase.NewPlaylist(playlists, logger)
+	playlistHandler.NewPlaylistHandler(e, playlist, auth, logger, sanitizer)
 
 	return &Server{
 		port: port,

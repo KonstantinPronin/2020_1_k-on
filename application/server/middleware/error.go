@@ -42,6 +42,8 @@ func ParseErrors(next echo.HandlerFunc) echo.HandlerFunc {
 				return WriteErrResponse(ctx, http.StatusBadRequest, err.Error())
 			case *errors.NotFoundError:
 				return WriteErrResponse(ctx, http.StatusNotFound, err.Error())
+			case *errors.ForbiddenError:
+				return WriteErrResponse(ctx, http.StatusForbidden, err.Error())
 			case *errors.DbInternalError:
 				return WriteErrResponse(ctx, http.StatusInternalServerError, err.Error())
 			default:
