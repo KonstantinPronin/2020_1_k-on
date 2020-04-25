@@ -16,6 +16,8 @@ tags:
     description: Сериалы
   - name: reviews
     description: Отзывы
+  - name: playlists
+    description: Плейлисты
 paths:
   /login:
     post:
@@ -721,8 +723,6 @@ paths:
           description: bad input parameter
         '404':
           description: not found
-
-
   /films:
     get:
       tags:
@@ -850,7 +850,6 @@ paths:
                     example: 10
         '500':
           description: Что-то не так с бд
-
   /series/{id}:
     get:
       tags:
@@ -930,6 +929,433 @@ paths:
           description: bad input parameter
         '404':
           description: not found
+
+  /playlist:
+    post:
+      tags:
+        - playlists
+      summary: create playlist
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Playlist'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Playlist'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    get:
+      tags:
+        - playlists
+      summary: get user playlists
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Playlist'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /playlist/{pid}:
+    get:
+      tags:
+        - playlists
+      summary: get playlist by id
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+        - name: pid
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    $ref: '#/components/schemas/Playlist'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    delete:
+      tags:
+        - playlists
+      summary: delete playlist
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+        - name: pid
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: string
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /playlist/{pid}/film/{filmId}:
+    post:
+      tags:
+        - playlists
+      summary: add film to playlist
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+        - name: pid
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: filmId
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: string
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    delete:
+      tags:
+        - playlists
+      summary: delete film from playlist
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+        - name: pid
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: filmId
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: string
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+  /playlist/{pid}/series/{seriesId}:
+    post:
+      tags:
+        - playlists
+      summary: add series to playlist
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+        - name: pid
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: seriesId
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: string
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+    delete:
+      tags:
+        - playlists
+      summary: delete series from playlist
+      parameters:
+        - name: session_id
+          required: true
+          in: cookie
+          schema:
+            type: number
+            format: uuid
+        - name: pid
+          required: true
+          in: path
+          schema:
+            type: integer
+        - name: seriesId
+          required: true
+          in: path
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  body:
+                    type: string
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        401:
+          description: No session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
 
 components:
   schemas:
@@ -1301,3 +1727,21 @@ components:
           type: string
         user:
           $ref: '#/components/schemas/ListUser'
+
+    Playlist:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        public:
+          type: boolean
+        films:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListFilm'
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListSeries'
