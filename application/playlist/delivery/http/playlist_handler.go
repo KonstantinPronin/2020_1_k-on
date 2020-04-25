@@ -62,7 +62,12 @@ func (handler *PlaylistHandler) AddFilm(ctx echo.Context) error {
 	}
 	userId := ctx.Get(session.UserIdKey).(uint)
 
-	return handler.useCase.AddFilm(pid, filmId, userId)
+	err = handler.useCase.AddFilm(pid, filmId, userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, "")
 }
 
 func (handler *PlaylistHandler) AddSeries(ctx echo.Context) error {
@@ -76,7 +81,12 @@ func (handler *PlaylistHandler) AddSeries(ctx echo.Context) error {
 	}
 	userId := ctx.Get(session.UserIdKey).(uint)
 
-	return handler.useCase.AddFilm(pid, seriesId, userId)
+	err = handler.useCase.AddSeries(pid, seriesId, userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, "")
 }
 
 func (handler *PlaylistHandler) Get(ctx echo.Context) error {
@@ -112,7 +122,12 @@ func (handler *PlaylistHandler) Delete(ctx echo.Context) error {
 	}
 	userId := ctx.Get(session.UserIdKey).(uint)
 
-	return handler.useCase.Delete(pid, userId)
+	err = handler.useCase.Delete(pid, userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, "")
 }
 
 func (handler *PlaylistHandler) DeleteFilm(ctx echo.Context) error {
@@ -126,7 +141,12 @@ func (handler *PlaylistHandler) DeleteFilm(ctx echo.Context) error {
 	}
 	userId := ctx.Get(session.UserIdKey).(uint)
 
-	return handler.useCase.DeleteFilm(pid, filmId, userId)
+	err = handler.useCase.DeleteFilm(pid, filmId, userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, "")
 }
 
 func (handler *PlaylistHandler) DeleteSeries(ctx echo.Context) error {
@@ -140,7 +160,12 @@ func (handler *PlaylistHandler) DeleteSeries(ctx echo.Context) error {
 	}
 	userId := ctx.Get(session.UserIdKey).(uint)
 
-	return handler.useCase.DeleteSeries(pid, seriesId, userId)
+	err = handler.useCase.DeleteSeries(pid, seriesId, userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, "")
 }
 
 func (handler *PlaylistHandler) parseRequestBody(ctx echo.Context) (*models.Playlist, error) {
