@@ -8,12 +8,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func NewAuthServer(usecase user.UseCase) *AuthServer {
-	return &AuthServer{usecase: usecase}
-}
-
 type AuthServer struct {
 	usecase user.UseCase
+}
+
+func NewAuthServer(usecase user.UseCase) *AuthServer {
+	return &AuthServer{usecase: usecase}
 }
 
 func (a *AuthServer) Login(ctx context.Context, usr *api.User) (*api.Session, error) {

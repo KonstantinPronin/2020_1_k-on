@@ -2,6 +2,7 @@ package main
 
 import (
 	auth "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/server"
+	film "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/film/server"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/conf"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/infrastructure"
@@ -13,6 +14,7 @@ const (
 	Host  = "127.0.0.1"
 	Port0 = ":8080"
 	Port1 = ":8081"
+	Port2 = ":8082"
 )
 
 func main() {
@@ -51,7 +53,15 @@ func main() {
 		Host:  Host,
 		Port0: Port0,
 		Port1: Port1,
+		Port2: Port2,
 	}
+
+	srv2 := film.NewServer(srvConf.Port2, db, logger)
+	go func() {
+		if err = srv2.ListenAndServe(); err != nil {
+			log.Fatal(err.Error())
+		}
+	}()
 
 	srv1 := auth.NewServer(srvConf.Port1, db, rd, logger)
 	go func() {

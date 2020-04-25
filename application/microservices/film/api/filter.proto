@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package api;
+
+message Strings {
+  repeated string value = 1;
+}
+
+message Filter {
+  map<string, Strings> fields = 1;
+}
+
+message Film {
+  uint64 id = 1;
+  string mainGenre = 2;
+  string russianName = 3;
+  string englishName = 4;
+  string trailerLink = 5;
+  double rating = 6;
+  double imdbRating = 7;
+  int64 totalVotes = 8;
+  int64 sumVotes = 9;
+  string description = 10;
+  string image = 11;
+  string backgroundImage = 12;
+  string country = 13;
+  int64 year = 14;
+  int64 ageLimit = 15;
+}
+
+message Films {
+  repeated Film list = 1;
+}
+
+message Genre {
+  string name = 1;
+  string reference = 2;
+}
+
+message Genres {
+  repeated Genre list = 1;
+}
+
+message FilterFields {
+  map<string, Genres> fields = 1;
+}
+
+message EmptyArgs {
+}
+
+service FilmFilter {
+  rpc GetFilterFields(EmptyArgs) returns (FilterFields) {}
+  rpc GetFilteredFilms(Filter) returns (Films) {}
+}

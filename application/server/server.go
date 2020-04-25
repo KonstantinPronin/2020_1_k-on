@@ -8,6 +8,7 @@ import (
 	imageRepository "github.com/go-park-mail-ru/2020_1_k-on/application/image/repository"
 	imageUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/image/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/client"
+	client2 "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/film/client"
 	personHandler "github.com/go-park-mail-ru/2020_1_k-on/application/person/delivery/http"
 	personRepository "github.com/go-park-mail-ru/2020_1_k-on/application/person/repository"
 	personUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
@@ -31,14 +32,19 @@ import (
 )
 
 type Server struct {
-	rpcAuth *client.AuthClient
-	port    string
-	e       *echo.Echo
+	rpcAuth       *client.AuthClient
+	rpcFilmFilter *client2.FilmFilterClient
+	port          string
+	e             *echo.Echo
 }
 
 func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Logger) *Server {
 	//microservices
 	rpcAuth, err := client.NewAuthClient(srvConf.Host, srvConf.Port1, logger)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	rpcFilmFilter, err := client2.NewFilmFilterClient(srvConf.Host, srvConf.Port2, logger)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -74,7 +80,7 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	//film handler
 	films := filmRepository.NewPostgresForFilms(db)
 	film := filmUsecase.NewFilmUsecase(films)
-	filmHandler.NewFilmHandler(e, film, person, sanitizer)
+	filmHandler.NewFilmHandler(e, rpcFilmFilter, film, person, sanitizer)
 
 	//review handler
 	filmReviewsRep := reviewRepository.NewFilmReviewDatabase(db, logger)
@@ -89,13 +95,17 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	imageHandler.NewUserHandler(e, image, user, auth, logger)
 
 	return &Server{
-		rpcAuth: rpcAuth,
-		port:    srvConf.Port0,
-		e:       e,
+		rpcAuth:       rpcAuth,
+		rpcFilmFilter: rpcFilmFilter,
+		port:          srvConf.Port0,
+		e:             e,
 	}
 }
 
 func (s Server) ListenAndServe() error {
-	defer s.rpcAuth.Close()
+	defer func() {
+		s.rpcAuth.Close()
+		s.rpcFilmFilter.Close()
+	}()
 	return s.e.Start(s.port)
 }
