@@ -194,7 +194,8 @@ create table kinopoisk.playlists
    	id     	bigserial primary key,
    	name   	varchar(80) not null,
    	public 	bool default false,
-	user_id bigint references kinopoisk.users (id) on delete cascade
+	user_id bigint references kinopoisk.users (id) on delete cascade,
+	unique (name, user_id)
 );
 
 create table kinopoisk.film_playlist (
