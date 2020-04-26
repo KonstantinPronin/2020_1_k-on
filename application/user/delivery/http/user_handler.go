@@ -144,7 +144,7 @@ func (uh *UserHandler) setCsrfToken(ctx echo.Context, token string) {
 		Path:    "/",
 		Expires: time.Now().Add(time.Hour),
 		//SameSite: http.SameSiteStrictMode,
-		HttpOnly: true,
+		//HttpOnly: true,
 	}
 	ctx.SetCookie(cookie)
 }
