@@ -6,6 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type PlaylistDatabase struct {
@@ -23,6 +24,9 @@ func NewPlaylistDatabase(db *gorm.DB, logger *zap.Logger) playlist.Repository {
 func (p *PlaylistDatabase) Create(playlist *models.Playlist) (*models.Playlist, error) {
 	err := p.conn.Table("kinopoisk.playlists").Create(playlist).Error
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key") {
+			return nil, errors.NewInvalidArgument("playlist already exists")
+		}
 		return nil, err
 	}
 	return playlist, nil
