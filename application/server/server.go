@@ -27,6 +27,7 @@ import (
 	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
 	userRepository "github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
 	userUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/crypto"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
@@ -49,7 +50,7 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	//e.Use(middleware.CORS)
 	e.Use(middleware2.CORSWithConfig(middleware2.CORSConfig{
 		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderXCSRFToken},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, crypto.CSRFHeader},
 		AllowCredentials: true,
 	}))
 

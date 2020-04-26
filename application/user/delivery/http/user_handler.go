@@ -45,7 +45,8 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 	}
 
 	uh.setCookie(ctx, sessionId)
-	ctx.Response().Header().Set(crypto.CSRFHeader, token)
+	uh.setCsrfToken(ctx, token)
+	//ctx.Response().Header().Set(crypto.CSRFHeader, token)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
@@ -87,7 +88,8 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 	}
 
 	uh.setCookie(ctx, sessionId)
-	ctx.Response().Header().Set(crypto.CSRFHeader, token)
+	uh.setCsrfToken(ctx, token)
+	//ctx.Response().Header().Set(crypto.CSRFHeader, token)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
@@ -129,6 +131,18 @@ func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {
 		Value:   sessionId,
 		Path:    "/",
 		Expires: time.Now().Add(session.CookieDuration),
+		//SameSite: http.SameSiteStrictMode,
+		HttpOnly: true,
+	}
+	ctx.SetCookie(cookie)
+}
+
+func (uh *UserHandler) setCsrfToken(ctx echo.Context, token string) {
+	cookie := &http.Cookie{
+		Name:    crypto.CSRFHeader,
+		Value:   token,
+		Path:    "/",
+		Expires: time.Now().Add(time.Hour),
 		//SameSite: http.SameSiteStrictMode,
 		HttpOnly: true,
 	}
