@@ -21,6 +21,9 @@ import (
 	serialUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/series/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
+	subsHandler "github.com/go-park-mail-ru/2020_1_k-on/application/subscription/delivery/http"
+	subsRepository "github.com/go-park-mail-ru/2020_1_k-on/application/subscription/repository"
+	subsUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/subscription/usecase"
 	userHandler "github.com/go-park-mail-ru/2020_1_k-on/application/user/delivery/http"
 	userRepository "github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
 	userUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
@@ -88,6 +91,11 @@ func NewServer(port string, e *echo.Echo, db *gorm.DB, rd *redis.Client, logger 
 	playlists := playlistRepository.NewPlaylistDatabase(db, logger)
 	playlist := playlistUsecase.NewPlaylist(playlists, logger)
 	playlistHandler.NewPlaylistHandler(e, playlist, auth, logger, sanitizer)
+
+	//subscription handler
+	subsRep := subsRepository.NewSubscriptionDatabase(db, logger)
+	subs := subsUsecase.NewSubscription(playlists, subsRep, logger)
+	subsHandler.NewSubscriptionHandler(e, subs, auth, logger)
 
 	return &Server{
 		port: port,

@@ -209,3 +209,11 @@ create table kinopoisk.series_playlist (
 	playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
 	series_id bigint references kinopoisk.series (id) on delete cascade
 );
+
+create table kinopoisk.subscriptions
+(
+   	id     	bigserial primary key,
+   	playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
+	user_id bigint references kinopoisk.users (id) on delete cascade,
+	unique (playlist_id, user_id)
+);
