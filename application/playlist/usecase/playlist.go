@@ -92,6 +92,26 @@ func (p *Playlist) GetUserPublicPlaylists(userId uint) (models.Playlists, error)
 	return p.rep.GetUserPublicPlaylists(userId)
 }
 
+func (p *Playlist) GetPlaylistsWithoutSer(sid, userId uint) (models.Playlists, error) {
+	if sid == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
+	return p.rep.GetPlaylistsWithoutSer(sid, userId)
+}
+
+func (p *Playlist) GetPlaylistsWithoutFilm(fid, userId uint) (models.Playlists, error) {
+	if fid == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
+	return p.rep.GetPlaylistsWithoutFilm(fid, userId)
+}
+
+func (p *Playlist) GetAdminPlaylists() (models.Playlists, error) {
+	return p.rep.GetAdminPlaylists()
+}
+
 func (p *Playlist) Delete(pid, userId uint) error {
 	if pid == 0 {
 		return errors.NewInvalidArgument("wrong id")
@@ -138,20 +158,4 @@ func (p *Playlist) DeleteSeries(pid, seriesId, userId uint) error {
 	}
 
 	return p.rep.DeleteSeries(pid, seriesId)
-}
-
-func (p *Playlist) GetPlaylistsWithoutSer(sid, userId uint) (models.Playlists, error) {
-	if sid == 0 {
-		return nil, errors.NewInvalidArgument("wrong id")
-	}
-
-	return p.rep.GetPlaylistsWithoutSer(sid, userId)
-}
-
-func (p *Playlist) GetPlaylistsWithoutFilm(fid, userId uint) (models.Playlists, error) {
-	if fid == 0 {
-		return nil, errors.NewInvalidArgument("wrong id")
-	}
-
-	return p.rep.GetPlaylistsWithoutFilm(fid, userId)
 }

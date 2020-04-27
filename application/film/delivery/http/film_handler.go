@@ -24,7 +24,7 @@ func NewFilmHandler(e *echo.Echo, fusecase film.Usecase, pusecase person.UseCase
 		sanitizer: sanitizer,
 	}
 	e.GET("/films/:id", handler.GetFilm)
-	e.GET("/", handler.GetFilmList)
+	//e.GET("/", handler.GetFilmList)
 	e.GET("/films", handler.FilterFilmList)
 	e.GET("/films/filter", handler.FilterFilmData)
 	e.POST("/films", handler.CreateFilm)
