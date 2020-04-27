@@ -12,4 +12,6 @@ type UseCase interface {
 	Delete(pid uint, userId uint) error
 	DeleteFilm(pid, filmId uint, userId uint) error
 	DeleteSeries(pid, seriesId uint, userId uint) error
+	GetPlaylistsWithoutSer(sid, userId uint) (models.Playlists, error)
+	GetPlaylistsWithoutFilm(fid, userId uint) (models.Playlists, error)
 }

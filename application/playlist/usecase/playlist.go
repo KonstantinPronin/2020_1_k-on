@@ -139,3 +139,19 @@ func (p *Playlist) DeleteSeries(pid, seriesId, userId uint) error {
 
 	return p.rep.DeleteSeries(pid, seriesId)
 }
+
+func (p *Playlist) GetPlaylistsWithoutSer(sid, userId uint) (models.Playlists, error) {
+	if sid == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
+	return p.rep.GetPlaylistsWithoutSer(sid, userId)
+}
+
+func (p *Playlist) GetPlaylistsWithoutFilm(fid, userId uint) (models.Playlists, error) {
+	if fid == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
+	return p.rep.GetPlaylistsWithoutFilm(fid, userId)
+}

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/playlist"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
@@ -203,4 +204,65 @@ func (p *PlaylistDatabase) GetSeries(pid uint) (models.ListSeriesArr, error) {
 	}
 
 	return series, nil
+}
+
+func (p *PlaylistDatabase) GetPlaylistsWithoutSer(sid, userId uint) (models.Playlists, error) {
+	var plist models.Playlists
+
+	//select p.id from kinopoisk.playlists p where p.id
+	//not in (select s.playlist_id from kinopoisk.series_playlist s where s.series_id=1
+
+	rows, err := p.conn.Table("kinopoisk.playlists p").
+		Select("p.id").
+		Where("p.id NOT IN (?) ",
+			p.conn.Table("kinopoisk.series_playlist s").Select("s.playlist_id").
+				Where("s.series_id = ?", sid).SubQuery()).
+		Where("p.user_id = ?", userId).
+		Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var pid uint
+		var pname string
+		err := rows.Scan(&pid, &pname)
+		if err != nil {
+			return nil, err
+		}
+
+		plist = append(plist, models.Playlist{Id: pid, Name: pname})
+	}
+
+	return plist, nil
+}
+
+func (p *PlaylistDatabase) GetPlaylistsWithoutFilm(fid, userId uint) (models.Playlists, error) {
+	var plist models.Playlists
+
+	fmt.Println(fid)
+
+	rows, err := p.conn.Table("kinopoisk.playlists p").
+		Select("p.id,p.name").
+		Where("p.id NOT IN (?) ",
+			p.conn.Table("kinopoisk.film_playlist f").Select("f.playlist_id").
+				Where("f.film_id = ?", fid).SubQuery()).
+		Where("p.user_id = ?", userId).
+		Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var pid uint
+		var pname string
+		err := rows.Scan(&pid, &pname)
+		if err != nil {
+			return nil, err
+		}
+
+		plist = append(plist, models.Playlist{Id: pid, Name: pname})
+	}
+
+	return plist, nil
 }

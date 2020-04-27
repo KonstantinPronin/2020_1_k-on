@@ -13,4 +13,6 @@ type Repository interface {
 	DeleteFilm(pid, filmId uint) error
 	DeleteSeries(pid, seriesId uint) error
 	IsCreator(pid, userId uint) (bool, error)
+	GetPlaylistsWithoutSer(sid, userId uint) (models.Playlists, error)
+	GetPlaylistsWithoutFilm(fid, userId uint) (models.Playlists, error)
 }
