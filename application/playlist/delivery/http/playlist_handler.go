@@ -27,9 +27,9 @@ func NewPlaylistHandler(e *echo.Echo,
 		sanitizer: sanitizer,
 	}
 
-	e.POST("/playlist", handler.Create, auth.GetSession, middleware.ParseErrors)
-	e.POST("/playlist/:pid/films/:id", handler.AddFilm, auth.GetSession, middleware.ParseErrors)
-	e.POST("/playlist/:pid/series/:id", handler.AddSeries, auth.GetSession, middleware.ParseErrors)
+	e.POST("/playlist", handler.Create, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
+	e.POST("/playlist/:pid/films/:id", handler.AddFilm, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
+	e.POST("/playlist/:pid/series/:id", handler.AddSeries, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
 
 	e.GET("/playlist/:pid", handler.Get, auth.GetSession, middleware.ParseErrors)
 	e.GET("/playlist", handler.GetUserPlaylists, auth.GetSession, middleware.ParseErrors)
@@ -38,9 +38,9 @@ func NewPlaylistHandler(e *echo.Echo,
 	e.GET("/series/:id/playlists", handler.GetPlaylistsWithoutSer, auth.GetSession, middleware.ParseErrors)
 	e.GET("/index", handler.GetAdminPlaylists, middleware.ParseErrors)
 
-	e.DELETE("/playlist/:pid", handler.Delete, auth.GetSession, middleware.ParseErrors)
-	e.DELETE("/playlist/:pid/film/:id", handler.DeleteFilm, auth.GetSession, middleware.ParseErrors)
-	e.DELETE("/playlist/:pid/series/:id", handler.DeleteSeries, auth.GetSession, middleware.ParseErrors)
+	e.DELETE("/playlist/:pid", handler.Delete, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
+	e.DELETE("/playlist/:pid/film/:id", handler.DeleteFilm, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
+	e.DELETE("/playlist/:pid/series/:id", handler.DeleteSeries, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
 }
 
 func (handler *PlaylistHandler) Create(ctx echo.Context) error {

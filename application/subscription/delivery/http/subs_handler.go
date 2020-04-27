@@ -21,8 +21,8 @@ func NewSubscriptionHandler(e *echo.Echo, useCase subscription.UseCase, auth mid
 		logger:  logger,
 	}
 
-	e.POST("/subscribe/:pid", handler.Subscribe, auth.GetSession, middleware.ParseErrors)
-	e.DELETE("/unsubscribe/:pid", handler.Unsubscribe, auth.GetSession, middleware.ParseErrors)
+	e.POST("/subscribe/:pid", handler.Subscribe, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
+	e.DELETE("/unsubscribe/:pid", handler.Unsubscribe, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
 	e.GET("/subscriptions", handler.Subscription, auth.GetSession, middleware.ParseErrors)
 }
 

@@ -142,7 +142,7 @@ func (uh *UserHandler) setCsrfToken(ctx echo.Context, token string) {
 		Name:    crypto.CSRFHeader,
 		Value:   token,
 		Path:    "/",
-		Expires: time.Now().Add(time.Hour),
+		Expires: time.Now().Add(-time.Hour),
 		//SameSite: http.SameSiteStrictMode,
 		//HttpOnly: true,
 	}
