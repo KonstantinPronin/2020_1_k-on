@@ -201,14 +201,14 @@ create table kinopoisk.playlists
 create table kinopoisk.film_playlist (
   	id     	bigserial primary key,
 	playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
-	film_id bigint references kinopoisk.films (id) on delete cascade
+	film_id bigint references kinopoisk.films (id) on delete cascade,
 	unique (playlist_id, film_id)
 );
 
 create table kinopoisk.series_playlist (
   	id     	bigserial primary key,
 	playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
-	series_id bigint references kinopoisk.series (id) on delete cascade
+	series_id bigint references kinopoisk.series (id) on delete cascade,
 	unique (playlist_id, series_id)
 );
 
