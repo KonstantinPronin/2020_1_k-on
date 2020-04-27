@@ -34,17 +34,35 @@ func (p *PlaylistDatabase) Create(playlist *models.Playlist) (*models.Playlist, 
 }
 
 func (p *PlaylistDatabase) AddFilm(pid, filmId uint) error {
-	return p.conn.Table("kinopoisk.film_playlist").Create(&models.FilmToPlaylist{
+	err := p.conn.Table("kinopoisk.film_playlist").Create(&models.FilmToPlaylist{
 		Pid:    pid,
 		FilmId: filmId,
 	}).Error
+
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key") {
+			return errors.NewInvalidArgument("film is already in playlist")
+		}
+		return err
+	}
+
+	return nil
 }
 
 func (p *PlaylistDatabase) AddSeries(pid, seriesId uint) error {
-	return p.conn.Table("kinopoisk.series_playlist").Create(&models.SeriesToPlaylist{
+	err := p.conn.Table("kinopoisk.series_playlist").Create(&models.SeriesToPlaylist{
 		Pid:      pid,
 		SeriesId: seriesId,
 	}).Error
+
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key") {
+			return errors.NewInvalidArgument("series is already in playlist")
+		}
+		return err
+	}
+
+	return nil
 }
 
 func (p *PlaylistDatabase) Get(pid uint) (*models.Playlist, error) {
