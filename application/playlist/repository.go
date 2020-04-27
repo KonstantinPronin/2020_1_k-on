@@ -8,6 +8,7 @@ type Repository interface {
 	AddSeries(pid, seriesId uint) error
 	Get(pid uint) (*models.Playlist, error)
 	GetUserPlaylists(userId uint) (models.Playlists, error)
+	GetUserPublicPlaylists(userId uint) (models.Playlists, error)
 	Delete(pid uint) error
 	DeleteFilm(pid, filmId uint) error
 	DeleteSeries(pid, seriesId uint) error

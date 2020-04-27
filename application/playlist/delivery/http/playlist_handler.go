@@ -32,6 +32,7 @@ func NewPlaylistHandler(e *echo.Echo,
 	e.POST("/playlist/:pid/series/:id", handler.AddSeries, auth.GetSession, middleware.ParseErrors)
 	e.GET("/playlist/:pid", handler.Get, auth.GetSession, middleware.ParseErrors)
 	e.GET("/playlist", handler.GetUserPlaylists, auth.GetSession, middleware.ParseErrors)
+	e.GET("/playlist/user/:id", handler.GetUserPublicPlaylists, middleware.ParseErrors)
 	e.DELETE("/playlist/:pid", handler.Delete, auth.GetSession, middleware.ParseErrors)
 	e.DELETE("/playlist/:pid/film/:id", handler.DeleteFilm, auth.GetSession, middleware.ParseErrors)
 	e.DELETE("/playlist/:pid/series/:id", handler.DeleteSeries, auth.GetSession, middleware.ParseErrors)
@@ -108,6 +109,20 @@ func (handler *PlaylistHandler) GetUserPlaylists(ctx echo.Context) error {
 	userId := ctx.Get(session.UserIdKey).(uint)
 
 	plist, err := handler.useCase.GetUserPlaylists(userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, plist)
+}
+
+func (handler *PlaylistHandler) GetUserPublicPlaylists(ctx echo.Context) error {
+	userId, err := handler.getParamId(ctx, "id")
+	if err != nil {
+		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
+	}
+
+	plist, err := handler.useCase.GetUserPublicPlaylists(userId)
 	if err != nil {
 		return err
 	}

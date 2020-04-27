@@ -97,6 +97,33 @@ func (p *PlaylistDatabase) GetUserPlaylists(userId uint) (models.Playlists, erro
 	return plist, nil
 }
 
+func (p *PlaylistDatabase) GetUserPublicPlaylists(userId uint) (models.Playlists, error) {
+	var plist models.Playlists
+
+	rows, err := p.conn.Table("kinopoisk.playlists").
+		Select("id").Where("user_id = ? and public = true", userId).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var pid uint
+		err := rows.Scan(&pid)
+		if err != nil {
+			return nil, err
+		}
+
+		play, err := p.Get(pid)
+		if err != nil {
+			return nil, err
+		}
+
+		plist = append(plist, *play)
+	}
+
+	return plist, nil
+}
+
 func (p *PlaylistDatabase) Delete(pid uint) error {
 	return p.conn.Table("kinopoisk.playlists").
 		Where("id = ?", pid).

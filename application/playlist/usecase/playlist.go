@@ -84,6 +84,14 @@ func (p *Playlist) GetUserPlaylists(userId uint) (models.Playlists, error) {
 	return p.rep.GetUserPlaylists(userId)
 }
 
+func (p *Playlist) GetUserPublicPlaylists(userId uint) (models.Playlists, error) {
+	if userId == 0 {
+		return nil, errors.NewInvalidArgument("wrong id")
+	}
+
+	return p.rep.GetUserPublicPlaylists(userId)
+}
+
 func (p *Playlist) Delete(pid, userId uint) error {
 	if pid == 0 {
 		return errors.NewInvalidArgument("wrong id")

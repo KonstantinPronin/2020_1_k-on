@@ -8,6 +8,7 @@ type UseCase interface {
 	AddSeries(pid, seriesId, userId uint) error
 	Get(pid uint, userId uint) (*models.Playlist, error)
 	GetUserPlaylists(userId uint) (models.Playlists, error)
+	GetUserPublicPlaylists(userId uint) (models.Playlists, error)
 	Delete(pid uint, userId uint) error
 	DeleteFilm(pid, filmId uint, userId uint) error
 	DeleteSeries(pid, seriesId uint, userId uint) error
