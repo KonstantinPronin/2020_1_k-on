@@ -185,7 +185,7 @@ func (p *PlaylistDatabase) GetPlaylistsWithoutFilm(fid, userId uint) (models.Pla
 
 func (p *PlaylistDatabase) GetAdminPlaylists() (models.Playlists, error) {
 	usr := new(models.User)
-	err := p.conn.Table("kinopoisk.users").Where("username = admin").First(usr).Error
+	err := p.conn.Table("kinopoisk.users").Where("username = ?", "admin").First(usr).Error
 	if err != nil {
 		return nil, err
 	}
