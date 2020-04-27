@@ -36,7 +36,7 @@ func NewPlaylistHandler(e *echo.Echo,
 	e.GET("/playlist/user/:id", handler.GetUserPublicPlaylists, middleware.ParseErrors)
 	e.GET("/films/:id/playlists", handler.GetPlaylistsWithoutFilm, auth.GetSession, middleware.ParseErrors)
 	e.GET("/series/:id/playlists", handler.GetPlaylistsWithoutSer, auth.GetSession, middleware.ParseErrors)
-	e.GET("/", handler.GetAdminPlaylists, middleware.ParseErrors)
+	e.GET("/index", handler.GetAdminPlaylists, middleware.ParseErrors)
 
 	e.DELETE("/playlist/:pid", handler.Delete, auth.GetSession, middleware.ParseErrors)
 	e.DELETE("/playlist/:pid/film/:id", handler.DeleteFilm, auth.GetSession, middleware.ParseErrors)

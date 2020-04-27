@@ -24,7 +24,7 @@ func NewFilmHandler(e *echo.Echo, fusecase film.Usecase, pusecase person.UseCase
 		sanitizer: sanitizer,
 	}
 	e.GET("/films/:id", handler.GetFilm)
-	//e.GET("/", handler.GetFilmList)
+	e.GET("/", handler.GetFilmList)
 	e.GET("/films", handler.FilterFilmList)
 	e.GET("/films/filter", handler.FilterFilmData)
 	e.POST("/films", handler.CreateFilm)
@@ -116,10 +116,10 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 		rec[ind].Image = f[ind].BackgroundImage
 	}
 	r["recommendations"] = rec
-	coll := make([]models.Collection, 2)
-	coll[0] = models.Collection{"Сейчас смотрят", fl.Convert(f)}
-	coll[1] = models.Collection{"Новое", fl.Convert(f)}
-	r["collections"] = coll
+	//coll := make([]models.Collection, 2)
+	//coll[0] = models.Collection{"Сейчас смотрят", fl.Convert(f)}
+	//coll[1] = models.Collection{"Новое", fl.Convert(f)}
+	//r["collections"] = coll
 	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
 	_, err := ctx.Response().Write(resp)
 	return err
