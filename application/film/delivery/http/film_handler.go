@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
+	client "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/film/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/labstack/echo"
@@ -12,16 +13,24 @@ import (
 )
 
 type FilmHandler struct {
-	fusecase  film.Usecase
-	pusecase  person.UseCase
-	sanitizer *bluemonday.Policy
+	rpcFilmFilter *client.FilmFilterClient
+	fusecase      film.Usecase
+	pusecase      person.UseCase
+	sanitizer     *bluemonday.Policy
 }
 
-func NewFilmHandler(e *echo.Echo, fusecase film.Usecase, pusecase person.UseCase, sanitizer *bluemonday.Policy) {
+func NewFilmHandler(
+	e *echo.Echo,
+	rpcFilmFilter *client.FilmFilterClient,
+	fusecase film.Usecase,
+	pusecase person.UseCase,
+	sanitizer *bluemonday.Policy) {
+
 	handler := &FilmHandler{
-		fusecase:  fusecase,
-		pusecase:  pusecase,
-		sanitizer: sanitizer,
+		rpcFilmFilter: rpcFilmFilter,
+		fusecase:      fusecase,
+		pusecase:      pusecase,
+		sanitizer:     sanitizer,
 	}
 	e.GET("/films/:id", handler.GetFilm)
 	e.GET("/", handler.GetFilmList)
@@ -31,7 +40,7 @@ func NewFilmHandler(e *echo.Echo, fusecase film.Usecase, pusecase person.UseCase
 }
 
 func (fh FilmHandler) FilterFilmData(ctx echo.Context) error {
-	d, ok := fh.fusecase.FilterFilmData()
+	d, ok := fh.rpcFilmFilter.GetFilterFields()
 	if !ok {
 		resp, _ := models.Generate(500, "can't get data", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
@@ -44,7 +53,7 @@ func (fh FilmHandler) FilterFilmData(ctx echo.Context) error {
 
 func (fh FilmHandler) FilterFilmList(ctx echo.Context) error {
 	query := ctx.QueryParams()
-	f, ok := fh.fusecase.FilterFilmList(query)
+	f, ok := fh.rpcFilmFilter.GetFilteredFilms(query)
 	if !ok {
 		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)

@@ -21,22 +21,6 @@ func (FU filmUsecase) GetFilmGenres(fid uint) (models.Genres, bool) {
 	return g, ok
 }
 
-func (FU filmUsecase) FilterFilmData() (interface{}, bool) {
-	data, ok := FU.filmRepo.FilterFilmData()
-	if !ok {
-		return nil, false
-	}
-	return data, true
-}
-
-func (FU filmUsecase) FilterFilmList(fields map[string][]string) (models.Films, bool) {
-	films, ok := FU.filmRepo.FilterFilmsList(fields)
-	if !ok {
-		return models.Films{}, false
-	}
-	return *films, true
-}
-
 func (FU filmUsecase) GetFilmsList(begin, end uint) (models.Films, bool) {
 	films, ok := FU.filmRepo.GetFilmsArr(begin, end)
 	if !ok {

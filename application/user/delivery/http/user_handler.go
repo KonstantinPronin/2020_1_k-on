@@ -1,11 +1,11 @@
 package http
 
 import (
+	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
-	"github.com/go-park-mail-ru/2020_1_k-on/pkg/crypto"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
 	"github.com/microcosm-cc/bluemonday"
@@ -15,13 +15,20 @@ import (
 )
 
 type UserHandler struct {
+	rpcAuth   *client.AuthClient
 	useCase   user.UseCase
 	logger    *zap.Logger
 	sanitizer *bluemonday.Policy
 }
 
-func NewUserHandler(e *echo.Echo, us user.UseCase, auth middleware.Auth, logger *zap.Logger, sanitizer *bluemonday.Policy) {
-	handler := UserHandler{useCase: us, logger: logger, sanitizer: sanitizer}
+func NewUserHandler(e *echo.Echo,
+	rpcAuth *client.AuthClient,
+	us user.UseCase,
+	auth middleware.Auth,
+	logger *zap.Logger,
+	sanitizer *bluemonday.Policy) {
+
+	handler := UserHandler{rpcAuth: rpcAuth, useCase: us, logger: logger, sanitizer: sanitizer}
 
 	//e.Use(middleware.ParseErrors)
 	e.POST("/login", handler.Login, auth.AlreadyLoginErr, middleware.ParseErrors)
@@ -39,7 +46,7 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 	}
 	uh.sanitize(usr)
 
-	sessionId, token, err := uh.useCase.Login(usr.Username, usr.Password)
+	sessionId, token, err := uh.rpcAuth.Login(usr.Username, usr.Password)
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, err.Error())
 	}
@@ -53,13 +60,13 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 }
 
 func (uh *UserHandler) Logout(ctx echo.Context) error {
-	cookie, err := ctx.Cookie(session.CookieName)
+	cookie, err := ctx.Cookie(constants.CookieName)
 	if err != nil {
 		uh.logger.Warn("request without cookie")
 		return middleware.WriteErrResponse(ctx, http.StatusUnauthorized, "no cookie")
 	}
 
-	if err := uh.useCase.Logout(cookie.Value); err != nil {
+	if err := uh.rpcAuth.Logout(cookie.Value); err != nil {
 		return err
 	}
 
@@ -84,7 +91,7 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 		return err
 	}
 
-	sessionId, token, err := uh.useCase.Login(usr.Username, password)
+	sessionId, token, err := uh.rpcAuth.Login(usr.Username, password)
 	if err != nil {
 		return err
 	}
@@ -98,7 +105,7 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 }
 
 func (uh *UserHandler) Profile(ctx echo.Context) error {
-	uid := ctx.Get(session.UserIdKey)
+	uid := ctx.Get(constants.UserIdKey)
 	usr, err := uh.useCase.Get(uid.(uint))
 	if err != nil {
 		return err
@@ -109,7 +116,7 @@ func (uh *UserHandler) Profile(ctx echo.Context) error {
 }
 
 func (uh *UserHandler) Update(ctx echo.Context) error {
-	uid := ctx.Get(session.UserIdKey)
+	uid := ctx.Get(constants.UserIdKey)
 	usr := new(models.User)
 	if err := easyjson.UnmarshalFromReader(ctx.Request().Body, usr); err != nil {
 		uh.logger.Error("request parser error")
@@ -129,10 +136,10 @@ func (uh *UserHandler) Update(ctx echo.Context) error {
 
 func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {
 	cookie := &http.Cookie{
-		Name:    session.CookieName,
+		Name:    constants.CookieName,
 		Value:   sessionId,
 		Path:    "/",
-		Expires: time.Now().Add(session.CookieDuration),
+		Expires: time.Now().Add(constants.CookieDuration),
 		//SameSite: http.SameSiteStrictMode,
 		HttpOnly: true,
 	}
@@ -144,7 +151,7 @@ func (uh *UserHandler) setCsrfToken(ctx echo.Context, token string) {
 		Name:    crypto.CSRFHeader,
 		Value:   token,
 		Path:    "/",
-		Expires: time.Now().Add(-time.Hour),
+		Expires: time.Now().Add(time.Hour),
 		//SameSite: http.SameSiteStrictMode,
 		//HttpOnly: true,
 	}

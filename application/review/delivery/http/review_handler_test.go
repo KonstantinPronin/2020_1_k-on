@@ -5,7 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/review/mocks"
 	server "github.com/go-park-mail-ru/2020_1_k-on/application/server/mocks"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
@@ -59,7 +59,7 @@ func TestReviewHandler_AddFilmReview(t *testing.T) {
 	}
 
 	ctx.EXPECT().Request().Return(request)
-	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().Add(gomock.Any()).Return(nil)
 	w.EXPECT().WriteHeader(ok)
@@ -99,7 +99,7 @@ func TestReviewHandler_AddSeriesReview(t *testing.T) {
 	}
 
 	ctx.EXPECT().Request().Return(request)
-	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().Add(gomock.Any()).Return(nil)
 	w.EXPECT().WriteHeader(ok)
@@ -175,7 +175,7 @@ func TestReviewHandler_GetBySeries_WrongParameter(t *testing.T) {
 func TestReviewHandler_GetByFilmAndUser(t *testing.T) {
 	handler, usecase, ctx, w := beforeTest(t)
 
-	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().GetReview(testReview.ProductId, testReview.UserId).Return(&testReview, nil)
 	w.EXPECT().WriteHeader(ok)
@@ -188,7 +188,7 @@ func TestReviewHandler_GetByFilmAndUser(t *testing.T) {
 func TestReviewHandler_GetByFilmAndUser_WrongParameter(t *testing.T) {
 	handler, _, ctx, w := beforeTest(t)
 
-	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(wrongId)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
@@ -200,7 +200,7 @@ func TestReviewHandler_GetByFilmAndUser_WrongParameter(t *testing.T) {
 func TestReviewHandler_GetBySeriesAndUser(t *testing.T) {
 	handler, usecase, ctx, w := beforeTest(t)
 
-	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().GetReview(testReview.ProductId, testReview.UserId).Return(&testReview, nil)
 	w.EXPECT().WriteHeader(ok)
@@ -213,7 +213,7 @@ func TestReviewHandler_GetBySeriesAndUser(t *testing.T) {
 func TestReviewHandler_GetBySeriesAndUser_WrongParameter(t *testing.T) {
 	handler, _, ctx, w := beforeTest(t)
 
-	ctx.EXPECT().Get(session.UserIdKey).Return(testReview.UserId)
+	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(wrongId)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())

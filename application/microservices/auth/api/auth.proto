@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package api;
+
+message UserId {
+  uint64 userId = 1;
+}
+
+message User {
+  string login = 1;
+  string password = 2;
+}
+
+message SessionId {
+  string sessionId = 1;
+}
+
+message Session {
+  string sessionId = 1;
+  string csrfToken = 2;
+}
+
+message Empty {
+}
+
+service Auth {
+  rpc Login(User) returns (Session) {}
+  rpc Check(SessionId) returns (UserId) {}
+  rpc Logout(SessionId) returns (Empty) {}
+}
+

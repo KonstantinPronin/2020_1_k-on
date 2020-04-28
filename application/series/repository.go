@@ -6,7 +6,5 @@ type Repository interface {
 	GetSeriesByID(id uint) (models.Series, bool)
 	GetSeriesSeasons(id uint) (models.Seasons, bool)
 	GetSeasonEpisodes(id uint) (models.Episodes, bool)
-	FilterSeriesList(map[string][]string) (*models.SeriesArr, bool)
-	FilterSeriesData() (map[string]interface{}, bool)
 	GetSeriesGenres(fid uint) (models.Genres, bool)
 }

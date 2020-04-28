@@ -44,19 +44,3 @@ func (SU serialUsecase) GetSeasonEpisodes(id uint) (models.Episodes, bool) {
 	}
 	return series, true
 }
-
-func (SU serialUsecase) FilterSeriesList(fields map[string][]string) (models.SeriesArr, bool) {
-	series, ok := SU.serialRepo.FilterSeriesList(fields)
-	if !ok {
-		return models.SeriesArr{}, false
-	}
-	return *series, true
-}
-
-func (SU serialUsecase) FilterSeriesData() (interface{}, bool) {
-	data, ok := SU.serialRepo.FilterSeriesData()
-	if !ok {
-		return nil, false
-	}
-	return data, true
-}

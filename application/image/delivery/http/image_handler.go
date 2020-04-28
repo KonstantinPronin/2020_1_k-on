@@ -3,8 +3,8 @@ package http
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/image"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"net/http"
@@ -39,14 +39,18 @@ func (handler *ImageHandler) AddUserImage(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, err.Error())
 	}
-	defer src.Close()
+	defer func() {
+		if err = src.Close(); err != nil {
+			handler.logger.Error("error while closing file")
+		}
+	}()
 
 	path, err := handler.image.Save(src)
 	if err != nil {
 		return err
 	}
 
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 	err = handler.user.SetImage(userId, path)
 	if err != nil {
 		return err

@@ -1,7 +1,8 @@
 package repository
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/session"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/go-redis/redis/v7"
 	"go.uber.org/zap"
 	"strconv"
@@ -17,7 +18,7 @@ func NewSessionDatabase(conn *redis.Client, logger *zap.Logger) session.Reposito
 }
 
 func (sd *SessionDatabase) Add(sessionId string, userId uint) error {
-	err := sd.conn.Set(sessionId, userId, session.CookieDuration).Err()
+	err := sd.conn.Set(sessionId, userId, constants.CookieDuration).Err()
 	if err != nil {
 		sd.logger.Error(err.Error())
 	}

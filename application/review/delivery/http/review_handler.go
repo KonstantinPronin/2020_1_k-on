@@ -4,7 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/review"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
 	"github.com/microcosm-cc/bluemonday"
@@ -108,7 +108,7 @@ func (r *ReviewHandler) GetByFilmAndUser(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	rev, err := r.film.GetReview(productId, userId)
 	if err != nil {
@@ -123,7 +123,7 @@ func (r *ReviewHandler) GetBySeriesAndUser(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	rev, err := r.series.GetReview(productId, userId)
 	if err != nil {
@@ -141,7 +141,7 @@ func (r *ReviewHandler) parseRequestBody(ctx echo.Context) (*models.Review, erro
 	}
 
 	rev.Body = r.sanitizer.Sanitize(rev.Body)
-	rev.UserId = ctx.Get(session.UserIdKey).(uint)
+	rev.UserId = ctx.Get(constants.UserIdKey).(uint)
 
 	return rev, nil
 }
