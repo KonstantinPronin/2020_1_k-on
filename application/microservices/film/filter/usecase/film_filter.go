@@ -14,17 +14,9 @@ func NewFilmFilter(filmRepo filter.Repository) filter.UseCase {
 }
 
 func (f *FilmFilter) FilterFilmData() (map[string]models.Genres, bool) {
-	data, ok := f.filmRepo.FilterFilmData()
-	if !ok {
-		return nil, false
-	}
-	return data, true
+	return f.filmRepo.FilterFilmData()
 }
 
-func (f *FilmFilter) FilterFilmList(fields map[string][]string) (models.Films, bool) {
-	films, ok := f.filmRepo.FilterFilmsList(fields)
-	if !ok {
-		return models.Films{}, false
-	}
-	return *films, true
+func (f *FilmFilter) FilterFilmList(fields map[string][]string) (*models.Films, bool) {
+	return f.filmRepo.FilterFilmsList(fields)
 }

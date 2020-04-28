@@ -9,6 +9,7 @@ import (
 	imageUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/image/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/client"
 	client2 "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/film/client"
+	client3 "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/series/client"
 	personHandler "github.com/go-park-mail-ru/2020_1_k-on/application/person/delivery/http"
 	personRepository "github.com/go-park-mail-ru/2020_1_k-on/application/person/repository"
 	personUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
@@ -32,10 +33,11 @@ import (
 )
 
 type Server struct {
-	rpcAuth       *client.AuthClient
-	rpcFilmFilter *client2.FilmFilterClient
-	port          string
-	e             *echo.Echo
+	rpcAuth         *client.AuthClient
+	rpcFilmFilter   *client2.FilmFilterClient
+	rpcSeriesFilter *client3.SeriesFilterClient
+	port            string
+	e               *echo.Echo
 }
 
 func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Logger) *Server {
@@ -45,6 +47,10 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 		log.Fatal(err.Error())
 	}
 	rpcFilmFilter, err := client2.NewFilmFilterClient(srvConf.Host, srvConf.Port2, logger)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	rpcSeriesFilter, err := client3.NewSeriesFilterClient(srvConf.Host, srvConf.Port3, logger)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -75,7 +81,7 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	//series handler
 	series := serialRepository.NewPostgresForSeries(db)
 	seriesUC := serialUsecase.NewSeriesUsecase(series)
-	serialHandler.NewSeriesHandler(e, seriesUC, person)
+	serialHandler.NewSeriesHandler(e, rpcSeriesFilter, seriesUC, person)
 
 	//film handler
 	films := filmRepository.NewPostgresForFilms(db)
@@ -95,10 +101,11 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	imageHandler.NewUserHandler(e, image, user, auth, logger)
 
 	return &Server{
-		rpcAuth:       rpcAuth,
-		rpcFilmFilter: rpcFilmFilter,
-		port:          srvConf.Port0,
-		e:             e,
+		rpcAuth:         rpcAuth,
+		rpcFilmFilter:   rpcFilmFilter,
+		rpcSeriesFilter: rpcSeriesFilter,
+		port:            srvConf.Port0,
+		e:               e,
 	}
 }
 
@@ -106,6 +113,7 @@ func (s Server) ListenAndServe() error {
 	defer func() {
 		s.rpcAuth.Close()
 		s.rpcFilmFilter.Close()
+		s.rpcSeriesFilter.Close()
 	}()
 	return s.e.Start(s.port)
 }

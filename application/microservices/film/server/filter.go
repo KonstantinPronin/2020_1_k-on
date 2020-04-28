@@ -32,5 +32,5 @@ func (f *FilmFilter) GetFilteredFilms(ctx context.Context, filter *api.Filter) (
 		return nil, status.Error(codes.InvalidArgument, "")
 	}
 
-	return convertToFilms(films), nil
+	return convertToFilms(*films), nil
 }

@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package apis;
+
+message Strings {
+  repeated string value = 1;
+}
+
+message Filter {
+  map<string, Strings> fields = 1;
+}
+
+message Series {
+  uint64 id = 1;
+  string mainGenre = 2;
+  string russianName = 3;
+  string englishName = 4;
+  string trailerLink = 5;
+  double rating = 6;
+  double imdbRating = 7;
+  int64 totalVotes = 8;
+  int64 sumVotes = 9;
+  string description = 10;
+  string image = 11;
+  string backgroundImage = 12;
+  string country = 13;
+  int64 yearFirst = 14;
+  int64 yearLast = 15;
+  int64 ageLimit = 16;
+}
+
+message SeriesList {
+  repeated Series list = 1;
+}
+
+message Genre {
+  string name = 1;
+  string reference = 2;
+}
+
+message Genres {
+  repeated Genre list = 1;
+}
+
+message FilterFields {
+  map<string, Genres> fields = 1;
+}
+
+message EmptyArgs {
+}
+
+service SeriesFilter {
+  rpc GetFilterFields(EmptyArgs) returns (FilterFields) {}
+  rpc GetFilteredSeries(Filter) returns (SeriesList) {}
+}

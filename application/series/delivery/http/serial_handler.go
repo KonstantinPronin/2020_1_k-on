@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/series/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
@@ -10,14 +11,18 @@ import (
 )
 
 type SeriesHandler struct {
-	usecase  series.Usecase
-	pusecase person.UseCase
+	rpcSeriesFilter *client.SeriesFilterClient
+	usecase         series.Usecase
+	pusecase        person.UseCase
 }
 
-func NewSeriesHandler(e *echo.Echo, usecase series.Usecase, pusecase person.UseCase) {
+func NewSeriesHandler(e *echo.Echo,
+	rpcSeriesFilter *client.SeriesFilterClient,
+	usecase series.Usecase, pusecase person.UseCase) {
 	handler := &SeriesHandler{
-		usecase:  usecase,
-		pusecase: pusecase,
+		rpcSeriesFilter: rpcSeriesFilter,
+		usecase:         usecase,
+		pusecase:        pusecase,
 	}
 	e.GET("/series/:id", handler.GetSeries)
 	e.GET("/series/:id/seasons", handler.GetSeriesSeasons)
@@ -28,7 +33,7 @@ func NewSeriesHandler(e *echo.Echo, usecase series.Usecase, pusecase person.UseC
 }
 
 func (sh SeriesHandler) FilterSeriesData(ctx echo.Context) error {
-	d, ok := sh.usecase.FilterSeriesData()
+	d, ok := sh.rpcSeriesFilter.GetFilterFields()
 	if !ok {
 		resp, _ := models.Generate(500, "can't get data", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
@@ -41,7 +46,7 @@ func (sh SeriesHandler) FilterSeriesData(ctx echo.Context) error {
 
 func (sh SeriesHandler) FilterSeriesList(ctx echo.Context) error {
 	query := ctx.QueryParams()
-	s, ok := sh.usecase.FilterSeriesList(query)
+	s, ok := sh.rpcSeriesFilter.GetFilteredSeries(query)
 	if !ok {
 		resp, _ := models.Generate(500, "can't get series", &ctx).MarshalJSON()
 		ctx.Response().Write(resp)
