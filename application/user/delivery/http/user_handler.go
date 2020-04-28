@@ -64,6 +64,8 @@ func (uh *UserHandler) Logout(ctx echo.Context) error {
 	}
 
 	cookie.Expires = time.Now().AddDate(0, 0, -1)
+	cookie.Path = "/"
+	cookie.HttpOnly = true
 	ctx.SetCookie(cookie)
 	return middleware.WriteOkResponse(ctx, nil)
 }
