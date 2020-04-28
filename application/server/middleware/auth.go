@@ -23,7 +23,6 @@ func (a *Auth) GetSession(next echo.HandlerFunc) echo.HandlerFunc {
 			return WriteErrResponse(ctx, http.StatusUnauthorized, "no cookie")
 		}
 
-		//uid, err := a.sessions.GetUserId(cookie.Value)
 		uid, err := a.rpcAuth.Check(cookie.Value)
 		if err != nil {
 			cookie.Expires = time.Now().AddDate(0, 0, -1)

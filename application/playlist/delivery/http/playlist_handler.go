@@ -4,7 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/playlist"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
 	"github.com/microcosm-cc/bluemonday"
@@ -66,7 +66,7 @@ func (handler *PlaylistHandler) AddFilm(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	err = handler.useCase.AddFilm(pid, filmId, userId)
 	if err != nil {
@@ -85,7 +85,7 @@ func (handler *PlaylistHandler) AddSeries(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	err = handler.useCase.AddSeries(pid, seriesId, userId)
 	if err != nil {
@@ -100,7 +100,7 @@ func (handler *PlaylistHandler) Get(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	play, err := handler.useCase.Get(pid, userId)
 	if err != nil {
@@ -111,7 +111,7 @@ func (handler *PlaylistHandler) Get(ctx echo.Context) error {
 }
 
 func (handler *PlaylistHandler) GetUserPlaylists(ctx echo.Context) error {
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	plist, err := handler.useCase.GetUserPlaylists(userId)
 	if err != nil {
@@ -136,7 +136,7 @@ func (handler *PlaylistHandler) GetUserPublicPlaylists(ctx echo.Context) error {
 }
 
 func (handler *PlaylistHandler) GetPlaylistsWithoutSer(ctx echo.Context) error {
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 	serId, err := handler.getParamId(ctx, "id")
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
@@ -151,7 +151,7 @@ func (handler *PlaylistHandler) GetPlaylistsWithoutSer(ctx echo.Context) error {
 }
 
 func (handler *PlaylistHandler) GetPlaylistsWithoutFilm(ctx echo.Context) error {
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 	filmId, err := handler.getParamId(ctx, "id")
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
@@ -179,7 +179,7 @@ func (handler *PlaylistHandler) Delete(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	err = handler.useCase.Delete(pid, userId)
 	if err != nil {
@@ -198,7 +198,7 @@ func (handler *PlaylistHandler) DeleteFilm(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	err = handler.useCase.DeleteFilm(pid, filmId, userId)
 	if err != nil {
@@ -217,7 +217,7 @@ func (handler *PlaylistHandler) DeleteSeries(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	err = handler.useCase.DeleteSeries(pid, seriesId, userId)
 	if err != nil {
@@ -235,7 +235,7 @@ func (handler *PlaylistHandler) parseRequestBody(ctx echo.Context) (*models.Play
 	}
 
 	play.Name = handler.sanitizer.Sanitize(play.Name)
-	play.UserId = ctx.Get(session.UserIdKey).(uint)
+	play.UserId = ctx.Get(constants.UserIdKey).(uint)
 
 	return play, nil
 }

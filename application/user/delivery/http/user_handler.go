@@ -148,7 +148,7 @@ func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {
 
 func (uh *UserHandler) setCsrfToken(ctx echo.Context, token string) {
 	cookie := &http.Cookie{
-		Name:    crypto.CSRFHeader,
+		Name:    constants.CSRFHeader,
 		Value:   token,
 		Path:    "/",
 		Expires: time.Now().Add(time.Hour),

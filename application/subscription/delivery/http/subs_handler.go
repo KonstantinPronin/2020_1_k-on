@@ -2,8 +2,8 @@ package http
 
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
-	"github.com/go-park-mail-ru/2020_1_k-on/application/session"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/subscription"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"net/http"
@@ -31,7 +31,7 @@ func (s *SubscriptionHandler) Subscribe(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	err = s.useCase.Subscribe(pid, userId)
 	if err != nil {
@@ -46,7 +46,7 @@ func (s *SubscriptionHandler) Unsubscribe(ctx echo.Context) error {
 	if err != nil {
 		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "wrong parameter")
 	}
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	err = s.useCase.Unsubscribe(pid, userId)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *SubscriptionHandler) Unsubscribe(ctx echo.Context) error {
 }
 
 func (s *SubscriptionHandler) Subscription(ctx echo.Context) error {
-	userId := ctx.Get(session.UserIdKey).(uint)
+	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	plist, err := s.useCase.Subscriptions(userId)
 	if err != nil {

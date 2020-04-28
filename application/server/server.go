@@ -23,7 +23,6 @@ import (
 	serialRepository "github.com/go-park-mail-ru/2020_1_k-on/application/series/repository"
 	serialUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/series/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
-	session "github.com/go-park-mail-ru/2020_1_k-on/application/session/repository"
 	subsHandler "github.com/go-park-mail-ru/2020_1_k-on/application/subscription/delivery/http"
 	subsRepository "github.com/go-park-mail-ru/2020_1_k-on/application/subscription/repository"
 	subsUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/subscription/usecase"
@@ -31,8 +30,7 @@ import (
 	userRepository "github.com/go-park-mail-ru/2020_1_k-on/application/user/repository"
 	userUsecase "github.com/go-park-mail-ru/2020_1_k-on/application/user/usecase"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/conf"
-	"github.com/go-park-mail-ru/2020_1_k-on/pkg/crypto"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	middleware2 "github.com/labstack/echo/middleware"
@@ -72,7 +70,7 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	//e.Use(middleware.CORS)
 	e.Use(middleware2.CORSWithConfig(middleware2.CORSConfig{
 		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, crypto.CSRFHeader},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, constants.CSRFHeader},
 		AllowCredentials: true,
 	}))
 
