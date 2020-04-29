@@ -36,12 +36,16 @@ import (
 	middleware2 "github.com/labstack/echo/middleware"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/uber/jaeger-client-go"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
 	jaegerlog "github.com/uber/jaeger-client-go/log"
 	"github.com/uber/jaeger-lib/metrics"
 	"go.uber.org/zap"
 	"log"
+	_ "net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Server struct {
@@ -54,7 +58,6 @@ type Server struct {
 
 func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Logger) *Server {
 	//tracing
-
 	jaegerCfgInstance := jaegercfg.Configuration{
 		ServiceName: "main_server",
 		Sampler: &jaegercfg.SamplerConfig{
@@ -100,8 +103,9 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	e.Use(ioLog.Log)
 	//e.Use(middleware.CORS)
 	e.Use(middleware2.CORSWithConfig(middleware2.CORSConfig{
-		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, constants.CSRFHeader},
+		AllowMethods: []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType,
+			echo.HeaderAccept, constants.CSRFHeader},
 		AllowCredentials: true,
 	}))
 
@@ -147,6 +151,11 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	subsRep := subsRepository.NewSubscriptionDatabase(db, logger)
 	subs := subsUsecase.NewSubscription(playlists, subsRep, logger)
 	subsHandler.NewSubscriptionHandler(e, subs, auth, logger)
+
+	//prometeus
+
+	prometheus.MustRegister(middleware.FooCount, middleware.Hits)
+	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	return &Server{
 		rpcAuth:         rpcAuth,

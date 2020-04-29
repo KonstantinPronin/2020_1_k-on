@@ -5,14 +5,29 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
+	"github.com/prometheus/client_golang/prometheus"
 	"net/http"
+	"strconv"
 )
+
+var FooCount = prometheus.NewCounter(prometheus.CounterOpts{
+	Name: "foo_total",
+	Help: "Number of foo successfully processed.",
+})
+
+var Hits = prometheus.NewCounterVec(prometheus.CounterOpts{
+	Name: "hits",
+}, []string{"status", "path"})
 
 func WriteOkResponse(ctx echo.Context, body interface{}) error {
 	resp := models.Response{
 		Status: http.StatusOK,
 		Body:   body,
 	}
+
+	Hits.WithLabelValues("200", ctx.Request().URL.String()).Inc()
+	FooCount.Add(1)
+
 	if _, err := easyjson.MarshalToWriter(resp, ctx.Response().Writer); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -22,6 +37,9 @@ func WriteOkResponse(ctx echo.Context, body interface{}) error {
 func WriteErrResponse(ctx echo.Context, code int, message string) error {
 	ctx.Response().Writer.WriteHeader(code)
 	ctx.Response().Committed = true
+
+	Hits.WithLabelValues(strconv.Itoa(code), ctx.Request().URL.String()).Inc()
+	//fooCount.Add(1)
 
 	resp := models.Response{Status: code, Body: message}
 	if _, err := easyjson.MarshalToWriter(resp, ctx.Response().Writer); err != nil {
