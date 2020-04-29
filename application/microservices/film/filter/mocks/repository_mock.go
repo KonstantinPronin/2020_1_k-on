@@ -49,10 +49,10 @@ func (mr *MockRepositoryMockRecorder) FilterFilmsList(arg0 interface{}) *gomock.
 }
 
 // FilterFilmData mocks base method
-func (m *MockRepository) FilterFilmData() (map[string]interface{}, bool) {
+func (m *MockRepository) FilterFilmData() (map[string]models.Genres, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FilterFilmData")
-	ret0, _ := ret[0].(map[string]interface{})
+	ret0, _ := ret[0].(map[string]models.Genres)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }

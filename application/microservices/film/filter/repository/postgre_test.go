@@ -160,9 +160,7 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 	mock.ExpectQuery(`SELECT (.*)" `).
 		WillReturnRows(rows)
 
-	repo := &FilmFiltersDb{
-		DB: DB,
-	}
+	repo := NewFilmFiltersDb(DB)
 	item, ok := repo.FilterFilmData()
 	if !ok {
 		t.Error(ok)
@@ -171,8 +169,8 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 		t.Error(item)
 		return
 	}
-	resp := make(map[string]interface{})
-	resp["genres"] = models.Genres{models.Genre{"Все жанры", "%"}, expect2}
+	resp := make(map[string]models.Genres)
+	resp["genre"] = models.Genres{models.Genre{"Все жанры", "%"}, expect2}
 	resp["year"] = models.Genres{
 		models.Genre{"Все годы", "%"},
 	}
@@ -180,4 +178,52 @@ func TestPostgresForFilms_FilterFilmData(t *testing.T) {
 	require.Equal(t, item["genres"], resp["genres"])
 	require.Equal(t, item["filters"], resp["filters"])
 	require.True(t, ok)
+}
+
+func TestPostgresForFilms_FilterFilmData2(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnError(errors.New(""))
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.Year+1, expect.Year)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnRows(rows)
+
+	repo := NewFilmFiltersDb(DB)
+	_, ok := repo.FilterFilmData()
+	require.False(t, ok)
+}
+
+func TestPostgresForFilms_FilterFilmData3(t *testing.T) {
+	mock, DB := SetupDB()
+	defer DB.Close()
+
+	// good query
+	rows2 := sqlmock.
+		NewRows([]string{"name", "reference"})
+	expect2 := testGenre
+	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
+	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
+		WillReturnRows(rows2)
+
+	rows := sqlmock.
+		NewRows([]string{"max", "min"})
+	expect := models.Film(testFilm)
+	rows = rows.AddRow(expect.Year+1, expect.Year)
+	mock.ExpectQuery(`SELECT (.*)" `).
+		WillReturnError(errors.New(""))
+
+	repo := NewFilmFiltersDb(DB)
+	_, ok := repo.FilterFilmData()
+
+	require.False(t, ok)
 }

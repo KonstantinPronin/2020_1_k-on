@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"fmt"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	mocks2 "github.com/go-park-mail-ru/2020_1_k-on/application/server/mocks"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user/mocks"
@@ -38,19 +39,24 @@ const (
 	ok        = 200
 )
 
-func beforeTest(t *testing.T) (*UserHandler, *mocks2.MockContext, *mocks.MockUseCase, *mocks2.MockResponseWriter) {
+func beforeTest(t *testing.T) (*UserHandler,
+	*mocks2.MockContext, *mocks.MockUseCase, *mocks2.MockResponseWriter, *client.MockIAuthClient) {
 	ctrl := gomock.NewController(t)
 	w := mocks2.NewMockResponseWriter(ctrl)
 	ctx := mocks2.NewMockContext(ctrl)
 	uc := mocks.NewMockUseCase(ctrl)
+	rpc := client.NewMockIAuthClient(ctrl)
 	response := echo.NewResponse(w, echo.New())
 
 	ctx.EXPECT().Response().Return(response).AnyTimes()
-	return &UserHandler{useCase: uc, logger: zap.NewExample(), sanitizer: bluemonday.UGCPolicy()}, ctx, uc, w
+	return &UserHandler{rpcAuth: rpc,
+		useCase:   uc,
+		logger:    zap.NewExample(),
+		sanitizer: bluemonday.UGCPolicy()}, ctx, uc, w, rpc
 }
 
 func TestUserHandler_Login(t *testing.T) {
-	uh, ctx, _, w := beforeTest(t)
+	uh, ctx, _, w, rpc := beforeTest(t)
 
 	body, err := easyjson.Marshal(testUser)
 	if err != nil {
@@ -62,10 +68,14 @@ func TestUserHandler_Login(t *testing.T) {
 	}
 
 	ctx.EXPECT().Request().Return(request)
-	//uc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, "", nil)
+	rpc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, "", nil)
 	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
-		assert.Equal(t, sessionId, arg.Value)
-	})
+		if arg.Name == constants.CookieName {
+			assert.Equal(t, sessionId, arg.Value)
+		} else if arg.Name != constants.CSRFHeader {
+			t.Errorf("wrong cookie name: '%s'", arg.Name)
+		}
+	}).Times(2)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Header().Return(http.Header{})
 	w.EXPECT().Write(gomock.Any())
@@ -75,7 +85,7 @@ func TestUserHandler_Login(t *testing.T) {
 }
 
 func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
-	uh, ctx, _, w := beforeTest(t)
+	uh, ctx, _, w, _ := beforeTest(t)
 
 	ctx.EXPECT().Cookie(gomock.Any()).Return(nil, fmt.Errorf(errMsg))
 	w.EXPECT().WriteHeader(http.StatusUnauthorized)
@@ -87,10 +97,10 @@ func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
 }
 
 func TestUserHandler_Logout(t *testing.T) {
-	uh, ctx, _, w := beforeTest(t)
+	uh, ctx, _, w, rpc := beforeTest(t)
 
 	ctx.EXPECT().Cookie(gomock.Any()).Return(&cookie, nil)
-	//uc.EXPECT().Logout(gomock.Any()).Return(nil)
+	rpc.EXPECT().Logout(gomock.Any()).Return(nil)
 	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
 		assert.Equal(t, sessionId, arg.Value)
 		assert.True(t, arg.Expires.Before(time.Now()))
@@ -103,7 +113,7 @@ func TestUserHandler_Logout(t *testing.T) {
 }
 
 func TestUserHandler_SignUp(t *testing.T) {
-	uh, ctx, uc, w := beforeTest(t)
+	uh, ctx, uc, w, rpc := beforeTest(t)
 
 	body, err := easyjson.Marshal(testUser)
 	if err != nil {
@@ -116,10 +126,14 @@ func TestUserHandler_SignUp(t *testing.T) {
 
 	ctx.EXPECT().Request().Return(request).AnyTimes()
 	uc.EXPECT().Add(&testUser).Return(&testUser, nil)
-	//uc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, "", nil)
+	rpc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, "", nil)
 	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
-		assert.Equal(t, sessionId, arg.Value)
-	})
+		if arg.Name == constants.CookieName {
+			assert.Equal(t, sessionId, arg.Value)
+		} else if arg.Name != constants.CSRFHeader {
+			t.Errorf("wrong cookie name: '%s'", arg.Name)
+		}
+	}).Times(2)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Header().Return(http.Header{})
 	w.EXPECT().Write(gomock.Any())
@@ -129,7 +143,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 }
 
 func TestUserHandler_Profile(t *testing.T) {
-	uh, ctx, uc, w := beforeTest(t)
+	uh, ctx, uc, w, _ := beforeTest(t)
 	id := uint(0)
 
 	ctx.EXPECT().Get(gomock.Any()).Return(id)
@@ -142,7 +156,7 @@ func TestUserHandler_Profile(t *testing.T) {
 }
 
 func TestUserHandler_Update(t *testing.T) {
-	uh, ctx, uc, w := beforeTest(t)
+	uh, ctx, uc, w, _ := beforeTest(t)
 
 	id := uint(0)
 	body, err := easyjson.Marshal(testUser)

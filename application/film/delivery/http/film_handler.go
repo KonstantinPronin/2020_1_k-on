@@ -13,7 +13,7 @@ import (
 )
 
 type FilmHandler struct {
-	rpcFilmFilter *client.FilmFilterClient
+	rpcFilmFilter client.IFilmFilterClient
 	fusecase      film.Usecase
 	pusecase      person.UseCase
 	sanitizer     *bluemonday.Policy
@@ -21,7 +21,7 @@ type FilmHandler struct {
 
 func NewFilmHandler(
 	e *echo.Echo,
-	rpcFilmFilter *client.FilmFilterClient,
+	rpcFilmFilter client.IFilmFilterClient,
 	fusecase film.Usecase,
 	pusecase person.UseCase,
 	sanitizer *bluemonday.Policy) {

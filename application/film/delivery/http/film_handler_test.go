@@ -4,6 +4,7 @@ import (
 	"bytes"
 	mockfilm "github.com/go-park-mail-ru/2020_1_k-on/application/film/mocks"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film/usecase"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/film/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	mock_p "github.com/go-park-mail-ru/2020_1_k-on/application/person/mocks"
 	usecase2 "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
@@ -52,7 +53,8 @@ var testFilm = models.Film{
 	BackgroundImage: image,
 }
 
-func setupEcho(t *testing.T, url, method string) (echo.Context, FilmHandler, *mockfilm.MockRepository, *mock_p.MockRepository) {
+func setupEcho(t *testing.T, url, method string) (echo.Context,
+	FilmHandler, *mockfilm.MockRepository, *mock_p.MockRepository, *client.MockIFilmFilterClient) {
 	e := echo.New()
 	r := e.Router()
 	r.Add(method, url, func(echo.Context) error { return nil })
@@ -72,13 +74,14 @@ func setupEcho(t *testing.T, url, method string) (echo.Context, FilmHandler, *mo
 	usecase := usecase.NewFilmUsecase(films)
 	person := mock_p.NewMockRepository(ctrl)
 	pusecase := usecase2.NewPerson(person, nil)
-	fh := FilmHandler{fusecase: usecase, pusecase: pusecase, sanitizer: bluemonday.UGCPolicy()}
-	return c, fh, films, person
+	rpc := client.NewMockIFilmFilterClient(ctrl)
+	fh := FilmHandler{rpcFilmFilter: rpc, fusecase: usecase, pusecase: pusecase, sanitizer: bluemonday.UGCPolicy()}
+	return c, fh, films, person, rpc
 
 }
 
 func TestFilmHandler_GetFilm(t *testing.T) {
-	c, fh, films, person := setupEcho(t, "/films/:id", http.MethodGet)
+	c, fh, films, person, _ := setupEcho(t, "/films/:id", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	films.EXPECT().GetById(gomock.Eq(testFilm.ID)).Return(&testFilm, true)
@@ -89,42 +92,42 @@ func TestFilmHandler_GetFilm(t *testing.T) {
 }
 
 func TestFilmHandler_GetFilmList(t *testing.T) {
-	c, fh, films, _ := setupEcho(t, "/", http.MethodGet)
+	c, fh, films, _, _ := setupEcho(t, "/", http.MethodGet)
 	films.EXPECT().GetFilmsArr(uint(13), uint(0)).Return(&models.Films{testFilm, testFilm, testFilm, testFilm, testFilm}, true)
 	err := fh.GetFilmList(c)
 	require.Equal(t, err, nil)
 }
 
 func TestFilmHandler_GetFilmList2(t *testing.T) {
-	c, fh, films, _ := setupEcho(t, "/", http.MethodGet)
+	c, fh, films, _, _ := setupEcho(t, "/", http.MethodGet)
 	films.EXPECT().GetFilmsArr(uint(13), uint(0)).Return(&models.Films{}, false)
 	err := fh.GetFilmList(c)
 	require.NotEqual(t, err, nil)
 }
 
 func TestFilmHandler_CreateFilm(t *testing.T) {
-	c, fh, films, _ := setupEcho(t, "/films", http.MethodPost)
+	c, fh, films, _, _ := setupEcho(t, "/films", http.MethodPost)
 	films.EXPECT().Create(&testFilm).Return(testFilm, true)
 	err := fh.CreateFilm(c)
 	require.Equal(t, err, nil)
 }
 
 func TestFilmHandler_CreateFilm2(t *testing.T) {
-	c, fh, films, _ := setupEcho(t, "/films", http.MethodGet)
+	c, fh, films, _, _ := setupEcho(t, "/films", http.MethodGet)
 	films.EXPECT().Create(&testFilm).Return(testFilm, true)
 	err := fh.CreateFilm(c)
 	require.NotEqual(t, err, nil)
 }
 
 func TestFilmHandler_CreateFilm3(t *testing.T) {
-	c, fh, films, _ := setupEcho(t, "/films", http.MethodPost)
+	c, fh, films, _, _ := setupEcho(t, "/films", http.MethodPost)
 	films.EXPECT().Create(&testFilm).Return(models.Film{}, false)
 	err := fh.CreateFilm(c)
 	require.NotEqual(t, err, nil)
 }
 
 func TestFilmHandler_GetFilm2(t *testing.T) {
-	c, fh, films, person := setupEcho(t, "/films/:id", http.MethodGet)
+	c, fh, films, person, _ := setupEcho(t, "/films/:id", http.MethodGet)
 	films.EXPECT().GetById(gomock.Eq(testFilm.ID)).Return(&testFilm, true)
 	person.EXPECT().GetActorsForFilm(testFilm.ID).Return(nil, nil)
 	err := fh.GetFilm(c)
@@ -132,7 +135,7 @@ func TestFilmHandler_GetFilm2(t *testing.T) {
 }
 
 func TestFilmHandler_GetFilm3(t *testing.T) {
-	c, fh, films, person := setupEcho(t, "/films/:id", http.MethodGet)
+	c, fh, films, person, _ := setupEcho(t, "/films/:id", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	films.EXPECT().GetById(testFilm.ID).Return(&models.Film{}, false)
@@ -142,15 +145,15 @@ func TestFilmHandler_GetFilm3(t *testing.T) {
 }
 
 func TestFilmHandler_FilterFilmData(t *testing.T) {
-	c, fh, films, _ := setupEcho(t, "/films/filter", http.MethodGet)
-	films.EXPECT().FilterFilmData().Return(nil, true)
+	c, fh, _, _, rpc := setupEcho(t, "/films/filter", http.MethodGet)
+	rpc.EXPECT().GetFilterFields().Return(nil, true)
 	err := fh.FilterFilmData(c)
 	require.Equal(t, err, nil)
 }
 
 func TestFilmHandler_FilterFilmData2(t *testing.T) {
-	c, fh, films, _ := setupEcho(t, "/films/filter", http.MethodGet)
-	films.EXPECT().FilterFilmData().Return(nil, false)
+	c, fh, _, _, rpc := setupEcho(t, "/films/filter", http.MethodGet)
+	rpc.EXPECT().GetFilterFields().Return(nil, false)
 	err := fh.FilterFilmData(c)
 	require.NotEqual(t, err, nil)
 }
@@ -158,9 +161,9 @@ func TestFilmHandler_FilterFilmData2(t *testing.T) {
 func TestFilmHandler_FilterFilmList(t *testing.T) {
 	q := make(map[string][]string)
 	q["year"] = []string{"year"}
-	c, fh, films, _ := setupEcho(t, "/films", http.MethodGet)
+	c, fh, _, _, rpc := setupEcho(t, "/films", http.MethodGet)
 	c.QueryParams().Add("year", "year")
-	films.EXPECT().FilterFilmsList(q).Return(&models.Films{}, true)
+	rpc.EXPECT().GetFilteredFilms(q).Return(models.Films{}, true)
 	err := fh.FilterFilmList(c)
 	require.Equal(t, err, nil)
 }
@@ -168,9 +171,9 @@ func TestFilmHandler_FilterFilmList(t *testing.T) {
 func TestFilmHandler_FilterFilmList2(t *testing.T) {
 	q := make(map[string][]string)
 	q["year"] = []string{"year"}
-	c, fh, films, _ := setupEcho(t, "/films", http.MethodGet)
+	c, fh, _, _, rpc := setupEcho(t, "/films", http.MethodGet)
 	c.QueryParams().Add("year", "year")
-	films.EXPECT().FilterFilmsList(q).Return(&models.Films{}, false)
+	rpc.EXPECT().GetFilteredFilms(q).Return(models.Films{}, false)
 	err := fh.FilterFilmList(c)
 	require.NotEqual(t, err, nil)
 }

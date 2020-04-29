@@ -15,14 +15,14 @@ import (
 )
 
 type UserHandler struct {
-	rpcAuth   *client.AuthClient
+	rpcAuth   client.IAuthClient
 	useCase   user.UseCase
 	logger    *zap.Logger
 	sanitizer *bluemonday.Policy
 }
 
 func NewUserHandler(e *echo.Echo,
-	rpcAuth *client.AuthClient,
+	rpcAuth client.IAuthClient,
 	us user.UseCase,
 	auth middleware.Auth,
 	logger *zap.Logger,

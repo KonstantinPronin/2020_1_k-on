@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/series/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	mock_p "github.com/go-park-mail-ru/2020_1_k-on/application/person/mocks"
 	usecase2 "github.com/go-park-mail-ru/2020_1_k-on/application/person/usecase"
@@ -70,7 +71,8 @@ var testEpisode = models.Episode{
 	Image:    image,
 }
 
-func setupEcho(t *testing.T, url, method string) (echo.Context, SeriesHandler, *mockseries.MockRepository, *mock_p.MockRepository) {
+func setupEcho(t *testing.T, url, method string) (echo.Context,
+	SeriesHandler, *mockseries.MockRepository, *mock_p.MockRepository, *client.MockISeriesFilterClient) {
 	e := echo.New()
 	r := e.Router()
 	r.Add(method, url, func(echo.Context) error { return nil })
@@ -87,13 +89,14 @@ func setupEcho(t *testing.T, url, method string) (echo.Context, SeriesHandler, *
 	seriesuc := usecase.NewSeriesUsecase(series)
 	person := mock_p.NewMockRepository(ctrl)
 	persons := usecase2.NewPerson(person, nil)
-	sh := SeriesHandler{usecase: seriesuc, pusecase: persons}
-	return c, sh, series, person
+	rpc := client.NewMockISeriesFilterClient(ctrl)
+	sh := SeriesHandler{usecase: seriesuc, pusecase: persons, rpcSeriesFilter: rpc}
+	return c, sh, series, person, rpc
 
 }
 
 func TestSeriesHandler_GetSeries(t *testing.T) {
-	c, sh, series, person := setupEcho(t, "/series/:id", http.MethodGet)
+	c, sh, series, person, _ := setupEcho(t, "/series/:id", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	series.EXPECT().GetSeriesByID(gomock.Eq(testSeries.ID)).Return(testSeries, true)
@@ -104,7 +107,7 @@ func TestSeriesHandler_GetSeries(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeries2(t *testing.T) {
-	c, sh, series, person := setupEcho(t, "/series/:id", http.MethodGet)
+	c, sh, series, person, _ := setupEcho(t, "/series/:id", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("abc")
 	series.EXPECT().GetSeriesByID(gomock.Eq(testSeries.ID)).Return(testSeries, true)
@@ -115,7 +118,7 @@ func TestSeriesHandler_GetSeries2(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeries3(t *testing.T) {
-	c, sh, series, person := setupEcho(t, "/series/:id", http.MethodGet)
+	c, sh, series, person, _ := setupEcho(t, "/series/:id", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	series.EXPECT().GetSeriesByID(gomock.Eq(testSeries.ID)).Return(testSeries, false)
@@ -126,7 +129,7 @@ func TestSeriesHandler_GetSeries3(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeriesSeasons(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/series/:id/seasons", http.MethodGet)
+	c, sh, series, _, _ := setupEcho(t, "/series/:id/seasons", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	series.EXPECT().GetSeriesSeasons(gomock.Eq(testSeries.ID)).Return(models.Seasons{testSeason}, true)
@@ -135,7 +138,7 @@ func TestSeriesHandler_GetSeriesSeasons(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeriesSeasons2(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/series/:id/seasons", http.MethodGet)
+	c, sh, series, _, _ := setupEcho(t, "/series/:id/seasons", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("abc")
 	series.EXPECT().GetSeriesSeasons(gomock.Eq(testSeries.ID)).Return(models.Seasons{testSeason}, true)
@@ -144,7 +147,7 @@ func TestSeriesHandler_GetSeriesSeasons2(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeriesSeasons3(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/series/:id/seasons", http.MethodGet)
+	c, sh, series, _, _ := setupEcho(t, "/series/:id/seasons", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	series.EXPECT().GetSeriesSeasons(gomock.Eq(testSeries.ID)).Return(models.Seasons{testSeason}, false)
@@ -153,7 +156,7 @@ func TestSeriesHandler_GetSeriesSeasons3(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeasonEpisodes(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/seasons/:id/series", http.MethodGet)
+	c, sh, series, _, _ := setupEcho(t, "/seasons/:id/series", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	series.EXPECT().GetSeasonEpisodes(gomock.Eq(testSeason.ID)).Return(models.Episodes{testEpisode}, true)
@@ -162,7 +165,7 @@ func TestSeriesHandler_GetSeasonEpisodes(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeasonEpisodes2(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/seasons/:id/series", http.MethodGet)
+	c, sh, series, _, _ := setupEcho(t, "/seasons/:id/series", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("abc")
 	series.EXPECT().GetSeasonEpisodes(gomock.Eq(testSeason.ID)).Return(models.Episodes{testEpisode}, true)
@@ -171,7 +174,7 @@ func TestSeriesHandler_GetSeasonEpisodes2(t *testing.T) {
 }
 
 func TestSeriesHandler_GetSeasonEpisodes3(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/seasons/:id/series", http.MethodGet)
+	c, sh, series, _, _ := setupEcho(t, "/seasons/:id/series", http.MethodGet)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 	series.EXPECT().GetSeasonEpisodes(gomock.Eq(testSeason.ID)).Return(models.Episodes{testEpisode}, false)
@@ -180,15 +183,15 @@ func TestSeriesHandler_GetSeasonEpisodes3(t *testing.T) {
 }
 
 func TestSeriesHandler_FilterSeriesData(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/series/filter", http.MethodGet)
-	series.EXPECT().FilterSeriesData().Return(nil, true)
+	c, sh, _, _, rpc := setupEcho(t, "/series/filter", http.MethodGet)
+	rpc.EXPECT().GetFilterFields().Return(nil, true)
 	err := sh.FilterSeriesData(c)
 	require.Equal(t, err, nil)
 }
 
 func TestSeriesHandler_FilterSeriesData2(t *testing.T) {
-	c, sh, series, _ := setupEcho(t, "/series/filter", http.MethodGet)
-	series.EXPECT().FilterSeriesData().Return(nil, false)
+	c, sh, _, _, rpc := setupEcho(t, "/series/filter", http.MethodGet)
+	rpc.EXPECT().GetFilterFields().Return(nil, false)
 	err := sh.FilterSeriesData(c)
 	require.NotEqual(t, err, nil)
 }
@@ -196,9 +199,9 @@ func TestSeriesHandler_FilterSeriesData2(t *testing.T) {
 func TestSeriesHandler_FilterSeriesList(t *testing.T) {
 	q := make(map[string][]string)
 	q["year"] = []string{"year"}
-	c, sh, series, _ := setupEcho(t, "/series", http.MethodGet)
+	c, sh, _, _, rpc := setupEcho(t, "/series", http.MethodGet)
 	c.QueryParams().Add("year", "year")
-	series.EXPECT().FilterSeriesList(q).Return(&models.SeriesArr{}, true)
+	rpc.EXPECT().GetFilteredSeries(q).Return(models.SeriesArr{}, true)
 	err := sh.FilterSeriesList(c)
 	require.Equal(t, err, nil)
 }
@@ -206,9 +209,9 @@ func TestSeriesHandler_FilterSeriesList(t *testing.T) {
 func TestSeriesHandler_FilterSeriesList2(t *testing.T) {
 	q := make(map[string][]string)
 	q["year"] = []string{"year"}
-	c, sh, series, _ := setupEcho(t, "/series", http.MethodGet)
+	c, sh, _, _, rpc := setupEcho(t, "/series", http.MethodGet)
 	c.QueryParams().Add("year", "year")
-	series.EXPECT().FilterSeriesList(q).Return(&models.SeriesArr{}, false)
+	rpc.EXPECT().GetFilteredSeries(q).Return(models.SeriesArr{}, false)
 	err := sh.FilterSeriesList(c)
 	require.NotEqual(t, err, nil)
 }

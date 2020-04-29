@@ -11,13 +11,13 @@ import (
 )
 
 type SeriesHandler struct {
-	rpcSeriesFilter *client.SeriesFilterClient
+	rpcSeriesFilter client.ISeriesFilterClient
 	usecase         series.Usecase
 	pusecase        person.UseCase
 }
 
 func NewSeriesHandler(e *echo.Echo,
-	rpcSeriesFilter *client.SeriesFilterClient,
+	rpcSeriesFilter client.ISeriesFilterClient,
 	usecase series.Usecase, pusecase person.UseCase) {
 	handler := &SeriesHandler{
 		rpcSeriesFilter: rpcSeriesFilter,
