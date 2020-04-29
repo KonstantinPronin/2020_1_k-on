@@ -35,6 +35,11 @@ import (
 	"github.com/labstack/echo"
 	middleware2 "github.com/labstack/echo/middleware"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/opentracing/opentracing-go"
+	"github.com/uber/jaeger-client-go"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jaegerlog "github.com/uber/jaeger-client-go/log"
+	"github.com/uber/jaeger-lib/metrics"
 	"go.uber.org/zap"
 	"log"
 )
@@ -48,12 +53,38 @@ type Server struct {
 }
 
 func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Logger) *Server {
+	//tracing
+
+	jaegerCfgInstance := jaegercfg.Configuration{
+		ServiceName: "main_server",
+		Sampler: &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans:           true,
+			LocalAgentHostPort: "localhost:6831",
+		},
+	}
+
+	tracer, closer, err := jaegerCfgInstance.NewTracer(
+		jaegercfg.Logger(jaegerlog.StdLogger),
+		jaegercfg.Metrics(metrics.NullFactory),
+	)
+
+	if err != nil {
+		log.Fatal("cannot create tracer", err)
+	}
+
+	opentracing.SetGlobalTracer(tracer)
+	defer closer.Close()
+
 	//microservices
-	rpcAuth, err := client.NewAuthClient(srvConf.Host, srvConf.Port1, logger)
+	rpcFilmFilter, err := client2.NewFilmFilterClient(srvConf.Host, srvConf.Port2, logger, &tracer)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	rpcFilmFilter, err := client2.NewFilmFilterClient(srvConf.Host, srvConf.Port2, logger)
+	rpcAuth, err := client.NewAuthClient(srvConf.Host, srvConf.Port1, logger)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

@@ -4,8 +4,11 @@ import (
 	"context"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/film/api"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+
+	traceutils "github.com/opentracing-contrib/go-grpc"
 )
 
 type FilmFilterClient struct {
@@ -14,10 +17,11 @@ type FilmFilterClient struct {
 	logger *zap.Logger
 }
 
-func NewFilmFilterClient(host, port string, logger *zap.Logger) (*FilmFilterClient, error) {
+func NewFilmFilterClient(host, port string, logger *zap.Logger, tracer *opentracing.Tracer) (*FilmFilterClient, error) {
 	gConn, err := grpc.Dial(
 		host+port,
 		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(traceutils.OpenTracingClientInterceptor(*tracer)),
 	)
 	if err != nil {
 		return nil, err
