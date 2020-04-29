@@ -1,10 +1,8 @@
 package main
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/application/server"
-	"github.com/go-park-mail-ru/2020_1_k-on/pkg/conf"
+	series "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/series/server"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/infrastructure"
-	"github.com/labstack/echo"
 	"log"
 )
 
@@ -27,7 +25,6 @@ func main() {
 		}
 	}()
 
-	e := echo.New()
 	db, err := infrastructure.InitDatabase("conf/db.json")
 	if err != nil {
 		log.Fatal(err.Error())
@@ -38,14 +35,8 @@ func main() {
 		}
 	}()
 
-	srvConf := &conf.Service{
-		Host:  Host,
-		Port0: Port0,
-		Port1: Port1,
-		Port2: Port2,
-		Port3: Port3,
+	srv3 := series.NewServer(Port3, db, logger)
+	if err = srv3.ListenAndServe(); err != nil {
+		log.Fatal(err.Error())
 	}
-
-	srv0 := server.NewServer(srvConf, e, db, logger)
-	log.Fatal(srv0.ListenAndServe())
 }

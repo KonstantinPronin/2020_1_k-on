@@ -1,10 +1,8 @@
 package main
 
 import (
-	"github.com/go-park-mail-ru/2020_1_k-on/application/server"
-	"github.com/go-park-mail-ru/2020_1_k-on/pkg/conf"
+	auth "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/server"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/infrastructure"
-	"github.com/labstack/echo"
 	"log"
 )
 
@@ -27,7 +25,16 @@ func main() {
 		}
 	}()
 
-	e := echo.New()
+	rd, err := infrastructure.InitRedis()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer func() {
+		if err := rd.Close(); err != nil {
+			log.Fatalf(`error '%s' while closing resource`, err)
+		}
+	}()
+
 	db, err := infrastructure.InitDatabase("conf/db.json")
 	if err != nil {
 		log.Fatal(err.Error())
@@ -38,14 +45,8 @@ func main() {
 		}
 	}()
 
-	srvConf := &conf.Service{
-		Host:  Host,
-		Port0: Port0,
-		Port1: Port1,
-		Port2: Port2,
-		Port3: Port3,
+	srv1 := auth.NewServer(Port1, db, rd, logger)
+	if err = srv1.ListenAndServe(); err != nil {
+		log.Fatal(err.Error())
 	}
-
-	srv0 := server.NewServer(srvConf, e, db, logger)
-	log.Fatal(srv0.ListenAndServe())
 }

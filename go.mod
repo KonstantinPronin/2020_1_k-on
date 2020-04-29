@@ -14,8 +14,13 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mailru/easyjson v0.7.1
 	github.com/microcosm-cc/bluemonday v1.0.2
+	github.com/opentracing-contrib/go-grpc v0.0.0-20191001143057-db30781987df
+	github.com/opentracing/opentracing-go v1.1.0
+	github.com/prometheus/client_golang v0.9.3
 	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.4.0
+	github.com/uber/jaeger-client-go v2.23.1+incompatible
+	github.com/uber/jaeger-lib v2.2.0+incompatible
 	go.uber.org/zap v1.14.1
 	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
