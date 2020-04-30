@@ -1,12 +1,13 @@
 package http
 
 import (
-	"errors"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/series/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/labstack/echo"
+	"net/http"
 	"strconv"
 )
 
@@ -35,41 +36,35 @@ func NewSeriesHandler(e *echo.Echo,
 func (sh SeriesHandler) FilterSeriesData(ctx echo.Context) error {
 	d, ok := sh.rpcSeriesFilter.GetFilterFields()
 	if !ok {
-		resp, _ := models.Generate(500, "can't get data", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("can't get data")
+		return middleware.WriteErrResponse(ctx,
+			http.StatusInternalServerError, "can't get data")
 	}
-	resp, _ := models.Generate(200, d, &ctx).MarshalJSON()
-	_, err := ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, d)
 }
 
 func (sh SeriesHandler) FilterSeriesList(ctx echo.Context) error {
 	query := ctx.QueryParams()
 	s, ok := sh.rpcSeriesFilter.GetFilteredSeries(query)
 	if !ok {
-		resp, _ := models.Generate(500, "can't get series", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("can't get series")
+		return middleware.WriteErrResponse(ctx,
+			http.StatusInternalServerError, "can't get series")
 	}
 	var sl models.ListSeriesArr
-	resp, _ := models.Generate(200, sl.Convert(s), &ctx).MarshalJSON()
-	_, err := ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, sl.Convert(s))
+
 }
 
 func (sh SeriesHandler) GetSeries(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return err
+		return middleware.WriteErrResponse(ctx,
+			http.StatusBadRequest, "not number")
 	}
 	serial, ok := sh.usecase.GetSeriesByID(uint(id))
 	if !ok {
-		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("Not Found")
+		return middleware.WriteErrResponse(ctx,
+			http.StatusNotFound, "Not Found")
+
 	}
 	a, err := sh.pusecase.GetActorsForSeries(serial.ID)
 	g, _ := sh.usecase.GetSeriesGenres(serial.ID)
@@ -77,43 +72,36 @@ func (sh SeriesHandler) GetSeries(ctx echo.Context) error {
 	r["object"] = serial
 	r["actors"] = a
 	r["genres"] = g
-	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
-	_, err = ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, r)
+
 }
 
 func (sh SeriesHandler) GetSeriesSeasons(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return err
+		return middleware.WriteErrResponse(ctx,
+			http.StatusBadRequest, "not number")
 	}
 	seasons, ok := sh.usecase.GetSeriesSeasons(uint(id))
 	if !ok {
-		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("Not Found")
+		return middleware.WriteErrResponse(ctx,
+			http.StatusNotFound, "Not Found")
 	}
-	resp, _ := models.Generate(200, seasons, &ctx).MarshalJSON()
-	_, err = ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, seasons)
+
 }
 
 func (sh SeriesHandler) GetSeasonEpisodes(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return err
+		return middleware.WriteErrResponse(ctx,
+			http.StatusBadRequest, "not number")
 	}
-	seasons, ok := sh.usecase.GetSeasonEpisodes(uint(id))
+	episodes, ok := sh.usecase.GetSeasonEpisodes(uint(id))
 	if !ok {
-		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("Not Found")
+		return middleware.WriteErrResponse(ctx,
+			http.StatusNotFound, "Not Found")
 	}
-	resp, _ := models.Generate(200, seasons, &ctx).MarshalJSON()
-	_, err = ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, episodes)
+
 }

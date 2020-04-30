@@ -1,14 +1,15 @@
 package http
 
 import (
-	"errors"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
 	client "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/film/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	person "github.com/go-park-mail-ru/2020_1_k-on/application/person"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
 	"github.com/labstack/echo"
 	"github.com/mailru/easyjson"
 	"github.com/microcosm-cc/bluemonday"
+	"net/http"
 	"strconv"
 )
 
@@ -42,41 +43,29 @@ func NewFilmHandler(
 func (fh FilmHandler) FilterFilmData(ctx echo.Context) error {
 	d, ok := fh.rpcFilmFilter.GetFilterFields()
 	if !ok {
-		resp, _ := models.Generate(500, "can't get data", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("can't get data")
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can't get data")
 	}
-	resp, _ := models.Generate(200, d, &ctx).MarshalJSON()
-	_, err := ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, d)
 }
 
 func (fh FilmHandler) FilterFilmList(ctx echo.Context) error {
 	query := ctx.QueryParams()
 	f, ok := fh.rpcFilmFilter.GetFilteredFilms(query)
 	if !ok {
-		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("can't get films")
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can't get films")
 	}
 	var fl models.ListsFilm
-	resp, _ := models.Generate(200, fl.Convert(f), &ctx).MarshalJSON()
-	_, err := ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, fl.Convert(f))
 }
 
 func (fh FilmHandler) GetFilm(ctx echo.Context) error {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		resp, _ := models.Generate(400, "not number", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return err
+		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, "bad request param")
 	}
 	f, ok := fh.fusecase.GetFilm(uint(id))
 	if !ok {
-		resp, _ := models.Generate(404, "Not Found", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("Not Found")
+		return middleware.WriteErrResponse(ctx, http.StatusNotFound, "Not Found")
 	}
 	a, _ := fh.pusecase.GetActorsForFilm(f.ID)
 	g, _ := fh.fusecase.GetFilmGenres(f.ID)
@@ -84,9 +73,9 @@ func (fh FilmHandler) GetFilm(ctx echo.Context) error {
 	r["object"] = f
 	r["actors"] = a
 	r["genres"] = g
-	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
-	_, err = ctx.Response().Write(resp)
-	return err
+
+	return middleware.WriteOkResponse(ctx, r)
+
 }
 
 func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
@@ -102,21 +91,15 @@ func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
 	fh.sanitize(&film)
 	f, ok := fh.fusecase.CreateFilm(film)
 	if !ok {
-		resp, _ := models.Generate(500, "can't create film", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("can't create film")
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can't create film")
 	}
-	resp, _ := models.Generate(200, f, &ctx).MarshalJSON()
-	ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, f)
 }
 
 func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 	f, ok := fh.fusecase.GetFilmsList(13, 0)
 	if !ok {
-		resp, _ := models.Generate(500, "can't get films", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
-		return errors.New("can't get films")
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can't get films")
 	}
 	var fl models.ListsFilm
 	r := make(map[string]interface{})
@@ -125,13 +108,8 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 		rec[ind].Image = f[ind].BackgroundImage
 	}
 	r["recommendations"] = rec
-	//coll := make([]models.Collection, 2)
-	//coll[0] = models.Collection{"Сейчас смотрят", fl.Convert(f)}
-	//coll[1] = models.Collection{"Новое", fl.Convert(f)}
-	//r["collections"] = coll
-	resp, _ := models.Generate(200, r, &ctx).MarshalJSON()
-	_, err := ctx.Response().Write(resp)
-	return err
+	return middleware.WriteOkResponse(ctx, r)
+
 }
 
 func (fh FilmHandler) sanitize(f *models.Film) {
