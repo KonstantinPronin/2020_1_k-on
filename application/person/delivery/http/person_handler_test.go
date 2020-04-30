@@ -50,23 +50,33 @@ func beforeTest(t *testing.T) (*PersonHandler, *mocks.MockUseCase, *server.MockC
 
 func TestPersonHandler_GetById(t *testing.T) {
 	handler, usecase, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().GetById(testPerson.Id).Return(&testPerson, nil)
 	w.EXPECT().WriteHeader(ok)
 
-	err := handler.GetById(ctx)
+	err = handler.GetById(ctx)
 
 	assert.Nil(t, err)
 }
 
 func TestPersonHandler_GetById_WrongParameter(t *testing.T) {
 	handler, _, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(wrongId)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 
-	err := handler.GetById(ctx)
+	err = handler.GetById(ctx)
 
 	assert.NotNil(t, err)
 }
@@ -83,7 +93,7 @@ func TestPersonHandler_Add(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	usecase.EXPECT().Add(&testPerson).Return(&testPerson, nil)
 	w.EXPECT().WriteHeader(ok)
 
@@ -100,7 +110,7 @@ func TestPersonHandler_Add_BadRequest(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 
 	err = handler.Add(ctx)
@@ -120,7 +130,7 @@ func TestPersonHandler_Update(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	usecase.EXPECT().Update(&testPerson).Return(&testPerson, nil)
 	w.EXPECT().WriteHeader(ok)
 
@@ -137,7 +147,7 @@ func TestPersonHandler_Update_BadRequest(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 
 	err = handler.Update(ctx)

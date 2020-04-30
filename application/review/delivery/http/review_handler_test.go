@@ -58,7 +58,7 @@ func TestReviewHandler_AddFilmReview(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().Add(gomock.Any()).Return(nil)
@@ -77,7 +77,7 @@ func TestReviewHandler_AddFilmReview_BadRequest(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(id)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
@@ -98,7 +98,7 @@ func TestReviewHandler_AddSeriesReview(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().Add(gomock.Any()).Return(nil)
@@ -117,7 +117,7 @@ func TestReviewHandler_AddSeriesReview_BadRequest(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(id)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
@@ -128,96 +128,136 @@ func TestReviewHandler_AddSeriesReview_BadRequest(t *testing.T) {
 
 func TestReviewHandler_GetByFilm(t *testing.T) {
 	handler, usecase, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().GetByProductId(testReview.ProductId).Return([]models.Review{testReview}, nil)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetByFilm(ctx)
+	err = handler.GetByFilm(ctx)
 	assert.Nil(t, err)
 }
 
 func TestReviewHandler_GetByFilm_WrongParameter(t *testing.T) {
 	handler, _, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(wrongId)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetByFilm(ctx)
+	err = handler.GetByFilm(ctx)
 	assert.NotNil(t, err)
 }
 
 func TestReviewHandler_GetBySeries(t *testing.T) {
 	handler, usecase, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().GetByProductId(testReview.ProductId).Return([]models.Review{testReview}, nil)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetBySeries(ctx)
+	err = handler.GetBySeries(ctx)
 	assert.Nil(t, err)
 }
 
 func TestReviewHandler_GetBySeries_WrongParameter(t *testing.T) {
 	handler, _, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Param(param).Return(wrongId)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetBySeries(ctx)
+	err = handler.GetBySeries(ctx)
 	assert.NotNil(t, err)
 }
 
 func TestReviewHandler_GetByFilmAndUser(t *testing.T) {
 	handler, usecase, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().GetReview(testReview.ProductId, testReview.UserId).Return(&testReview, nil)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetByFilmAndUser(ctx)
+	err = handler.GetByFilmAndUser(ctx)
 	assert.Nil(t, err)
 }
 
 func TestReviewHandler_GetByFilmAndUser_WrongParameter(t *testing.T) {
 	handler, _, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(wrongId)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetByFilmAndUser(ctx)
+	err = handler.GetByFilmAndUser(ctx)
 	assert.NotNil(t, err)
 }
 
 func TestReviewHandler_GetBySeriesAndUser(t *testing.T) {
 	handler, usecase, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(id)
 	usecase.EXPECT().GetReview(testReview.ProductId, testReview.UserId).Return(&testReview, nil)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetBySeriesAndUser(ctx)
+	err = handler.GetBySeriesAndUser(ctx)
 	assert.Nil(t, err)
 }
 
 func TestReviewHandler_GetBySeriesAndUser_WrongParameter(t *testing.T) {
 	handler, _, ctx, w := beforeTest(t)
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
 
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(constants.UserIdKey).Return(testReview.UserId)
 	ctx.EXPECT().Param(param).Return(wrongId)
 	w.EXPECT().WriteHeader(http.StatusBadRequest)
 	w.EXPECT().Write(gomock.Any())
 
-	err := handler.GetByFilmAndUser(ctx)
+	err = handler.GetByFilmAndUser(ctx)
 	assert.NotNil(t, err)
 }

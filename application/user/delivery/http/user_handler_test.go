@@ -67,7 +67,7 @@ func TestUserHandler_Login(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	rpc.EXPECT().Login(testUser.Username, testUser.Password).Return(sessionId, "", nil)
 	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
 		if arg.Name == constants.CookieName {
@@ -87,18 +87,30 @@ func TestUserHandler_Login(t *testing.T) {
 func TestUserHandler_Logout_WithoutCookie(t *testing.T) {
 	uh, ctx, _, w, _ := beforeTest(t)
 
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
+
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Cookie(gomock.Any()).Return(nil, fmt.Errorf(errMsg))
 	w.EXPECT().WriteHeader(http.StatusUnauthorized)
 	w.EXPECT().Write(gomock.Any())
 
 	expErr := echo.NewHTTPError(http.StatusUnauthorized, "no cookie")
-	err := uh.Logout(ctx)
+	err = uh.Logout(ctx)
 	assert.Equal(t, expErr, err)
 }
 
 func TestUserHandler_Logout(t *testing.T) {
 	uh, ctx, _, w, rpc := beforeTest(t)
 
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
+
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Cookie(gomock.Any()).Return(&cookie, nil)
 	rpc.EXPECT().Logout(gomock.Any()).Return(nil)
 	ctx.EXPECT().SetCookie(gomock.Any()).Do(func(arg *http.Cookie) {
@@ -108,7 +120,7 @@ func TestUserHandler_Logout(t *testing.T) {
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
 
-	err := uh.Logout(ctx)
+	err = uh.Logout(ctx)
 	assert.Nil(t, err)
 }
 
@@ -146,12 +158,18 @@ func TestUserHandler_Profile(t *testing.T) {
 	uh, ctx, uc, w, _ := beforeTest(t)
 	id := uint(0)
 
+	request, err := http.NewRequest("", "", bytes.NewReader([]byte{}))
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
+
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(gomock.Any()).Return(id)
 	uc.EXPECT().Get(id).Return(&testUser, nil)
 	w.EXPECT().WriteHeader(ok)
 	w.EXPECT().Write(gomock.Any())
 
-	err := uh.Profile(ctx)
+	err = uh.Profile(ctx)
 	assert.Nil(t, err)
 }
 
@@ -168,7 +186,7 @@ func TestUserHandler_Update(t *testing.T) {
 		t.Errorf("unexpected error: '%s'", err)
 	}
 
-	ctx.EXPECT().Request().Return(request)
+	ctx.EXPECT().Request().Return(request).AnyTimes()
 	ctx.EXPECT().Get(gomock.Any()).Return(id)
 	uc.EXPECT().Update(&testUser).Return(nil)
 	w.EXPECT().WriteHeader(ok)
