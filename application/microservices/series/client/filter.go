@@ -4,6 +4,8 @@ import (
 	"context"
 	api "github.com/go-park-mail-ru/2020_1_k-on/application/microservices/series/api"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	traceutils "github.com/opentracing-contrib/go-grpc"
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -14,10 +16,11 @@ type SeriesFilterClient struct {
 	logger *zap.Logger
 }
 
-func NewSeriesFilterClient(host, port string, logger *zap.Logger) (*SeriesFilterClient, error) {
+func NewSeriesFilterClient(host, port string, logger *zap.Logger, tracer opentracing.Tracer) (*SeriesFilterClient, error) {
 	gConn, err := grpc.Dial(
 		host+port,
 		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(traceutils.OpenTracingClientInterceptor(tracer)),
 	)
 	if err != nil {
 		return nil, err

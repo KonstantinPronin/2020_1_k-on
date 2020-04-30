@@ -47,7 +47,7 @@ func (s *Server) ListenAndServe() error {
 		},
 	}
 
-	tracer, closer, err := jaegerCfgInstance.NewTracer(
+	tracer, _, err := jaegerCfgInstance.NewTracer(
 		jaegercfg.Logger(jaegerlog.StdLogger),
 		jaegercfg.Metrics(metrics.NullFactory),
 	)
@@ -57,7 +57,6 @@ func (s *Server) ListenAndServe() error {
 	}
 
 	opentracing.SetGlobalTracer(tracer)
-	defer closer.Close()
 	//
 
 	listener, err := net.Listen("tcp", s.port)

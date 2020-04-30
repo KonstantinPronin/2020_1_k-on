@@ -70,7 +70,7 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 		},
 	}
 
-	tracer, closer, err := jaegerCfgInstance.NewTracer(
+	tracer, _, err := jaegerCfgInstance.NewTracer(
 		jaegercfg.Logger(jaegerlog.StdLogger),
 		jaegercfg.Metrics(metrics.NullFactory),
 	)
@@ -80,18 +80,17 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	}
 
 	opentracing.SetGlobalTracer(tracer)
-	defer closer.Close()
 
 	//microservices
-	rpcFilmFilter, err := client2.NewFilmFilterClient(srvConf.Host, srvConf.Port2, logger, &tracer)
+	rpcSeriesFilter, err := client3.NewSeriesFilterClient(srvConf.Host, srvConf.Port3, logger, tracer)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	rpcAuth, err := client.NewAuthClient(srvConf.Host, srvConf.Port1, logger)
+	rpcFilmFilter, err := client2.NewFilmFilterClient(srvConf.Host, srvConf.Port2, logger, tracer)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	rpcSeriesFilter, err := client3.NewSeriesFilterClient(srvConf.Host, srvConf.Port3, logger)
+	rpcAuth, err := client.NewAuthClient(srvConf.Host, srvConf.Port1, logger, tracer)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

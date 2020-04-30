@@ -3,6 +3,8 @@ package client
 import (
 	"context"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/api"
+	traceutils "github.com/opentracing-contrib/go-grpc"
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -13,10 +15,11 @@ type AuthClient struct {
 	logger *zap.Logger
 }
 
-func NewAuthClient(host, port string, logger *zap.Logger) (*AuthClient, error) {
+func NewAuthClient(host, port string, logger *zap.Logger, tracer opentracing.Tracer) (*AuthClient, error) {
 	gConn, err := grpc.Dial(
 		host+port,
 		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(traceutils.OpenTracingClientInterceptor(tracer)),
 	)
 	if err != nil {
 		return nil, err
