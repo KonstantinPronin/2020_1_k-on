@@ -17,11 +17,11 @@ type FilmFilterClient struct {
 	logger *zap.Logger
 }
 
-func NewFilmFilterClient(host, port string, logger *zap.Logger, tracer *opentracing.Tracer) (*FilmFilterClient, error) {
+func NewFilmFilterClient(host, port string, logger *zap.Logger, tracer opentracing.Tracer) (*FilmFilterClient, error) {
 	gConn, err := grpc.Dial(
 		host+port,
 		grpc.WithInsecure(),
-		grpc.WithUnaryInterceptor(traceutils.OpenTracingClientInterceptor(*tracer)),
+		grpc.WithUnaryInterceptor(traceutils.OpenTracingClientInterceptor(tracer)),
 	)
 	if err != nil {
 		return nil, err
