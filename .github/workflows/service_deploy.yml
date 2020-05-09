@@ -54,7 +54,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          script: chmod 755 -R
+          script: chmod 755 #-R
       - name: restart service
         uses: appleboy/ssh-action@master
         with:
