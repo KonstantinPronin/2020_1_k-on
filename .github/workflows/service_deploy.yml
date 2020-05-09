@@ -20,11 +20,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Check dir
-        run: ls -la
-
       - name: Run script
-        run: sudo ../scripts/start.sh
+        run: sudo ./scripts/start.sh
+
+      - name: Check dir
+        run: ls build/ -la
 
       - name: Upload build result
         uses: actions/upload-artifact@v1
