@@ -1,0 +1,27 @@
+---
+- name: "Restart nginx"
+  hosts: web_server
+  become: yes
+  tasks:
+#    - name: "Install nginx from apt"
+#      apt:
+#        name: nginx
+#        state: present
+    - name: "Copy nginx config"
+      copy:
+        src: files/kino-on.ru
+        dest: /etc/nginx/sites-available/kino-on.ru
+    - name: "Reload nginx configuration"
+      command: nginx -s reload
+
+#- name: "Update systemd unit"
+#  become: yes
+#  hosts: all
+#  tasks:
+#    - name: "Provide actual unit file"
+#      copy:
+#        src: files/app.service
+#        dest: /etc/systemd/system/app.service
+#
+#    - name: "Systemctl daemon reload"
+#      command: systemctl daemon-reload
