@@ -20,16 +20,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-#      - name: Set Rules
-#        run: sudo chmod +x scripts/start.sh
-
-      - name: Check dir1
-        run: ls build/ -la
+      #      - name: Set Rules
+      #        run: sudo chmod +x scripts/start.sh
 
       - name: Run script
-        run: sudo  sh scripts/start.sh
+        run: sudo sh scripts/start.sh
 
-      - name: Check dir2
+      - name: Check dir
         run: ls build/ -la
 
       - name: Upload build result
