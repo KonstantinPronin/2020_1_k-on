@@ -57,12 +57,13 @@ jobs:
           script: chmod 755 -R /./backend/src/github.com/go-park-mail-ru/2020_1_k-on/build
       - name: restart service
         uses: appleboy/ssh-action@master
-        working-directory: /./backend/src/github.com/go-park-mail-ru/2020_1_k-on/build
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
+            cd /./backend/src/github.com/go-park-mail-ru/2020_1_k-on/build
+            ls -la
             ./go_series_service &
             ./go_film_service &
             ./go_auth_service &
