@@ -18,7 +18,7 @@ server {
     text/xml application/xml application/xml+rss text/javascript
     application/javascript;
 
-#секция оптимизации данных за раз
+#секция оптимизации отправки данных - отправка разом
     tcp_nopush on;
 
 
@@ -43,7 +43,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Host $server_name;
         proxy_pass_header X-CSRF-TOKEN;
-	if ($request_uri ~* "/api/(.*)") {
+	    if ($request_uri ~* "/api/(.*)") {
            proxy_pass  http://127.0.0.1:8080/$1;
 		}
     }
