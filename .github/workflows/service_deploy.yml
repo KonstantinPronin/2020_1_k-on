@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run script
-        run: sudo sh scripts/start.sh
+        run: sudo sh scripts/build.sh
 
       - name: Check dir
         run: ls build/ -la
@@ -63,7 +63,4 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             cd /./backend/src/github.com/go-park-mail-ru/2020_1_k-on/
-            .build/go_series_service &
-            .build/go_film_service &
-            .build/go_auth_service &
-            .build/go_main_service &
+            sudo sh scripts/start.sh

@@ -11,7 +11,7 @@ build_path2="${build_dir}/${build_filename2}"
 build_path3="${build_dir}/${build_filename3}"
 build_path4="${build_dir}/${build_filename4}"
 
-./$build_path4 &
-./$build_path3 &
-./$build_path2 &
-./$build_path1 &
+go build -o $build_path1 ./cmd
+go build -o $build_path2 ./application/microservices/auth/cmd/
+go build -o $build_path3 ./application/microservices/film/cmd/
+go build -o $build_path4 ./application/microservices/series/cmd/
