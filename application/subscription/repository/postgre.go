@@ -51,6 +51,7 @@ func (s *SubscriptionDatabase) Subscriptions(userId uint) ([]uint, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var pid uint

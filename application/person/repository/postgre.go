@@ -80,6 +80,7 @@ func (rep *PersonDatabase) GetFilms(id uint) (models.ListsFilm, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	film := new(models.ListFilm)
 	for rows.Next() {
@@ -105,6 +106,7 @@ func (rep *PersonDatabase) GetSeries(id uint) (models.ListSeriesArr, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	s := new(models.ListSeries)
 	for rows.Next() {
@@ -129,6 +131,7 @@ func (rep *PersonDatabase) GetActorsForFilm(filmId uint) (models.ListPersonArr, 
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	per := new(models.ListPerson)
 	for rows.Next() {
@@ -153,6 +156,7 @@ func (rep *PersonDatabase) GetActorsForSeries(seriesId uint) (models.ListPersonA
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	per := new(models.ListPerson)
 	for rows.Next() {

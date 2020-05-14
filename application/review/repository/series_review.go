@@ -34,6 +34,7 @@ func (r *SeriesReviewDatabase) GetByProductId(id uint) ([]models.Review, error) 
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	rev := new(models.Review)
 	usr := new(models.ListUser)
@@ -60,6 +61,7 @@ func (r *SeriesReviewDatabase) GetReview(productId uint, userId uint) (*models.R
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	if rows.Next() {
 		err = rows.Scan(&rev.Id, &rev.Rating, &rev.Body, &rev.UserId, &rev.ProductId, &rev.Usr.Username, &rev.Usr.Image)

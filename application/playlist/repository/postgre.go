@@ -97,6 +97,7 @@ func (p *PlaylistDatabase) GetUserPlaylists(userId uint) (models.Playlists, erro
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var pid uint
@@ -124,6 +125,7 @@ func (p *PlaylistDatabase) GetUserPublicPlaylists(userId uint) (models.Playlists
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var pid uint
@@ -156,6 +158,7 @@ func (p *PlaylistDatabase) GetPlaylistsWithoutSer(sid, userId uint) (models.Play
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var pid uint
@@ -186,6 +189,7 @@ func (p *PlaylistDatabase) GetPlaylistsWithoutFilm(fid, userId uint) (models.Pla
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var pid uint
@@ -253,6 +257,7 @@ func (p *PlaylistDatabase) GetFilms(pid uint) (models.ListsFilm, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	film := new(models.ListFilm)
 	for rows.Next() {
@@ -278,6 +283,7 @@ func (p *PlaylistDatabase) GetSeries(pid uint) (models.ListSeriesArr, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	s := new(models.ListSeries)
 	for rows.Next() {
