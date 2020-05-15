@@ -21,6 +21,9 @@ server {
 #секция оптимизации отправки данных - отправка разом
     tcp_nopush on;
 
+    location  /sw.js {
+        root $front_root/dist;
+	    try_files $uri $request_uri =404;    }
 
 	location  /static/img {
 	    root $front_root;
@@ -32,7 +35,7 @@ server {
 
 	location / {
 	    root $front_root;
-	        try_files $uri $request_uri /static/index.html;
+	        try_files $uri $request_uri /dist/index.html;
 	}
 
 

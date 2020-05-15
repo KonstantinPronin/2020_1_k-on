@@ -1,0 +1,9 @@
+FROM golang:alpine
+
+COPY . /project
+
+WORKDIR /project
+
+RUN go build -o build/go_film_service ./application/microservices/film/cmd/
+
+CMD ["/project/build/go_film_service"]
