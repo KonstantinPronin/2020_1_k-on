@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-#      на серверке подтягиваем все наши уже сбилдженные контейнеры
+      #      на серверке подтягиваем все наши уже сбилдженные контейнеры
       - name: pull docker image
         uses: appleboy/ssh-action@master
         with:
@@ -49,7 +49,7 @@ jobs:
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/auth:${GITHUB_SHA::8}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/films:${GITHUB_SHA::8}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/series:${GITHUB_SHA::8}
-# запускаем все докеры, порядок важен! не забыть чистить предыдущие попытки!
+      # запускаем все докеры, порядок важен! не забыть чистить предыдущие попытки!
       - name: deploy docker image
         uses: appleboy/ssh-action@master
         with:
@@ -58,7 +58,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            sudo docker run -d -p 8083:8083 --name series ${{ secrets.DOCKERHUB_USERNAME }}/series:${GITHUB_SHA::8}
-            sudo docker run -d -p 8082:8082 --name films ${{ secrets.DOCKERHUB_USERNAME }}/films:${GITHUB_SHA::8}
-            sudo docker run -d -p 8081:8081 --name auth ${{ secrets.DOCKERHUB_USERNAME }}/auth:${GITHUB_SHA::8}
-            sudo docker run -d -p 8080:8080 --name main ${{ secrets.DOCKERHUB_USERNAME }}/main:${GITHUB_SHA::8}
+            sudo docker run -d --network="host" -p 8083:8083 --name series ${{ secrets.DOCKERHUB_USERNAME }}/series:${GITHUB_SHA::8}
+            sudo docker run -d --network="host" -p 8082:8082 --name films ${{ secrets.DOCKERHUB_USERNAME }}/films:${GITHUB_SHA::8}
+            sudo docker run -d --network="host" -p 8081:8081 --name auth ${{ secrets.DOCKERHUB_USERNAME }}/auth:${GITHUB_SHA::8}
+            sudo docker run -d --network="host" -p 8080:8080 --name main ${{ secrets.DOCKERHUB_USERNAME }}/main:${GITHUB_SHA::8}

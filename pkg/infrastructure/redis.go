@@ -4,7 +4,7 @@ import "github.com/go-redis/redis/v7"
 
 func InitRedis() (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "host.docker.internal:6379",
+		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
