@@ -2,9 +2,9 @@ name: Docker Build Services
 
 on:
   push:
-    branches: [ deploy ]
+    branches: [ rk3 ]
   pull_request:
-    branches: [ deploy ]
+    branches: [ rk3 ]
 
 jobs:
   build:
@@ -61,4 +61,4 @@ jobs:
             sudo docker run -d --network="host" -p 8083:8083 --name series ${{ secrets.DOCKERHUB_USERNAME }}/series:${GITHUB_SHA::8}
             sudo docker run -d --network="host" -p 8082:8082 --name films ${{ secrets.DOCKERHUB_USERNAME }}/films:${GITHUB_SHA::8}
             sudo docker run -d --network="host" -p 8081:8081 --name auth ${{ secrets.DOCKERHUB_USERNAME }}/auth:${GITHUB_SHA::8}
-            sudo docker run -d --network="host" -p 8080:8080 --name main ${{ secrets.DOCKERHUB_USERNAME }}/main:${GITHUB_SHA::8}
+            sudo docker run -d --network="host" -v /./frontend/static/img:/./frontend/static/img  -p 8080:8080 --name main ${{ secrets.DOCKERHUB_USERNAME }}/main:${GITHUB_SHA::8}
