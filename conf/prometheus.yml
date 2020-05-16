@@ -5,11 +5,11 @@ global:
 scrape_configs:
   - job_name: 'kino-on'
     static_configs:
-      - targets: ['docker.for.mac.localhost:8080']
+      - targets: ['localhost:8080']
 
   - job_name: 'system'
     static_configs:
-      - targets: ['docker.for.mac.localhost:9100']
+      - targets: ['localhost:9100']
 
 rule_files:
   - 'alerts.yml'

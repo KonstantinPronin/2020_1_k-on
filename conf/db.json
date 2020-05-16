@@ -1,8 +1,8 @@
 {
-  "host": "",
-  "port": "",
-  "user": "",
-  "password": "",
-  "dbname": "",
+  "host": "localhost",
+  "port": "5432",
+  "user": "postgres",
+  "password": "postgres",
+  "dbname": "k_on",
   "sslmode": "disable"
 }
