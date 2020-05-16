@@ -2,9 +2,9 @@ name: Docker Build Services
 
 on:
   push:
-    branches: [ deploy ]
+    branches: [ rk3 ]
   pull_request:
-    branches: [ deploy ]
+    branches: [ rk3 ]
 
 jobs:
   build:
