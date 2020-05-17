@@ -14,6 +14,9 @@ type Repository interface {
 	GetPlaylistsWithoutFilm(fid, userId uint) (models.Playlists, error)
 	GetAdminPlaylists() (models.Playlists, error)
 
+	GetFilms(pid uint) (models.ListsFilm, error)
+	GetSeries(pid uint) (models.ListSeriesArr, error)
+
 	Delete(pid uint) error
 	DeleteFilm(pid, filmId uint) error
 	DeleteSeries(pid, seriesId uint) error

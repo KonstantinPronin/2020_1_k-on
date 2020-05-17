@@ -1,12 +1,13 @@
 package models
 
 type Playlist struct {
-	Id     uint          `json:"id" gorm:"primary_key"`
-	Name   string        `json:"name" gorm:"column:name"`
-	Public bool          `json:"public" gorm:"column:public"`
-	UserId uint          `json:"userId" gorm:"column:user_id"`
-	Films  ListsFilm     `json:"films" gorm:"-"`
-	Series ListSeriesArr `json:"series" gorm:"-"`
+	Id           uint          `json:"id" gorm:"primary_key"`
+	Name         string        `json:"name" gorm:"column:name"`
+	Public       bool          `json:"public" gorm:"column:public"`
+	UserId       uint          `json:"userId" gorm:"column:user_id"`
+	Films        ListsFilm     `json:"films" gorm:"-"`
+	Series       ListSeriesArr `json:"series" gorm:"-"`
+	IsSubscribed bool          `json:"isSubscribed" gorm:"-"`
 }
 
 //easyjson:json

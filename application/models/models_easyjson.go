@@ -1031,6 +1031,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20201KOnApplicationModels11(in *
 			(out.Films).UnmarshalEasyJSON(in)
 		case "series":
 			(out.Series).UnmarshalEasyJSON(in)
+		case "isSubscribed":
+			out.IsSubscribed = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -1074,6 +1076,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20201KOnApplicationModels11(out 
 		const prefix string = ",\"series\":"
 		out.RawString(prefix)
 		(in.Series).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"isSubscribed\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.IsSubscribed))
 	}
 	out.RawByte('}')
 }

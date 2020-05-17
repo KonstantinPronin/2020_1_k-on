@@ -65,3 +65,39 @@ func (s *SubscriptionDatabase) Subscriptions(userId uint) ([]uint, error) {
 
 	return pidList, nil
 }
+
+func (s *SubscriptionDatabase) GetMainPagePlaylists(userId uint) (models.Playlists, error) {
+	var plist models.Playlists
+
+	rows, err := s.conn.Table("kinopoisk.playlists p").
+		Select("p.id, p.name, p.public, p.user_id, coalesce(sub.user_id, 0)").
+		Joins("inner join kinopoisk.users u1 on u1.id = p.user_id").
+		Joins("left join ? sub on sub.playlist_id = p.id",
+			s.conn.Table("kinopoisk.subscriptions s").
+				Select("s.playlist_id, s.user_id").
+				Joins("inner join kinopoisk.users u2 on s.user_id = u2.id").
+				Where("u2.id = ?", userId).SubQuery()).
+		Where("u1.username = 'admin' and p.public = true").Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var uid uint
+		p := new(models.Playlist)
+
+		err := rows.Scan(&p.Id, &p.Name, &p.Public, &p.UserId, &uid)
+		if err != nil {
+			return nil, err
+		}
+
+		if uid == userId {
+			p.IsSubscribed = true
+		}
+
+		plist = append(plist, *p)
+	}
+
+	return plist, nil
+}

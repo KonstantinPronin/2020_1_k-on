@@ -92,3 +92,18 @@ func (mr *MockUsecaseMockRecorder) GetFilmGenres(fid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFilmGenres", reflect.TypeOf((*MockUsecase)(nil).GetFilmGenres), fid)
 }
+
+// Search mocks base method
+func (m *MockUsecase) Search(word string, query map[string][]string) (models.Films, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Search", word, query)
+	ret0, _ := ret[0].(models.Films)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// Search indicates an expected call of Search
+func (mr *MockUsecaseMockRecorder) Search(word, query interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockUsecase)(nil).Search), word, query)
+}

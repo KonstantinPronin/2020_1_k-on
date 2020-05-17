@@ -75,3 +75,28 @@ func (s *Subscription) Subscriptions(userId uint) (models.Playlists, error) {
 
 	return plist, nil
 }
+
+func (s *Subscription) GetMainPagePlaylists(userId uint) (models.Playlists, error) {
+	plist, err := s.subsRep.GetMainPagePlaylists(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, play := range plist {
+		films, err := s.plistRep.GetFilms(play.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		plist[i].Films = films
+
+		series, err := s.plistRep.GetSeries(play.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		plist[i].Series = series
+	}
+
+	return plist, nil
+}
