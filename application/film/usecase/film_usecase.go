@@ -62,14 +62,3 @@ func (FU filmUsecase) Search(word string, query map[string][]string) (models.Fil
 
 	return FU.filmRepo.Search(word, begin, repository.FilmPerPage)
 }
-
-//
-//func (FU filmUsecase) UploadImageFilm(id uint) models.Film {
-//	f, _ := FU.filmRepo.GetById(id)
-//	return *f
-//}
-//
-//func (FU filmUsecase) GetImageFilm(id uint) string {
-//	f, _ := FU.filmRepo.GetById(id)
-//	return f.Image
-//}

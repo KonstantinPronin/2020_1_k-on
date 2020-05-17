@@ -1,11 +1,10 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/util"
 	"github.com/jinzhu/gorm"
-	"strings"
 )
 
 var SeriesPerPage = 13
@@ -62,16 +61,7 @@ func (p PostgresForSerials) GetSeasonEpisodes(id uint) (models.Episodes, bool) {
 
 func (p PostgresForSerials) Search(word string, begin, end int) (models.SeriesArr, bool) {
 	var seriesArr models.SeriesArr
-	var query string
-	words := strings.Split(word, " ")
-
-	for _, str := range words {
-		if query == "" {
-			query = str
-			continue
-		}
-		query = fmt.Sprintf("%s | %s", query, str)
-	}
+	query := util.PlainTextToQuery(word)
 
 	err := p.DB.Table("kinopoisk.series").
 		Where("textsearchable_index_col @@ to_tsquery('russian', ?)", query).

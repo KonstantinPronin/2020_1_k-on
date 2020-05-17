@@ -1,13 +1,12 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/util"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
-	"strings"
 )
 
 type PersonDatabase struct {
@@ -175,16 +174,7 @@ func (rep *PersonDatabase) GetActorsForSeries(seriesId uint) (models.ListPersonA
 
 func (rep *PersonDatabase) Search(word string, begin, end int) (models.ListPersonArr, error) {
 	var persons models.ListPersonArr
-	var query string
-	words := strings.Split(word, " ")
-
-	for _, str := range words {
-		if query == "" {
-			query = str
-			continue
-		}
-		query = fmt.Sprintf("%s | %s", query, str)
-	}
+	query := util.PlainTextToQuery(word)
 
 	rows, err := rep.conn.Table("kinopoisk.persons").
 		Select("id, name, image").
