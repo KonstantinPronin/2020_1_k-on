@@ -38,6 +38,7 @@ func NewFilmHandler(
 	e.GET("/films", handler.FilterFilmList)
 	e.GET("/films/filter", handler.FilterFilmData)
 	e.POST("/films", handler.CreateFilm)
+	e.GET("/films/search/:word", handler.Search)
 }
 
 func (fh FilmHandler) FilterFilmData(ctx echo.Context) error {
@@ -110,6 +111,19 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 	r["recommendations"] = rec
 	return middleware.WriteOkResponse(ctx, r)
 
+}
+
+func (fh *FilmHandler) Search(ctx echo.Context) error {
+	word := ctx.Param("word")
+	query := ctx.QueryParams()
+
+	films, ok := fh.fusecase.Search(word, query)
+	if !ok {
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can't find films")
+	}
+
+	var fl models.ListsFilm
+	return middleware.WriteOkResponse(ctx, fl.Convert(films))
 }
 
 func (fh FilmHandler) sanitize(f *models.Film) {

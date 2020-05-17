@@ -5,8 +5,11 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"go.uber.org/zap"
+	"strconv"
 	"time"
 )
+
+const PersonsPerPage = 13
 
 type Person struct {
 	persons person.Repository
@@ -77,4 +80,21 @@ func (usecase *Person) GetActorsForSeries(seriesId uint) (models.ListPersonArr, 
 	}
 
 	return usecase.persons.GetActorsForSeries(seriesId)
+}
+
+func (usecase *Person) Search(word string, query map[string][]string) (models.ListPersonArr, error) {
+	begin := 0
+	page, ok := query["page"]
+	if ok {
+		var err error
+		begin, err = strconv.Atoi(page[0])
+		if err == nil {
+			begin = (begin - 1) * PersonsPerPage
+		}
+		if begin < 0 {
+			begin = 0
+		}
+	}
+
+	return usecase.persons.Search(word, begin, PersonsPerPage)
 }

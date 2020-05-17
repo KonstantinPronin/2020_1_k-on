@@ -7,4 +7,5 @@ type Repository interface {
 	GetSeriesSeasons(id uint) (models.Seasons, bool)
 	GetSeasonEpisodes(id uint) (models.Episodes, bool)
 	GetSeriesGenres(fid uint) (models.Genres, bool)
+	Search(word string, begin, end int) (models.SeriesArr, bool)
 }

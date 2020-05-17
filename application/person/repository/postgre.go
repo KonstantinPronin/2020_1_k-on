@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type PersonDatabase struct {
@@ -161,6 +163,40 @@ func (rep *PersonDatabase) GetActorsForSeries(seriesId uint) (models.ListPersonA
 	per := new(models.ListPerson)
 	for rows.Next() {
 		err := rows.Scan(&per.Id, &per.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		persons = append(persons, *per)
+	}
+
+	return persons, nil
+}
+
+func (rep *PersonDatabase) Search(word string, begin, end int) (models.ListPersonArr, error) {
+	var persons models.ListPersonArr
+	var query string
+	words := strings.Split(word, " ")
+
+	for _, str := range words {
+		if query == "" {
+			query = str
+			continue
+		}
+		query = fmt.Sprintf("%s | %s", query, str)
+	}
+
+	rows, err := rep.conn.Table("kinopoisk.persons").
+		Select("id, name, image").
+		Where("textsearchable_index_col @@ to_tsquery('russian', ?)", query).Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	per := new(models.ListPerson)
+	for rows.Next() {
+		err := rows.Scan(&per.Id, &per.Name, &per.Image)
 		if err != nil {
 			return nil, err
 		}

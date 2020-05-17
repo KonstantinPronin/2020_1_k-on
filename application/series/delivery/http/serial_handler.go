@@ -31,6 +31,7 @@ func NewSeriesHandler(e *echo.Echo,
 
 	e.GET("/series", handler.FilterSeriesList)
 	e.GET("/series/filter", handler.FilterSeriesData)
+	e.GET("/series/search/:word", handler.Search)
 }
 
 func (sh SeriesHandler) FilterSeriesData(ctx echo.Context) error {
@@ -102,6 +103,19 @@ func (sh SeriesHandler) GetSeasonEpisodes(ctx echo.Context) error {
 		return middleware.WriteErrResponse(ctx,
 			http.StatusNotFound, "Not Found")
 	}
-	return middleware.WriteOkResponse(ctx, episodes)
 
+	return middleware.WriteOkResponse(ctx, episodes)
+}
+
+func (sh SeriesHandler) Search(ctx echo.Context) error {
+	word := ctx.Param("word")
+	query := ctx.QueryParams()
+
+	series, ok := sh.usecase.Search(word, query)
+	if !ok {
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can't find series")
+	}
+
+	var sl models.ListSeriesArr
+	return middleware.WriteOkResponse(ctx, sl.Convert(series))
 }

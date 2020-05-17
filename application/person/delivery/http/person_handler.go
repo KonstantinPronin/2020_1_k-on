@@ -28,6 +28,7 @@ func NewPersonHandler(e *echo.Echo, usecase person.UseCase, logger *zap.Logger, 
 	e.GET("/persons/:id", handler.GetById, middleware.ParseErrors)
 	e.POST("/persons", handler.Add, middleware.ParseErrors)
 	e.PUT("/persons", handler.Update, middleware.ParseErrors)
+	e.GET("/persons/search/:word", handler.Search, middleware.ParseErrors)
 }
 
 func (handler *PersonHandler) GetById(ctx echo.Context) error {
@@ -70,6 +71,18 @@ func (handler *PersonHandler) Update(ctx echo.Context) error {
 
 	handler.sanitize(p)
 	p, err := handler.usecase.Update(p)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, p)
+}
+
+func (handler *PersonHandler) Search(ctx echo.Context) error {
+	word := ctx.Param("word")
+	query := ctx.QueryParams()
+
+	p, err := handler.usecase.Search(word, query)
 	if err != nil {
 		return err
 	}

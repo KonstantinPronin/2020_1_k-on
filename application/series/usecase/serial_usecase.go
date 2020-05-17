@@ -3,6 +3,8 @@ package usecase
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/series/repository"
+	"strconv"
 )
 
 type serialUsecase struct {
@@ -43,4 +45,21 @@ func (SU serialUsecase) GetSeasonEpisodes(id uint) (models.Episodes, bool) {
 		return models.Episodes{}, false
 	}
 	return series, true
+}
+
+func (SU serialUsecase) Search(word string, query map[string][]string) (models.SeriesArr, bool) {
+	begin := 0
+	page, ok := query["page"]
+	if ok {
+		var err error
+		begin, err = strconv.Atoi(page[0])
+		if err == nil {
+			begin = (begin - 1) * repository.SeriesPerPage
+		}
+		if begin < 0 {
+			begin = 0
+		}
+	}
+
+	return SU.serialRepo.Search(word, begin, repository.SeriesPerPage)
 }

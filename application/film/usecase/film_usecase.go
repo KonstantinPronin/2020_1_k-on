@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
+	"github.com/go-park-mail-ru/2020_1_k-on/application/film/repository"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
+	"strconv"
 )
 
 type filmUsecase struct {
@@ -41,6 +43,24 @@ func (FU filmUsecase) CreateFilm(f models.Film) (models.Film, bool) {
 	var ok bool
 	f, ok = FU.filmRepo.Create(&f)
 	return f, ok
+}
+
+func (FU filmUsecase) Search(word string, query map[string][]string) (models.Films, bool) {
+	begin := 0
+
+	page, ok := query["page"]
+	if ok {
+		var err error
+		begin, err = strconv.Atoi(page[0])
+		if err == nil {
+			begin = (begin - 1) * repository.FilmPerPage
+		}
+		if begin < 0 {
+			begin = 0
+		}
+	}
+
+	return FU.filmRepo.Search(word, begin, repository.FilmPerPage)
 }
 
 //

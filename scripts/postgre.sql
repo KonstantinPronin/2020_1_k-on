@@ -2,8 +2,8 @@ CREATE DATABASE k_on
     WITH
     OWNER = postgres
     ENCODING = 'UTF8'
-    LC_COLLATE = 'C'
-    LC_CTYPE = 'C'
+    LC_COLLATE = 'C.UTF8'
+    LC_CTYPE = 'C.UTF8'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
 
@@ -219,3 +219,78 @@ create table kinopoisk.subscriptions
 	user_id bigint references kinopoisk.users (id) on delete cascade,
 	unique (playlist_id, user_id)
 );
+
+alter table kinopoisk.films
+add column textsearchable_index_col tsvector;
+
+update kinopoisk.films SET textsearchable_index_col =
+     to_tsvector('russian', coalesce(russianname,'') || ' ' || coalesce(description,''));
+
+create index films_textsearchable_idx on kinopoisk.films using gin (textsearchable_index_col);
+
+create or replace function kinopoisk.film_searchable_text() returns trigger as
+$film_searchable_text$
+begin
+    update kinopoisk.films
+    set textsearchable_index_col =
+     to_tsvector('russian', coalesce(new.russianname,'') || ' ' || coalesce(new.description,''))
+    where id = new.id;
+    return new;
+end;
+$film_searchable_text$ LANGUAGE plpgsql;
+
+create trigger film_searchable_text
+    after insert or update
+    on kinopoisk.films
+    for each row
+execute procedure kinopoisk.film_searchable_text();
+
+alter table kinopoisk.series
+add column textsearchable_index_col tsvector;
+
+update kinopoisk.series SET textsearchable_index_col =
+     to_tsvector('russian', coalesce(russianname,'') || ' ' || coalesce(description,''));
+
+create index series_textsearchable_idx on kinopoisk.series using gin (textsearchable_index_col);
+
+create or replace function kinopoisk.series_searchable_text() returns trigger as
+$series_searchable_text$
+begin
+    update kinopoisk.series
+    set textsearchable_index_col =
+     to_tsvector('russian', coalesce(new.russianname,'') || ' ' || coalesce(new.description,''))
+    where id = new.id;
+    return new;
+end;
+$series_searchable_text$ LANGUAGE plpgsql;
+
+create trigger series_searchable_text
+    after insert or update
+    on kinopoisk.series
+    for each row
+execute procedure kinopoisk.series_searchable_text();
+
+alter table kinopoisk.persons
+add column textsearchable_index_col tsvector;
+
+update kinopoisk.persons SET textsearchable_index_col =
+     to_tsvector('russian', coalesce("name",''));
+
+create index persons_textsearchable_idx on kinopoisk.persons using gin (textsearchable_index_col);
+
+create or replace function kinopoisk.persons_searchable_text() returns trigger as
+$persons_searchable_text$
+begin
+    update kinopoisk.persons
+    set textsearchable_index_col =
+     to_tsvector('russian', coalesce(new.name,''))
+    where id = new.id;
+    return new;
+end;
+$persons_searchable_text$ LANGUAGE plpgsql;
+
+create trigger persons_searchable_text
+    after insert or update
+    on kinopoisk.persons
+    for each row
+execute procedure kinopoisk.persons_searchable_text();

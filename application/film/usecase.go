@@ -11,6 +11,7 @@ type Usecase interface {
 	GetFilm(id uint) (models.Film, bool)
 	CreateFilm(f models.Film) (models.Film, bool)
 	GetFilmGenres(fid uint) (models.Genres, bool)
+	Search(word string, query map[string][]string) (models.Films, bool)
 	//UploadImageFilm(id uint) models.Film //?? как правильно вести себя с картинками?
 	//GetImageFilm(id uint) string         //(model.File)????????????
 }

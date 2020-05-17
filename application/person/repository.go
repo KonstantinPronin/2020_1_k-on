@@ -10,4 +10,5 @@ type Repository interface {
 	Update(p *models.Person) (*models.Person, error)
 	GetActorsForFilm(filmId uint) (models.ListPersonArr, error)
 	GetActorsForSeries(seriesId uint) (models.ListPersonArr, error)
+	Search(word string, begin, end int) (models.ListPersonArr, error)
 }

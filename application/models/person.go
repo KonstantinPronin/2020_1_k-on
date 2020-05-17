@@ -12,8 +12,9 @@ type Person struct {
 }
 
 type ListPerson struct {
-	Id   uint   `json:"id" gorm:"primary_key"`
-	Name string `json:"name" gorm:"column:name"`
+	Id    uint   `json:"id" gorm:"primary_key"`
+	Name  string `json:"name" gorm:"column:name"`
+	Image string `json:"image, omitempty" gorm:"column:image"`
 }
 
 //easyjson:json
