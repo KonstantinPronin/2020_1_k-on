@@ -24,6 +24,7 @@ func NewSubscriptionHandler(e *echo.Echo, useCase subscription.UseCase, auth mid
 	e.POST("/subscribe/:pid", handler.Subscribe, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
 	e.DELETE("/unsubscribe/:pid", handler.Unsubscribe, auth.GetSession, middleware.CSRF, middleware.ParseErrors)
 	e.GET("/subscriptions", handler.Subscription, auth.GetSession, middleware.ParseErrors)
+	e.GET("/main", handler.GetMainPage, auth.GetSession, middleware.ParseErrors)
 }
 
 func (s *SubscriptionHandler) Subscribe(ctx echo.Context) error {
@@ -60,6 +61,17 @@ func (s *SubscriptionHandler) Subscription(ctx echo.Context) error {
 	userId := ctx.Get(constants.UserIdKey).(uint)
 
 	plist, err := s.useCase.Subscriptions(userId)
+	if err != nil {
+		return err
+	}
+
+	return middleware.WriteOkResponse(ctx, plist)
+}
+
+func (s *SubscriptionHandler) GetMainPage(ctx echo.Context) error {
+	userId := ctx.Get(constants.UserIdKey).(uint)
+
+	plist, err := s.useCase.GetMainPagePlaylists(userId)
 	if err != nil {
 		return err
 	}

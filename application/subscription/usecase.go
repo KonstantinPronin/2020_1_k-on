@@ -6,4 +6,5 @@ type UseCase interface {
 	Subscribe(pid, userId uint) error
 	Unsubscribe(pid, userId uint) error
 	Subscriptions(userId uint) (models.Playlists, error)
+	GetMainPagePlaylists(userId uint) (models.Playlists, error)
 }

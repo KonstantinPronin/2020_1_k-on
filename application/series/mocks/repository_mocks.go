@@ -92,3 +92,18 @@ func (mr *MockRepositoryMockRecorder) GetSeriesGenres(fid interface{}) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeriesGenres", reflect.TypeOf((*MockRepository)(nil).GetSeriesGenres), fid)
 }
+
+// Search mocks base method
+func (m *MockRepository) Search(word string, begin, end int) (models.SeriesArr, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Search", word, begin, end)
+	ret0, _ := ret[0].(models.SeriesArr)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// Search indicates an expected call of Search
+func (mr *MockRepositoryMockRecorder) Search(word, begin, end interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockRepository)(nil).Search), word, begin, end)
+}
