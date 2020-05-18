@@ -178,7 +178,8 @@ func (rep *PersonDatabase) Search(word string, begin, end int) (models.ListPerso
 
 	rows, err := rep.conn.Table("kinopoisk.persons").
 		Select("id, name, image").
-		Where("textsearchable_index_col @@ to_tsquery('russian', ?)", query).Rows()
+		Where("textsearchable_index_col @@ to_tsquery('russian', ?)", query).
+		Offset(begin).Limit(end).Rows()
 	if err != nil {
 		return nil, err
 	}
