@@ -8,4 +8,6 @@ type Repository interface {
 	GetSeasonEpisodes(id uint) (models.Episodes, bool)
 	GetSeriesGenres(fid uint) (models.Genres, bool)
 	Search(word string, begin, end int) (models.SeriesArr, bool)
+	GetSimilarFilms(sid uint) (models.Films, bool)
+	GetSimilarSeries(sid uint) (models.SeriesArr, bool)
 }

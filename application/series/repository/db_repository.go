@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/series"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/util"
@@ -8,6 +9,7 @@ import (
 )
 
 var SeriesPerPage = 13
+var SimilarCount = 10
 
 type PostgresForSerials struct {
 	DB *gorm.DB
@@ -71,4 +73,49 @@ func (p PostgresForSerials) Search(word string, begin, end int) (models.SeriesAr
 	}
 
 	return seriesArr, true
+}
+
+func (p PostgresForSerials) GetSimilarFilms(sid uint) (models.Films, bool) {
+	films := &models.Films{}
+	var db *gorm.DB
+	var err error
+	err = nil
+	db = p.DB.Table("kinopoisk.films f2").Select("f2.*").
+		Joins("join (?) sub on f2.russianname = sub.russianname",
+			p.DB.Table("kinopoisk.series_playlist sp1").
+				Select("f1.russianname, count(fp2.film_id)").
+				Joins("join kinopoisk.film_playlist fp2 on sp1.playlist_id = fp2.playlist_id").
+				Joins("join kinopoisk.films f1 on fp2.film_id = f1.id").
+				Where("sp1.series_id = ?", sid).Group("f1.russianname").
+				SubQuery()).
+		Order("sub.count desc").Limit(SimilarCount).Find(films)
+	err = db.Error
+	if err != nil {
+		fmt.Print(err, "\n")
+		return models.Films{}, false
+	}
+	return *films, true
+}
+
+func (p PostgresForSerials) GetSimilarSeries(sid uint) (models.SeriesArr, bool) {
+	series := &models.SeriesArr{}
+	var db *gorm.DB
+	var err error
+	err = nil
+	db = p.DB.Table("kinopoisk.series s2").Select("s2.*").
+		Joins("join (?) sub on s2.russianname = sub.russianname",
+			p.DB.Table("kinopoisk.series_playlist sp1").
+				Select("s1.russianname, count(sp2.series_id)").
+				Joins("join kinopoisk.series_playlist sp2 on sp1.playlist_id = sp2.playlist_id").
+				Joins("join kinopoisk.series s1 on sp2.series_id = s1.id").
+				Where("sp1.series_id = ?", sid).Group("s1.russianname").
+				SubQuery()).
+		Where("s2.id <> ?", sid).
+		Order("sub.count desc").Limit(SimilarCount).Find(series)
+	err = db.Error
+	if err != nil {
+		fmt.Print(err, "\n")
+		return models.SeriesArr{}, false
+	}
+	return *series, true
 }

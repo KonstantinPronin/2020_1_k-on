@@ -12,4 +12,6 @@ type Usecase interface {
 	CreateFilm(f models.Film) (models.Film, bool)
 	GetFilmGenres(fid uint) (models.Genres, bool)
 	Search(word string, query map[string][]string) (models.Films, bool)
+	GetSimilarFilms(fid uint) (models.Films, bool)
+	GetSimilarSeries(fid uint) (models.SeriesArr, bool)
 }

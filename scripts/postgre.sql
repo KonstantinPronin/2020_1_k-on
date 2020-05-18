@@ -191,40 +191,43 @@ create table kinopoisk.series_actor
 
 create table kinopoisk.playlists
 (
-   	id     	bigserial primary key,
-   	name   	varchar(80) not null,
-   	public 	bool default false,
-	user_id bigint references kinopoisk.users (id) on delete cascade,
-	unique (name, user_id)
+    id      bigserial primary key,
+    name    varchar(80) not null,
+    public  bool default false,
+    user_id bigint references kinopoisk.users (id) on delete cascade,
+    unique (name, user_id)
 );
 
-create table kinopoisk.film_playlist (
-  	id     	bigserial primary key,
-	playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
-	film_id bigint references kinopoisk.films (id) on delete cascade,
-	unique (playlist_id, film_id)
+create table kinopoisk.film_playlist
+(
+    id          bigserial primary key,
+    playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
+    film_id     bigint references kinopoisk.films (id) on delete cascade,
+    unique (playlist_id, film_id)
 );
 
-create table kinopoisk.series_playlist (
-  	id     	bigserial primary key,
-	playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
-	series_id bigint references kinopoisk.series (id) on delete cascade,
-	unique (playlist_id, series_id)
+create table kinopoisk.series_playlist
+(
+    id          bigserial primary key,
+    playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
+    series_id   bigint references kinopoisk.series (id) on delete cascade,
+    unique (playlist_id, series_id)
 );
 
 create table kinopoisk.subscriptions
 (
-   	id     	bigserial primary key,
-   	playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
-	user_id bigint references kinopoisk.users (id) on delete cascade,
-	unique (playlist_id, user_id)
+    id          bigserial primary key,
+    playlist_id bigint references kinopoisk.playlists (id) on delete cascade,
+    user_id     bigint references kinopoisk.users (id) on delete cascade,
+    unique (playlist_id, user_id)
 );
 
 alter table kinopoisk.films
-add column textsearchable_index_col tsvector;
+    add column textsearchable_index_col tsvector;
 
-update kinopoisk.films SET textsearchable_index_col =
-     to_tsvector('russian', coalesce(russianname,'') || ' ' || coalesce(description,''));
+update kinopoisk.films
+SET textsearchable_index_col =
+        to_tsvector('russian', coalesce(russianname, '') || ' ' || coalesce(description, ''));
 
 create index films_textsearchable_idx on kinopoisk.films using gin (textsearchable_index_col);
 
@@ -233,7 +236,7 @@ $film_searchable_text$
 begin
     update kinopoisk.films
     set textsearchable_index_col =
-     to_tsvector('russian', coalesce(new.russianname,'') || ' ' || coalesce(new.description,''))
+            to_tsvector('russian', coalesce(new.russianname, '') || ' ' || coalesce(new.description, ''))
     where id = new.id;
     return new;
 end;
@@ -246,10 +249,11 @@ create trigger film_searchable_text
 execute procedure kinopoisk.film_searchable_text();
 
 alter table kinopoisk.series
-add column textsearchable_index_col tsvector;
+    add column textsearchable_index_col tsvector;
 
-update kinopoisk.series SET textsearchable_index_col =
-     to_tsvector('russian', coalesce(russianname,'') || ' ' || coalesce(description,''));
+update kinopoisk.series
+SET textsearchable_index_col =
+        to_tsvector('russian', coalesce(russianname, '') || ' ' || coalesce(description, ''));
 
 create index series_textsearchable_idx on kinopoisk.series using gin (textsearchable_index_col);
 
@@ -258,7 +262,7 @@ $series_searchable_text$
 begin
     update kinopoisk.series
     set textsearchable_index_col =
-     to_tsvector('russian', coalesce(new.russianname,'') || ' ' || coalesce(new.description,''))
+            to_tsvector('russian', coalesce(new.russianname, '') || ' ' || coalesce(new.description, ''))
     where id = new.id;
     return new;
 end;
@@ -271,10 +275,11 @@ create trigger series_searchable_text
 execute procedure kinopoisk.series_searchable_text();
 
 alter table kinopoisk.persons
-add column textsearchable_index_col tsvector;
+    add column textsearchable_index_col tsvector;
 
-update kinopoisk.persons SET textsearchable_index_col =
-     to_tsvector('russian', coalesce("name",''));
+update kinopoisk.persons
+SET textsearchable_index_col =
+        to_tsvector('russian', coalesce("name", ''));
 
 create index persons_textsearchable_idx on kinopoisk.persons using gin (textsearchable_index_col);
 
@@ -283,7 +288,7 @@ $persons_searchable_text$
 begin
     update kinopoisk.persons
     set textsearchable_index_col =
-     to_tsvector('russian', coalesce(new.name,''))
+            to_tsvector('russian', coalesce(new.name, ''))
     where id = new.id;
     return new;
 end;
@@ -294,3 +299,22 @@ create trigger persons_searchable_text
     on kinopoisk.persons
     for each row
 execute procedure kinopoisk.persons_searchable_text();
+
+select f1.russianname, count(fp2.film_id)
+from kinopoisk.film_playlist fp1
+         join kinopoisk.film_playlist fp2 on fp1.playlist_id = fp2.playlist_id
+         join kinopoisk.films f1 on fp2.film_id = f1.id
+where fp1.film_id = 1
+group by f1.russianname
+order by count(fp2.film_id) desc;
+
+select f2.*
+from kinopoisk.films f2
+         join (select f1.russianname, count(fp2.film_id)
+               from kinopoisk.film_playlist fp1
+                        join kinopoisk.film_playlist fp2 on fp1.playlist_id = fp2.playlist_id
+                        join kinopoisk.films f1 on fp2.film_id = f1.id
+               where fp1.film_id = 1
+               group by f1.russianname) as sub on f2.russianname = sub.russianname
+order by sub.count desc
+offset 1;

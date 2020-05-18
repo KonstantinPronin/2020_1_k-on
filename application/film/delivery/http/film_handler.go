@@ -70,10 +70,17 @@ func (fh FilmHandler) GetFilm(ctx echo.Context) error {
 	}
 	a, _ := fh.pusecase.GetActorsForFilm(f.ID)
 	g, _ := fh.fusecase.GetFilmGenres(f.ID)
+	sim_films, _ := fh.fusecase.GetSimilarFilms(uint(id))
+	var fl models.ListsFilm
+	sim_series, _ := fh.fusecase.GetSimilarSeries(uint(id))
+	var sl models.ListSeriesArr
+
 	r := make(map[string]interface{})
 	r["object"] = f
 	r["actors"] = a
 	r["genres"] = g
+	r["simfilms"] = fl.Convert(sim_films)
+	r["simseries"] = sl.Convert(sim_series)
 
 	return middleware.WriteOkResponse(ctx, r)
 
