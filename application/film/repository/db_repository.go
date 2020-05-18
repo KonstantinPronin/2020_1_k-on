@@ -3,6 +3,7 @@ package repository
 import (
 	_ "context"
 	_ "errors"
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/film"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/util"
@@ -12,6 +13,7 @@ import (
 //Интерфейсы запросов к бд
 
 var FilmPerPage = 13
+var SimilarCount = 10
 
 type PostgresForFilms struct {
 	DB *gorm.DB
@@ -84,4 +86,60 @@ func (p *PostgresForFilms) Search(word string, begin, end int) (models.Films, bo
 	}
 
 	return films, true
+}
+
+//select f2.*
+//from kinopoisk.films f2
+//join (select f1.russianname, count(fp2.film_id)
+//from kinopoisk.film_playlist fp1
+//join kinopoisk.film_playlist fp2 on fp1.playlist_id = fp2.playlist_id
+//join kinopoisk.films f1 on fp2.film_id = f1.id
+//where fp1.film_id = 1
+//group by f1.russianname) as sub on f2.russianname = sub.russianname
+//order by sub.count desc
+//offset 1;
+
+func (p PostgresForFilms) GetSimilarFilms(fid uint) (models.Films, bool) {
+	films := &models.Films{}
+	var db *gorm.DB
+	var err error
+	err = nil
+	db = p.DB.Table("kinopoisk.films f2").Select("f2.*").
+		Joins("join (?) sub on f2.russianname = sub.russianname",
+			p.DB.Table("kinopoisk.film_playlist fp1").
+				Select("f1.russianname, count(fp2.film_id)").
+				Joins("join kinopoisk.film_playlist fp2 on fp1.playlist_id = fp2.playlist_id").
+				Joins("join kinopoisk.films f1 on fp2.film_id = f1.id").
+				Where("fp1.film_id = ?", fid).Group("f1.russianname").
+				SubQuery()).
+		Where("f2.id <> ?", fid).
+		Order("sub.count desc").Limit(SimilarCount).Find(films)
+	err = db.Error
+	if err != nil {
+		fmt.Print(err, "\n")
+		return models.Films{}, false
+	}
+	return *films, true
+}
+
+func (p PostgresForFilms) GetSimilarSeries(fid uint) (models.SeriesArr, bool) {
+	series := &models.SeriesArr{}
+	var db *gorm.DB
+	var err error
+	err = nil
+	db = p.DB.Table("kinopoisk.series s2").Select("s2.*").
+		Joins("join (?) sub on s2.russianname = sub.russianname",
+			p.DB.Table("kinopoisk.film_playlist fp1").
+				Select("s1.russianname, count(sp2.series_id)").
+				Joins("join kinopoisk.series_playlist sp2 on fp1.playlist_id = sp2.playlist_id").
+				Joins("join kinopoisk.series s1 on sp2.series_id = s1.id").
+				Where("fp1.film_id = ?", fid).Group("s1.russianname").
+				SubQuery()).
+		Order("sub.count desc").Limit(SimilarCount).Find(series)
+	err = db.Error
+	if err != nil {
+		fmt.Print(err, "\n")
+		return models.SeriesArr{}, false
+	}
+	return *series, true
 }

@@ -62,3 +62,19 @@ func (FU filmUsecase) Search(word string, query map[string][]string) (models.Fil
 
 	return FU.filmRepo.Search(word, begin, repository.FilmPerPage)
 }
+
+func (FU filmUsecase) GetSimilarFilms(fid uint) (models.Films, bool) {
+	f, ok := FU.filmRepo.GetSimilarFilms(fid)
+	if !ok {
+		return models.Films{}, false
+	}
+	return f, true
+}
+
+func (FU filmUsecase) GetSimilarSeries(fid uint) (models.SeriesArr, bool) {
+	ser, ok := FU.filmRepo.GetSimilarSeries(fid)
+	if !ok {
+		return models.SeriesArr{}, false
+	}
+	return ser, true
+}

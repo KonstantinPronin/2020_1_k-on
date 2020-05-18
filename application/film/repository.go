@@ -13,4 +13,6 @@ type Repository interface {
 	GetFilmsArr(begin, end uint) (*models.Films, bool)
 	GetFilmGenres(fid uint) (models.Genres, bool)
 	Search(word string, begin, end int) (models.Films, bool)
+	GetSimilarFilms(fid uint) (models.Films, bool)
+	GetSimilarSeries(fid uint) (models.SeriesArr, bool)
 }
