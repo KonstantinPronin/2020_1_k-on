@@ -63,3 +63,19 @@ func (SU serialUsecase) Search(word string, query map[string][]string) (models.S
 
 	return SU.serialRepo.Search(word, begin, repository.SeriesPerPage)
 }
+
+func (SU serialUsecase) GetSimilarFilms(sid uint) (models.Films, bool) {
+	f, ok := SU.serialRepo.GetSimilarFilms(sid)
+	if !ok {
+		return models.Films{}, false
+	}
+	return f, true
+}
+
+func (SU serialUsecase) GetSimilarSeries(sid uint) (models.SeriesArr, bool) {
+	ser, ok := SU.serialRepo.GetSimilarSeries(sid)
+	if !ok {
+		return models.SeriesArr{}, false
+	}
+	return ser, true
+}

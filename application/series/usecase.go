@@ -10,6 +10,8 @@ type Usecase interface {
 	GetSeriesByID(id uint) (models.Series, bool)
 	GetSeriesSeasons(id uint) (models.Seasons, bool)
 	GetSeasonEpisodes(id uint) (models.Episodes, bool)
-	GetSeriesGenres(fid uint) (models.Genres, bool)
+	GetSeriesGenres(sid uint) (models.Genres, bool)
 	Search(word string, query map[string][]string) (models.SeriesArr, bool)
+	GetSimilarFilms(sid uint) (models.Films, bool)
+	GetSimilarSeries(sid uint) (models.SeriesArr, bool)
 }

@@ -69,10 +69,17 @@ func (sh SeriesHandler) GetSeries(ctx echo.Context) error {
 	}
 	a, err := sh.pusecase.GetActorsForSeries(serial.ID)
 	g, _ := sh.usecase.GetSeriesGenres(serial.ID)
+	sim_films, _ := sh.usecase.GetSimilarFilms(uint(id))
+	var fl models.ListsFilm
+	sim_series, _ := sh.usecase.GetSimilarSeries(uint(id))
+	var sl models.ListSeriesArr
+
 	r := make(map[string]interface{})
 	r["object"] = serial
 	r["actors"] = a
 	r["genres"] = g
+	r["simfilms"] = fl.Convert(sim_films)
+	r["simseries"] = sl.Convert(sim_series)
 	return middleware.WriteOkResponse(ctx, r)
 
 }
