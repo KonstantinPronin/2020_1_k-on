@@ -2,9 +2,9 @@ name: Docker Build Services
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ ignore ]
   pull_request:
-    branches: [ dev ]
+    branches: [ ignore ]
 
 jobs:
   build:

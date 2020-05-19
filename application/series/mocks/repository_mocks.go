@@ -107,3 +107,33 @@ func (mr *MockRepositoryMockRecorder) Search(word, begin, end interface{}) *gomo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockRepository)(nil).Search), word, begin, end)
 }
+
+// GetSimilarFilms mocks base method
+func (m *MockRepository) GetSimilarFilms(sid uint) (models.Films, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSimilarFilms", sid)
+	ret0, _ := ret[0].(models.Films)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetSimilarFilms indicates an expected call of GetSimilarFilms
+func (mr *MockRepositoryMockRecorder) GetSimilarFilms(sid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSimilarFilms", reflect.TypeOf((*MockRepository)(nil).GetSimilarFilms), sid)
+}
+
+// GetSimilarSeries mocks base method
+func (m *MockRepository) GetSimilarSeries(sid uint) (models.SeriesArr, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSimilarSeries", sid)
+	ret0, _ := ret[0].(models.SeriesArr)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetSimilarSeries indicates an expected call of GetSimilarSeries
+func (mr *MockRepositoryMockRecorder) GetSimilarSeries(sid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSimilarSeries", reflect.TypeOf((*MockRepository)(nil).GetSimilarSeries), sid)
+}

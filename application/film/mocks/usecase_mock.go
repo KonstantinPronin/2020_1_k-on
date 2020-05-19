@@ -2,7 +2,7 @@
 // Source: ./application/film/usecase.go
 
 // Package mock_film is a generated GoMock package.
-package mocks
+package mock_film
 
 import (
 	models "github.com/go-park-mail-ru/2020_1_k-on/application/models"
@@ -106,4 +106,34 @@ func (m *MockUsecase) Search(word string, query map[string][]string) (models.Fil
 func (mr *MockUsecaseMockRecorder) Search(word, query interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockUsecase)(nil).Search), word, query)
+}
+
+// GetSimilarFilms mocks base method
+func (m *MockUsecase) GetSimilarFilms(fid uint) (models.Films, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSimilarFilms", fid)
+	ret0, _ := ret[0].(models.Films)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetSimilarFilms indicates an expected call of GetSimilarFilms
+func (mr *MockUsecaseMockRecorder) GetSimilarFilms(fid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSimilarFilms", reflect.TypeOf((*MockUsecase)(nil).GetSimilarFilms), fid)
+}
+
+// GetSimilarSeries mocks base method
+func (m *MockUsecase) GetSimilarSeries(fid uint) (models.SeriesArr, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSimilarSeries", fid)
+	ret0, _ := ret[0].(models.SeriesArr)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetSimilarSeries indicates an expected call of GetSimilarSeries
+func (mr *MockUsecaseMockRecorder) GetSimilarSeries(fid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSimilarSeries", reflect.TypeOf((*MockUsecase)(nil).GetSimilarSeries), fid)
 }

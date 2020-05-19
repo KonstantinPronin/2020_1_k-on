@@ -101,6 +101,8 @@ func TestSeriesHandler_GetSeries(t *testing.T) {
 	c.SetParamValues("1")
 	series.EXPECT().GetSeriesByID(gomock.Eq(testSeries.ID)).Return(testSeries, true)
 	series.EXPECT().GetSeriesGenres(testSeries.ID).Return(nil, true)
+	series.EXPECT().GetSimilarFilms(gomock.Any()).Return(nil, true)
+	series.EXPECT().GetSimilarSeries(gomock.Any()).Return(nil, true)
 	person.EXPECT().GetActorsForSeries(testSeries.ID).Return(nil, nil)
 	err := sh.GetSeries(c)
 	require.Equal(t, err, nil)

@@ -86,6 +86,8 @@ func TestFilmHandler_GetFilm(t *testing.T) {
 	c.SetParamValues("1")
 	films.EXPECT().GetById(gomock.Eq(testFilm.ID)).Return(&testFilm, true)
 	films.EXPECT().GetFilmGenres(gomock.Eq(testFilm.ID)).Return(nil, true)
+	films.EXPECT().GetSimilarFilms(gomock.Any()).Return(nil, true)
+	films.EXPECT().GetSimilarSeries(gomock.Any()).Return(nil, true)
 	person.EXPECT().GetActorsForFilm(testFilm.ID).Return(nil, nil)
 	err := fh.GetFilm(c)
 	require.Equal(t, err, nil)
