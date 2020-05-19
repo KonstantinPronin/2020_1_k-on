@@ -243,7 +243,7 @@ end;
 $film_searchable_text$ LANGUAGE plpgsql;
 
 create trigger film_searchable_text
-    after insert or update
+    after insert
     on kinopoisk.films
     for each row
 execute procedure kinopoisk.film_searchable_text();
@@ -269,7 +269,7 @@ end;
 $series_searchable_text$ LANGUAGE plpgsql;
 
 create trigger series_searchable_text
-    after insert or update
+    after insert
     on kinopoisk.series
     for each row
 execute procedure kinopoisk.series_searchable_text();
@@ -295,7 +295,7 @@ end;
 $persons_searchable_text$ LANGUAGE plpgsql;
 
 create trigger persons_searchable_text
-    after insert or update
+    after insert
     on kinopoisk.persons
     for each row
 execute procedure kinopoisk.persons_searchable_text();
