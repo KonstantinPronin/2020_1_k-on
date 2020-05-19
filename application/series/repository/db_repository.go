@@ -64,9 +64,10 @@ func (p PostgresForSerials) GetSeasonEpisodes(id uint) (models.Episodes, bool) {
 func (p PostgresForSerials) Search(word string, begin, end int) (models.SeriesArr, bool) {
 	var seriesArr models.SeriesArr
 	query := util.PlainTextToQuery(word)
+	word = fmt.Sprintf("%%%s%%", word)
 
 	err := p.DB.Table("kinopoisk.series").
-		Where("textsearchable_index_col @@ to_tsquery('russian', ?)", query).
+		Where("textsearchable_index_col @@ to_tsquery('russian', ?)  or russianname ilike ?", query, word).
 		Offset(begin).Limit(end).Find(&seriesArr).Error
 	if err != nil {
 		return nil, false

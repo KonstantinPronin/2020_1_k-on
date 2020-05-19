@@ -227,7 +227,7 @@ alter table kinopoisk.films
 
 update kinopoisk.films
 SET textsearchable_index_col =
-        to_tsvector('russian', coalesce(russianname, '') || ' ' || coalesce(description, ''));
+        to_tsvector('russian', coalesce(russianname, ''));
 
 create index films_textsearchable_idx on kinopoisk.films using gin (textsearchable_index_col);
 
@@ -236,7 +236,7 @@ $film_searchable_text$
 begin
     update kinopoisk.films
     set textsearchable_index_col =
-            to_tsvector('russian', coalesce(new.russianname, '') || ' ' || coalesce(new.description, ''))
+            to_tsvector('russian', coalesce(new.russianname, ''))
     where id = new.id;
     return new;
 end;
@@ -253,7 +253,7 @@ alter table kinopoisk.series
 
 update kinopoisk.series
 SET textsearchable_index_col =
-        to_tsvector('russian', coalesce(russianname, '') || ' ' || coalesce(description, ''));
+        to_tsvector('russian', coalesce(russianname, ''));
 
 create index series_textsearchable_idx on kinopoisk.series using gin (textsearchable_index_col);
 
@@ -262,7 +262,7 @@ $series_searchable_text$
 begin
     update kinopoisk.series
     set textsearchable_index_col =
-            to_tsvector('russian', coalesce(new.russianname, '') || ' ' || coalesce(new.description, ''))
+            to_tsvector('russian', coalesce(new.russianname, ''))
     where id = new.id;
     return new;
 end;

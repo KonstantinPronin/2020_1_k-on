@@ -77,9 +77,10 @@ func (p PostgresForFilms) GetByName(name string) (*models.Film, bool) {
 func (p *PostgresForFilms) Search(word string, begin, end int) (models.Films, bool) {
 	var films models.Films
 	query := util.PlainTextToQuery(word)
+	word = fmt.Sprintf("%%%s%%", word)
 
 	err := p.DB.Table("kinopoisk.films").
-		Where("textsearchable_index_col @@ to_tsquery('russian', ?)", query).
+		Where("textsearchable_index_col @@ to_tsquery('russian', ?) or russianname ilike ?", query, word).
 		Offset(begin).Limit(end).Find(&films).Error
 	if err != nil {
 		return nil, false
@@ -87,17 +88,6 @@ func (p *PostgresForFilms) Search(word string, begin, end int) (models.Films, bo
 
 	return films, true
 }
-
-//select f2.*
-//from kinopoisk.films f2
-//join (select f1.russianname, count(fp2.film_id)
-//from kinopoisk.film_playlist fp1
-//join kinopoisk.film_playlist fp2 on fp1.playlist_id = fp2.playlist_id
-//join kinopoisk.films f1 on fp2.film_id = f1.id
-//where fp1.film_id = 1
-//group by f1.russianname) as sub on f2.russianname = sub.russianname
-//order by sub.count desc
-//offset 1;
 
 func (p PostgresForFilms) GetSimilarFilms(fid uint) (models.Films, bool) {
 	films := &models.Films{}

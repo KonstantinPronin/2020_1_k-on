@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/person"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
@@ -175,10 +176,11 @@ func (rep *PersonDatabase) GetActorsForSeries(seriesId uint) (models.ListPersonA
 func (rep *PersonDatabase) Search(word string, begin, end int) (models.ListPersonArr, error) {
 	var persons models.ListPersonArr
 	query := util.PlainTextToQuery(word)
+	word = fmt.Sprintf("%%%s%%", word)
 
 	rows, err := rep.conn.Table("kinopoisk.persons").
 		Select("id, name, image").
-		Where("textsearchable_index_col @@ to_tsquery('russian', ?)", query).
+		Where("textsearchable_index_col @@ to_tsquery('russian', ?) or name ilike ?", query, word).
 		Offset(begin).Limit(end).Rows()
 	if err != nil {
 		return nil, err
