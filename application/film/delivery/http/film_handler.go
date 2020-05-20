@@ -92,7 +92,7 @@ func (fh FilmHandler) CreateFilm(ctx echo.Context) error {
 	err := easyjson.UnmarshalFromReader(ctx.Request().Body, &film)
 	if err != nil || film.EnglishName == "" {
 		resp, _ := models.Generate(400, "request parser error", &ctx).MarshalJSON()
-		ctx.Response().Write(resp)
+		_, _ = ctx.Response().Write(resp)
 		return err
 	}
 
@@ -112,7 +112,7 @@ func (fh FilmHandler) GetFilmList(ctx echo.Context) error {
 	var fl models.ListsFilm
 	r := make(map[string]interface{})
 	rec := fl.Convert(f[0:5])
-	for ind, _ := range rec {
+	for ind := range rec {
 		rec[ind].Image = f[ind].BackgroundImage
 	}
 	r["recommendations"] = rec

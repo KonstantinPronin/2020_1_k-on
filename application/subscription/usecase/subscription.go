@@ -33,7 +33,7 @@ func (s *Subscription) Subscribe(pid, userId uint) error {
 	if err != nil {
 		return err
 	}
-	if play.Public == false {
+	if !play.Public {
 		return errors.NewForbiddenError("playlist is private")
 	}
 
@@ -66,7 +66,7 @@ func (s *Subscription) Subscriptions(userId uint) (models.Playlists, error) {
 			return nil, err
 		}
 
-		if play.Public != true && play.UserId != userId {
+		if !play.Public && play.UserId != userId {
 			continue
 		}
 

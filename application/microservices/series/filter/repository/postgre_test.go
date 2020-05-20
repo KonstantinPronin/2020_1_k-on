@@ -33,7 +33,6 @@ var yearfirst = 2012
 var yearlast = yearfirst + 1
 var agelimit = 10
 var fid = uint(1)
-var number = 1
 
 var testSeries = models.Series{
 	ID:              fid,
@@ -52,25 +51,6 @@ var testSeries = models.Series{
 	SumVotes:        sumvotes,
 	TotalVotes:      totalvotes,
 	BackgroundImage: image,
-}
-
-var testSeason = models.Season{
-	ID:          fid,
-	SeriesID:    fid,
-	Name:        rn,
-	Number:      number,
-	TrailerLink: tl,
-	Description: d,
-	Year:        yearfirst,
-	Image:       image,
-}
-
-var testEpisode = models.Episode{
-	ID:       fid,
-	SeasonId: fid,
-	Name:     rn,
-	Number:   number,
-	Image:    image,
 }
 
 func SetupDB() (sqlmock.Sqlmock, *gorm.DB) {
@@ -115,9 +95,9 @@ func TestPostgresForSerials_FilterSeriesData(t *testing.T) {
 		return
 	}
 	resp := make(map[string]models.Genres)
-	resp["genre"] = models.Genres{models.Genre{"Все жанры", "%"}, expect2}
+	resp["genre"] = models.Genres{models.Genre{Name: "Все жанры", Reference: "%"}, expect2}
 	resp["year"] = models.Genres{
-		models.Genre{"Все годы", "%"},
+		models.Genre{Name: "Все годы", Reference: "%"},
 	}
 
 	require.Equal(t, item["genres"], resp["genres"])
@@ -129,11 +109,6 @@ func TestPostgresForSerials_FilterSeriesData2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	// good query
-	rows2 := sqlmock.
-		NewRows([]string{"name", "reference"})
-	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
 		WillReturnError(errors.New(""))
 
@@ -161,10 +136,6 @@ func TestPostgresForSerials_FilterSeriesData3(t *testing.T) {
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"genres" `).
 		WillReturnRows(rows2)
 
-	rows := sqlmock.
-		NewRows([]string{"max", "min"})
-	expect := testSeries
-	rows = rows.AddRow(expect.YearFirst+1, expect.YearFirst)
 	mock.ExpectQuery(`SELECT (.*)" `).
 		WillReturnError(errors.New(""))
 
@@ -217,19 +188,7 @@ func TestPostgresForSerials_FilterSeriesList2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	// good query
-
-	rows := sqlmock.
-		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
-			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
-			"country", "yearfirst", "yearlast", "agelimit"})
 	expect := models.Series(testSeries)
-	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
-		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.YearFirst, expect.YearLast, expect.AgeLimit)
-	rows = rows.AddRow(expect.ID+1, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
-		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.YearFirst, expect.YearLast, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (.*)(\*) FROM (.*)"series"  (.*)`).
 		WillReturnError(errors.New(""))
 

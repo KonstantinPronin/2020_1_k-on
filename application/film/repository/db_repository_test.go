@@ -18,9 +18,7 @@ var testGenre = models.Genre{
 }
 
 var image = "image"
-var ftype1 = "film"
 
-//var ftype2 = "series"
 var mg = "mg"
 var rn = "rn"
 var en = "en"
@@ -103,18 +101,8 @@ func TestPostgresForFilms_GetById2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	// good query
-
-	rows := sqlmock.
-		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
-			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
-			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
-		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)"films"."id" (.*)`).
-		//WithArgs(elemID).
 		WillReturnError(errors.New(""))
 
 	repo := &PostgresForFilms{
@@ -161,16 +149,7 @@ func TestPostgresForFilms_GetByName2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	// good query
-
-	rows := sqlmock.
-		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
-			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
-			"country", "year", "agelimit"})
 	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
-		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" WHERE (.*)"films"."id" (.*)`).
 		WillReturnError(errors.New(""))
 
@@ -218,16 +197,6 @@ func TestPostgresForFilms_GetFilmsArr2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	// good query
-
-	rows := sqlmock.
-		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
-			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
-			"country", "year", "agelimit"})
-	expect := models.Film(testFilm)
-	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
-		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.Year, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"films" LIMIT (.*)`).
 		WillReturnError(errors.New(""))
 	repo := &PostgresForFilms{
@@ -323,11 +292,6 @@ func TestPostgresForFilms_GetFilmGenres2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	// good query
-	rows2 := sqlmock.
-		NewRows([]string{"name", "reference"})
-	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
 	mock.ExpectQuery(`SELECT genres.name,genres.reference FROM (.*)" `).
 		WillReturnError(errors.New(""))
 	repo := &PostgresForFilms{

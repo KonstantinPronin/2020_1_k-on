@@ -66,7 +66,6 @@ func (a *AuthClient) Logout(sessionId string) error {
 
 func (a *AuthClient) Close() {
 	if err := a.gConn.Close(); err != nil {
-		err = a.gConn.Close()
 		a.logger.Error("error while closing grpc connection")
 	}
 }

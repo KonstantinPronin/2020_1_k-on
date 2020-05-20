@@ -8,62 +8,6 @@ import (
 	"testing"
 )
 
-var image = "image"
-
-var mg = "mg"
-var rn = "rn"
-var en = "en"
-var sumvotes = 0
-var totalvotes = 0
-var tl = "tl"
-var rating = 1.2
-var imdbrating = 9.87
-var d = "d"
-var c = "c"
-var yearfirst = 2012
-var yearlast = yearfirst + 1
-var agelimit = 10
-var fid = uint(1)
-var number = 1
-
-var testSeries = models.Series{
-	ID:              fid,
-	MainGenre:       mg,
-	RussianName:     rn,
-	EnglishName:     en,
-	TrailerLink:     tl,
-	Rating:          rating,
-	ImdbRating:      imdbrating,
-	Description:     d,
-	Image:           image,
-	Country:         c,
-	YearFirst:       yearfirst,
-	YearLast:        yearlast,
-	AgeLimit:        agelimit,
-	SumVotes:        sumvotes,
-	TotalVotes:      totalvotes,
-	BackgroundImage: image,
-}
-
-var testSeason = models.Season{
-	ID:          fid,
-	SeriesID:    fid,
-	Name:        rn,
-	Number:      number,
-	TrailerLink: tl,
-	Description: d,
-	Year:        yearfirst,
-	Image:       image,
-}
-
-var testEpisode = models.Episode{
-	ID:       fid,
-	SeasonId: fid,
-	Name:     rn,
-	Number:   number,
-	Image:    image,
-}
-
 func TestSerialUsecase_FilterSeriesData(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	series := mockseries.NewMockRepository(ctrl)

@@ -7,11 +7,7 @@ import (
 )
 
 const (
-	Host  = "127.0.0.1"
-	Port0 = ":8080"
 	Port1 = ":8081"
-	Port2 = ":8082"
-	Port3 = ":8083"
 )
 
 func main() {

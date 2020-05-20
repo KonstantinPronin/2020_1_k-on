@@ -69,7 +69,7 @@ func (p *Playlist) Get(pid, userId uint) (*models.Playlist, error) {
 		return nil, err
 	}
 
-	if play.Public == true || play.UserId == userId {
+	if play.Public || play.UserId == userId {
 		return play, nil
 	} else {
 		return nil, errors.NewForbiddenError("playlist is not public")

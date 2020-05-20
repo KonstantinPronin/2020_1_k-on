@@ -55,7 +55,6 @@ func (s *SeriesFilterClient) GetFilterFields() (map[string]models.Genres, bool) 
 
 func (s *SeriesFilterClient) Close() {
 	if err := s.gConn.Close(); err != nil {
-		err = s.gConn.Close()
 		s.logger.Error("error while closing grpc connection")
 	}
 }

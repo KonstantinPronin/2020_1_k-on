@@ -40,13 +40,13 @@ func (p *FilmFiltersDb) FilterFilmData() (map[string]models.Genres, bool) {
 	g = append(g, *genres...)
 	resp["genre"] = g
 	resp["order"] = models.Genres{
-		models.Genre{"По рейтингу", "rating"},
-		models.Genre{"По рейтингу IMDb", "imdbrating"},
+		models.Genre{Name: "По рейтингу", Reference: "rating"},
+		models.Genre{Name: "По рейтингу IMDb", Reference: "imdbrating"},
 	}
 	resp["year"] = models.Genres{
-		models.Genre{"Все годы", "%"},
-		models.Genre{"maxyear", strconv.Itoa(max)},
-		models.Genre{"minyear", strconv.Itoa(min)},
+		models.Genre{Name: "Все годы", Reference: "%"},
+		models.Genre{Name: "maxyear", Reference: strconv.Itoa(max)},
+		models.Genre{Name: "minyear", Reference: strconv.Itoa(min)},
 	}
 
 	return resp, true

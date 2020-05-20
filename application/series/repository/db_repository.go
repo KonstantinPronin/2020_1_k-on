@@ -80,7 +80,6 @@ func (p PostgresForSerials) GetSimilarFilms(sid uint) (models.Films, bool) {
 	films := &models.Films{}
 	var db *gorm.DB
 	var err error
-	err = nil
 	db = p.DB.Table("kinopoisk.films f2").Select("f2.*").
 		Joins("join (?) sub on f2.russianname = sub.russianname",
 			p.DB.Table("kinopoisk.series_playlist sp1").
@@ -102,7 +101,6 @@ func (p PostgresForSerials) GetSimilarSeries(sid uint) (models.SeriesArr, bool) 
 	series := &models.SeriesArr{}
 	var db *gorm.DB
 	var err error
-	err = nil
 	db = p.DB.Table("kinopoisk.series s2").Select("s2.*").
 		Joins("join (?) sub on s2.russianname = sub.russianname",
 			p.DB.Table("kinopoisk.series_playlist sp1").

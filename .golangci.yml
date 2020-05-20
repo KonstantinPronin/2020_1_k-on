@@ -1,3 +1,2 @@
 linters-settings:
   errcheck:
-    exclude: ./conf/linter_ignore.txt

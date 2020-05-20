@@ -26,7 +26,8 @@ func (l *Logger) Log(next echo.HandlerFunc) echo.HandlerFunc {
 			var status int
 			switch err.(type) {
 			case *echo.HTTPError:
-				status = err.(*echo.HTTPError).Code
+				httpErr := err
+				status = httpErr.(*echo.HTTPError).Code
 			default:
 				status = ctx.Response().Status
 			}

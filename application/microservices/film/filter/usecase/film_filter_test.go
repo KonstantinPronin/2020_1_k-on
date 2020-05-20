@@ -8,41 +8,6 @@ import (
 	"testing"
 )
 
-var image = "image"
-var ftype1 = "film"
-
-var mg = "mg"
-var rn = "rn"
-var en = "en"
-var sumvotes = 0
-var totalvotes = 0
-var tl = "tl"
-var rating = 1.2
-var imdbrating = 9.87
-var d = "d"
-var c = "c"
-var year = 2012
-var agelimit = 10
-var fid = uint(1)
-
-var testFilm = models.Film{
-	ID:              fid,
-	MainGenre:       mg,
-	RussianName:     rn,
-	EnglishName:     en,
-	TrailerLink:     tl,
-	Rating:          rating,
-	ImdbRating:      imdbrating,
-	Description:     d,
-	Image:           image,
-	Country:         c,
-	Year:            year,
-	AgeLimit:        agelimit,
-	SumVotes:        sumvotes,
-	TotalVotes:      totalvotes,
-	BackgroundImage: image,
-}
-
 func TestFilmUsecase_FilterFilmList(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	films := mockfilm.NewMockRepository(ctrl)

@@ -118,14 +118,7 @@ func TestPostgresForSerials_GetSeriesByID2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	rows := sqlmock.
-		NewRows([]string{"id", "maingenre", "russianname", "englishname", "trailerlink",
-			"rating", "imdbrating", "totalvotes", "sumvotes", "description", "image", "backgroundimage",
-			"country", "yearfirst", "yearlast", "agelimit"})
 	expect := testSeries
-	rows = rows.AddRow(expect.ID, expect.MainGenre, expect.RussianName, expect.EnglishName,
-		expect.TrailerLink, expect.Rating, expect.ImdbRating, expect.TotalVotes, expect.SumVotes,
-		expect.Description, expect.Image, expect.BackgroundImage, expect.Country, expect.YearFirst, expect.YearLast, expect.AgeLimit)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"series" WHERE (.*)"series"."id" (.*)`).
 		WillReturnError(errors.New(""))
 
@@ -165,12 +158,7 @@ func TestPostgresForSerials_GetSeriesSeasons2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	rows := sqlmock.
-		NewRows([]string{"id", "seriesid", "name", "trailerlink",
-			"number", "description", "image", "year"})
 	expect := testSeason
-	rows = rows.AddRow(expect.ID, expect.SeriesID, expect.Name,
-		expect.TrailerLink, expect.Number, expect.Description, expect.Image, expect.Year)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"seasons" WHERE (.*)`).
 		WillReturnError(errors.New(""))
 
@@ -209,11 +197,7 @@ func TestPostgresForSerials_GetSeasonEpisodes2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	rows := sqlmock.
-		NewRows([]string{"id", "seasonid", "name", "number", "image"})
 	expect := testEpisode
-	rows = rows.AddRow(expect.ID, expect.SeasonId, expect.Name,
-		expect.Number, expect.Image)
 	mock.ExpectQuery(`SELECT (\*) FROM (.*)"episodes" WHERE (.*)`).
 		WillReturnError(errors.New(""))
 
@@ -253,11 +237,6 @@ func TestPostgresForSerials_GetSeriesGenres2(t *testing.T) {
 	mock, DB := SetupDB()
 	defer DB.Close()
 
-	// good query
-	rows2 := sqlmock.
-		NewRows([]string{"name", "reference"})
-	expect2 := testGenre
-	rows2 = rows2.AddRow(expect2.Name, expect2.Reference)
 	mock.ExpectQuery(`SELECT genres.name,genres.reference FROM (.*)" `).
 		WillReturnError(errors.New(""))
 	repo := &PostgresForSerials{

@@ -9,7 +9,6 @@ import (
 )
 
 var image = "image"
-var ftype1 = "film"
 
 var mg = "mg"
 var rn = "rn"

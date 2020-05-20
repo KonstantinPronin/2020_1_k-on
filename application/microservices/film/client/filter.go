@@ -56,7 +56,6 @@ func (f *FilmFilterClient) GetFilterFields() (map[string]models.Genres, bool) {
 
 func (f *FilmFilterClient) Close() {
 	if err := f.gConn.Close(); err != nil {
-		err = f.gConn.Close()
 		f.logger.Error("error while closing grpc connection")
 	}
 }
