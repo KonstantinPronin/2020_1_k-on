@@ -3,6 +3,7 @@ package repository
 import (
 	"encoding/base64"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/image"
+	"github.com/go-park-mail-ru/2020_1_k-on/pkg/constants"
 	"github.com/google/uuid"
 	"io"
 	"io/ioutil"
@@ -18,7 +19,7 @@ func NewImageRepository() image.Repository {
 
 func (rep *ImageRepository) Save(data io.Reader) (string, error) {
 	filename := uuid.New().String()
-	path := filepath.Join(image.Dir, filename)
+	path := filepath.Join(constants.ImgDir, filename)
 
 	dst, err := os.Create(path)
 	if err != nil {
@@ -34,7 +35,7 @@ func (rep *ImageRepository) Save(data io.Reader) (string, error) {
 }
 
 func (rep *ImageRepository) Get(filename string) (string, error) {
-	path := filepath.Join(image.Dir, filename)
+	path := filepath.Join(constants.ImgDir, filename)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return "", err

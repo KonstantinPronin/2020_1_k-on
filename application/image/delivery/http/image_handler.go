@@ -61,7 +61,7 @@ func (handler *ImageHandler) AddUserImage(ctx echo.Context) error {
 
 func (handler *ImageHandler) Get(ctx echo.Context) error {
 	path := ctx.Param("path")
-	path = filepath.Join(image.Dir, path)
+	path = filepath.Join(constants.ImgDir, path)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return middleware.WriteErrResponse(ctx, http.StatusNotFound, err.Error())
 	}
