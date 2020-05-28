@@ -90,3 +90,33 @@ func (mr *MockUseCaseMockRecorder) SetImage(id, image interface{}) *gomock.Call 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetImage", reflect.TypeOf((*MockUseCase)(nil).SetImage), id, image)
 }
+
+// Oauth mocks base method
+func (m *MockUseCase) Oauth(vkUser *models.VkUser) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Oauth", vkUser)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Oauth indicates an expected call of Oauth
+func (mr *MockUseCaseMockRecorder) Oauth(vkUser interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Oauth", reflect.TypeOf((*MockUseCase)(nil).Oauth), vkUser)
+}
+
+// GetOauthConfig mocks base method
+func (m *MockUseCase) GetOauthConfig() (*models.OauthConfig, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOauthConfig")
+	ret0, _ := ret[0].(*models.OauthConfig)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOauthConfig indicates an expected call of GetOauthConfig
+func (mr *MockUseCaseMockRecorder) GetOauthConfig() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOauthConfig", reflect.TypeOf((*MockUseCase)(nil).GetOauthConfig))
+}

@@ -6,6 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-redis/redis/v7 v7.2.0
+	github.com/go-vk-api/vk v0.0.0-20200129183856-014d9b8adc96
 	github.com/golang/mock v1.4.3
 	github.com/golang/protobuf v1.4.0-rc.4.0.20200313231945-b860323f09d0
 	github.com/google/uuid v1.1.1
@@ -24,6 +25,7 @@ require (
 	go.uber.org/zap v1.14.1
 	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
+	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
 	golang.org/x/sys v0.0.0-20200408040146-ea54a3c99b9b // indirect
 	google.golang.org/grpc v1.27.0
 	google.golang.org/protobuf v1.21.0

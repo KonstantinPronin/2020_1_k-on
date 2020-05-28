@@ -9,4 +9,7 @@ type Repository interface {
 	GetByName(login string) (user *models.User, err error)
 	Contains(login string) (bool, error)
 	SetImage(id uint, image string) error
+	GetUserFromVk(vkUserId int64) (*models.User, error)
+	CreateUserFromVk(vkUserId int64, usr *models.User) error
+	GetOauthConfig() (*models.OauthConfig, error)
 }

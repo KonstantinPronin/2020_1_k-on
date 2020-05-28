@@ -119,3 +119,47 @@ func (mr *MockRepositoryMockRecorder) SetImage(id, image interface{}) *gomock.Ca
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetImage", reflect.TypeOf((*MockRepository)(nil).SetImage), id, image)
 }
+
+// GetUserFromVk mocks base method
+func (m *MockRepository) GetUserFromVk(vkUserId int64) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserFromVk", vkUserId)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserFromVk indicates an expected call of GetUserFromVk
+func (mr *MockRepositoryMockRecorder) GetUserFromVk(vkUserId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserFromVk", reflect.TypeOf((*MockRepository)(nil).GetUserFromVk), vkUserId)
+}
+
+// CreateUserFromVk mocks base method
+func (m *MockRepository) CreateUserFromVk(vkUserId int64, usr *models.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUserFromVk", vkUserId, usr)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateUserFromVk indicates an expected call of CreateUserFromVk
+func (mr *MockRepositoryMockRecorder) CreateUserFromVk(vkUserId, usr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserFromVk", reflect.TypeOf((*MockRepository)(nil).CreateUserFromVk), vkUserId, usr)
+}
+
+// GetOauthConfig mocks base method
+func (m *MockRepository) GetOauthConfig() (*models.OauthConfig, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOauthConfig")
+	ret0, _ := ret[0].(*models.OauthConfig)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOauthConfig indicates an expected call of GetOauthConfig
+func (mr *MockRepositoryMockRecorder) GetOauthConfig() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOauthConfig", reflect.TypeOf((*MockRepository)(nil).GetOauthConfig))
+}

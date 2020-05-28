@@ -300,21 +300,15 @@ create trigger persons_searchable_text
     for each row
 execute procedure kinopoisk.persons_searchable_text();
 
-select f1.russianname, count(fp2.film_id)
-from kinopoisk.film_playlist fp1
-         join kinopoisk.film_playlist fp2 on fp1.playlist_id = fp2.playlist_id
-         join kinopoisk.films f1 on fp2.film_id = f1.id
-where fp1.film_id = 1
-group by f1.russianname
-order by count(fp2.film_id) desc;
+create table kinopoisk.oauth
+(
+    client_id  text not null ,
+    client_secret text not null,
+    redirect_url text not null
+);
 
-select f2.*
-from kinopoisk.films f2
-         join (select f1.russianname, count(fp2.film_id)
-               from kinopoisk.film_playlist fp1
-                        join kinopoisk.film_playlist fp2 on fp1.playlist_id = fp2.playlist_id
-                        join kinopoisk.films f1 on fp2.film_id = f1.id
-               where fp1.film_id = 1
-               group by f1.russianname) as sub on f2.russianname = sub.russianname
-order by sub.count desc
-offset 1;
+create table kinopoisk.vkusers
+(
+    user_id  bigint references kinopoisk.users(id) on delete cascade,
+    vk_user_id bigint not null
+);

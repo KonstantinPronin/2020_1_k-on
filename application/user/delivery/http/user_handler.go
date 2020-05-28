@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/microservices/auth/client"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/models"
 	"github.com/go-park-mail-ru/2020_1_k-on/application/server/middleware"
@@ -10,6 +11,8 @@ import (
 	"github.com/mailru/easyjson"
 	"github.com/microcosm-cc/bluemonday"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
+	vkc "golang.org/x/oauth2/vk"
 	"net/http"
 	"time"
 )
@@ -19,23 +22,38 @@ type UserHandler struct {
 	useCase   user.UseCase
 	logger    *zap.Logger
 	sanitizer *bluemonday.Policy
+	oauthConf oauth2.Config
 }
 
 func NewUserHandler(e *echo.Echo,
 	rpcAuth client.IAuthClient,
-	us user.UseCase,
+	uc user.UseCase,
 	auth middleware.Auth,
 	logger *zap.Logger,
-	sanitizer *bluemonday.Policy) {
+	sanitizer *bluemonday.Policy) error {
 
-	handler := UserHandler{rpcAuth: rpcAuth, useCase: us, logger: logger, sanitizer: sanitizer}
+	conf, err := uc.GetOauthConfig()
+	if err != nil {
+		return err
+	}
+	oauth := oauth2.Config{
+		ClientID:     conf.ClientId,
+		ClientSecret: conf.ClientSecret,
+		Endpoint:     vkc.Endpoint,
+		RedirectURL:  conf.RedirectUrl,
+		Scopes:       []string{"email"},
+	}
+	handler := UserHandler{rpcAuth: rpcAuth, useCase: uc, logger: logger, sanitizer: sanitizer, oauthConf: oauth}
 
-	//e.Use(middleware.ParseErrors)
 	e.POST("/login", handler.Login, auth.AlreadyLoginErr, middleware.ParseErrors)
 	e.DELETE("/logout", handler.Logout, auth.GetSession, middleware.ParseErrors)
 	e.POST("/signup", handler.SignUp, auth.AlreadyLoginErr, middleware.ParseErrors)
 	e.GET("/user", handler.Profile, auth.GetSession, middleware.ParseErrors)
 	e.PUT("/user", handler.Update, auth.GetSession, middleware.ParseErrors, middleware.CSRF)
+	e.GET("/vk", handler.GetVkRedirect, middleware.ParseErrors)
+	e.GET("/oauth", handler.Oauth, middleware.ParseErrors)
+
+	return nil
 }
 
 func (uh *UserHandler) Login(ctx echo.Context) error {
@@ -53,7 +71,6 @@ func (uh *UserHandler) Login(ctx echo.Context) error {
 
 	uh.setCookie(ctx, sessionId)
 	uh.setCsrfToken(ctx, token)
-	//ctx.Response().Header().Set(crypto.CSRFHeader, token)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
@@ -98,7 +115,6 @@ func (uh *UserHandler) SignUp(ctx echo.Context) error {
 
 	uh.setCookie(ctx, sessionId)
 	uh.setCsrfToken(ctx, token)
-	//ctx.Response().Header().Set(crypto.CSRFHeader, token)
 
 	usr.Password = ""
 	return middleware.WriteOkResponse(ctx, usr)
@@ -134,6 +150,39 @@ func (uh *UserHandler) Update(ctx echo.Context) error {
 	return middleware.WriteOkResponse(ctx, usr)
 }
 
+func (uh *UserHandler) GetVkRedirect(ctx echo.Context) error {
+	url := uh.oauthConf.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	return middleware.WriteOkResponse(ctx, url)
+}
+
+func (uh *UserHandler) Oauth(ctx echo.Context) error {
+	code := ctx.QueryParam("code")
+	authToken, err := uh.oauthConf.Exchange(context.Background(), code)
+	if err != nil {
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can not get auth token from vk")
+	}
+
+	vkUser := new(models.VkUser)
+	vkUser.Id = int64(authToken.Extra("user_id").(float64))
+	vkUser.Email = authToken.Extra("email").(string)
+
+	usr, err := uh.useCase.Oauth(vkUser)
+	if err != nil {
+		return middleware.WriteErrResponse(ctx, http.StatusInternalServerError, "can not create vk user")
+	}
+
+	sessionId, csrfToken, err := uh.rpcAuth.Login(usr.Username, usr.Password)
+	if err != nil {
+		return middleware.WriteErrResponse(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	uh.setCookie(ctx, sessionId)
+	uh.setCsrfToken(ctx, csrfToken)
+
+	usr.Password = ""
+	return middleware.WriteOkResponse(ctx, usr)
+}
+
 func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {
 	cookie := &http.Cookie{
 		Name:    constants.CookieName,
@@ -153,7 +202,6 @@ func (uh *UserHandler) setCsrfToken(ctx echo.Context, token string) {
 		Path:    "/",
 		Expires: time.Now().Add(time.Hour),
 		//SameSite: http.SameSiteStrictMode,
-		//HttpOnly: true,
 	}
 	ctx.SetCookie(cookie)
 }

@@ -112,7 +112,10 @@ func NewServer(srvConf *conf.Service, e *echo.Echo, db *gorm.DB, logger *zap.Log
 	users := userRepository.NewUserDatabase(db, logger)
 	auth := middleware.NewAuth(rpcAuth)
 	user := userUsecase.NewUser(users, logger)
-	userHandler.NewUserHandler(e, rpcAuth, user, auth, logger, sanitizer)
+	err = userHandler.NewUserHandler(e, rpcAuth, user, auth, logger, sanitizer)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	//person handler
 	persons := personRepository.NewPersonDatabase(db, logger)

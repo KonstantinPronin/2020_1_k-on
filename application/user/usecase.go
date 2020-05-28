@@ -9,4 +9,6 @@ type UseCase interface {
 	Get(id uint) (*models.User, error)
 	Update(user *models.User) error
 	SetImage(id uint, image string) error
+	Oauth(vkUser *models.VkUser) (*models.User, error)
+	GetOauthConfig() (*models.OauthConfig, error)
 }

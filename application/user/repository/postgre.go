@@ -97,3 +97,39 @@ func (udb *UserDatabase) SetImage(id uint, image string) error {
 	usr.Image = image
 	return udb.conn.Table("kinopoisk.users").Save(usr).Error
 }
+
+func (udb *UserDatabase) GetOauthConfig() (*models.OauthConfig, error) {
+	conf := new(models.OauthConfig)
+	err := udb.conn.Table("kinopoisk.oauth").First(conf).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return conf, nil
+}
+
+func (udb *UserDatabase) GetUserFromVk(vkUserId int64) (*models.User, error) {
+	usr := new(models.User)
+
+	err := udb.conn.Table("kinopoisk.users").
+		Select("id, username, password, email, image").
+		Joins("inner join kinopoisk.vkusers vk on vk.user_id = id").
+		Where("vk.vk_user_id = ?", vkUserId).First(usr).Error
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return usr, nil
+}
+
+func (udb *UserDatabase) CreateUserFromVk(vkUserId int64, usr *models.User) error {
+	err := udb.Add(usr)
+	if err != nil {
+		return err
+	}
+
+	return udb.conn.Exec("insert into kinopoisk.vkusers(user_id, vk_user_id) values(?, ?)", usr.Id, vkUserId).Error
+}

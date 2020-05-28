@@ -5,6 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2020_1_k-on/application/user"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/crypto"
 	"github.com/go-park-mail-ru/2020_1_k-on/pkg/errors"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -65,4 +66,60 @@ func (uc *User) Update(usr *models.User) error {
 
 func (uc *User) SetImage(id uint, image string) error {
 	return uc.users.SetImage(id, image)
+}
+
+func (uc *User) Oauth(vkUser *models.VkUser) (*models.User, error) {
+	usr, err := uc.users.GetUserFromVk(vkUser.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	if usr != nil {
+		password, hash, err := uc.generatePassword()
+		if err != nil {
+			return nil, err
+		}
+
+		usr.Password = hash
+		err = uc.Update(usr)
+		if err != nil {
+			return nil, err
+		}
+		usr.Password = password
+
+		return usr, nil
+	}
+
+	usr = new(models.User)
+	usr.Username = vkUser.Email
+	usr.Email = vkUser.Email
+	usr.Image = ""
+
+	password, hash, err := uc.generatePassword()
+	if err != nil {
+		return nil, err
+	}
+
+	usr.Password = hash
+	err = uc.users.CreateUserFromVk(vkUser.Id, usr)
+	if err != nil {
+		return nil, err
+	}
+	usr.Password = password
+
+	return usr, err
+}
+
+func (uc *User) GetOauthConfig() (*models.OauthConfig, error) {
+	return uc.users.GetOauthConfig()
+}
+
+func (uc *User) generatePassword() (string, string, error) {
+	password := uuid.New().String()
+	hash, err := crypto.HashPassword(password)
+	if err != nil {
+		return "", "", err
+	}
+
+	return password, hash, err
 }
