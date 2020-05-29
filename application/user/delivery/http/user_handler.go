@@ -201,7 +201,7 @@ func (uh *UserHandler) setCsrfToken(ctx echo.Context, token string) {
 		Name:    constants.CSRFHeader,
 		Value:   token,
 		Path:    "/",
-		Expires: time.Now().Add(time.Hour),
+		Expires: time.Now().Add(constants.CookieDuration),
 		//SameSite: http.SameSiteStrictMode,
 	}
 	ctx.SetCookie(cookie)
