@@ -3,11 +3,11 @@ name: Docker Build Services
 on:
   push:
     branches:
-      - master
+      #- master
       - dev
   pull_request:
     branches:
-      - master
+      #- master
       - dev
 
 jobs:
