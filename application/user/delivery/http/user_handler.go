@@ -180,7 +180,8 @@ func (uh *UserHandler) Oauth(ctx echo.Context) error {
 	uh.setCsrfToken(ctx, csrfToken)
 
 	usr.Password = ""
-	return middleware.WriteOkResponse(ctx, usr)
+	return ctx.Redirect(http.StatusPermanentRedirect, "kino-on.ru")
+	//return middleware.WriteOkResponse(ctx, usr)
 }
 
 func (uh *UserHandler) setCookie(ctx echo.Context, sessionId string) {

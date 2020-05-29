@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+      - redirect
   pull_request:
     branches:
       - master
@@ -60,7 +61,7 @@ jobs:
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/series:${GITHUB_SHA::8}
 
   deploy:
-    if: contains(github.ref, 'master')
+    #if: contains(github.ref, 'master')
     runs-on: ubuntu-latest
     needs: build
     steps:
